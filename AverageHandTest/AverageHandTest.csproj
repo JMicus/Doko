@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>AverageHandTest</RootNamespace>
+    <AssemblyName>AverageHandTest</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\HandControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\HandControl.Designer.cs">
+      <DependentUpon>HandControl.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="UI\HandControl.resx">
+      <DependentUpon>HandControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DokoCore\DokoCore.csproj">
+      <Project>{f32dc26b-318c-44ea-a110-eb5682bd3079}</Project>
+      <Name>DokoCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\b2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\b3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\b4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c0_old.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ca.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cb.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ck.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\closebutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dealbutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dealsymbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount10symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount11symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount12symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount1symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount2symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount3symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount4symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount5symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount6symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount7symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount8symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deckcount9symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ha.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hb.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\k9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ka.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kb.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kontrabutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lasttrickbackbutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\msgbutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\p9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pa.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pb.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rebutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rulesbutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

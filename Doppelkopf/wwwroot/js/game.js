@@ -79,7 +79,7 @@ connection.on("Hand", function (cards) {
             img.src = cardLink(card);
             img.className = "lift";
             //img.style = "cursor: pointer; margin-right: " + margin + "px";
-            img.style = "cursor: pointer; position: absolute; left: " + ((i - .5) * 100 / (cardArray.length - 1) - 50) + "%";
+            img.style = "cursor: pointer; position: absolute; left: " + ((i) * 100 / (cardArray.length)) + "%";
             setCardImgLayout(img);
             img.setAttribute("data-cardCode", card);
             img.draggable = true;
@@ -117,8 +117,8 @@ connection.on("Hand", function (cards) {
             handDiv.appendChild(img);
         }
 
-        document.getElementById("handDiv").style.maxWidth = (layoutDict["cardWidth"] * (cardArray.length - 1)) + "px";
-        document.getElementById("handDiv").style.marginRight = layoutDict["cardWidth"] + "px";
+        document.getElementById("handDiv").style.maxWidth = (layoutDict["cardWidth"] * (cardArray.length)) + "px";
+        //document.getElementById("handDiv").style.marginRight = layoutDict["cardWidth"] + "px";
         //document.getElementById("handDivRight").style.height = layoutDict["cardHeight"] + "px";
 
 

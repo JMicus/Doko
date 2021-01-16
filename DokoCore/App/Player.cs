@@ -92,7 +92,7 @@ namespace Doppelkopf.App
             }
         }
 
-        public async Task AddMessage(string msg, bool addPlayerName = true)
+        public async Task AddMessage(string msg, bool addPlayerName = false)
         {
             var msgPlus = (addPlayerName ? (NameShort + ": ") : "") + msg;
             Messages.Add(msgPlus);

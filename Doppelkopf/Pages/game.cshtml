@@ -13,9 +13,9 @@
 
 <div id="data" style="display: none" data-gameName="@Model.GameName" data-playerNo="@Model.PlayerNo" data-playerToken="@Model.PlayerToken"></div>
 
-<div id="gameDiv" style="visibility: visible; text-align: center; overflow: clip">
+<div id="gameDiv" style="visibility: visible; text-align: center;">
     <div>
-        <div class="row">
+        <div class="row" style="width: 100%">
             <div class="col">
                 @* 0 0 *@
             </div>
@@ -23,16 +23,16 @@
                 @* 0 1 *@
                 <div class="nameLabel" id="playerName3Panel" style="display: inline-block;" data-playerNo="0">-</div>
                 <div id="player3SymbolsDiv" style="display: inline-block;"></div>
-                <div id="player3MsgDiv" class="playerMsgDiv" style="left: 300px; top:50px"></div>
+                <div id="player3MsgDiv" class="playerMsgDiv" style="top:50px"></div>
             </div>
             <div class="col"></div> @* 0 2 *@
         </div>
-        <div class="row">
+        <div class="row" style="width: 100%">
             <div class="col">
                 @* 1 0 *@
                 <div class="nameLabel" id="playerName2Panel" style="display: inline-block;" data-playerNo="0">-</div>
                 <div id="player2SymbolsDiv"></div>
-                <div id="player2MsgDiv" class="playerMsgDiv" style="left: 300px; top:100px"></div>
+                <div id="player2MsgDiv" class="playerMsgDiv" style="top:100px"></div>
             </div>
             <div class="col" style="display: flex; justify-content: center">
                 @* 1 1 *@
@@ -78,11 +78,11 @@
             <div class="col">
                 @* 1 2 *@
                 <div class="nameLabel" id="playerName4Panel" style="display: inline-block;" data-playerNo="0">-</div>
-                <div id="player4SymbolsDiv" style="display: inline-block;"></div>
-                <div id="player4MsgDiv" class="playerMsgDiv" style="left: 100px; top: 100px"></div>
+                <div id="player4SymbolsDiv"></div>
+                <div id="player4MsgDiv" class="playerMsgDiv" style="top: 100px"></div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="width: 100%">
             <div class="col">
                 @* 2 0 *@
             </div>
@@ -90,7 +90,7 @@
                 @* 2 1 *@
                 <div class="nameLabel" id="playerName1Panel" data-playerNo="0" style="display: inline-block;">-</div>
                 <div id="player1SymbolsDiv" style="display: inline-block;"></div>
-                <div id="player1MsgDiv" class="playerMsgDiv" style="left: 300px; top:-50px"></div>
+                <div id="player1MsgDiv" class="playerMsgDiv" style="top:-50px"></div>
             </div>
             <div class="col" style="float: right; margin-top: -100px">
                 @* 2 2 *@

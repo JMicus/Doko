@@ -132,17 +132,19 @@ img.circularTinyButton {
 
 div.playerMsgDiv {
     position: absolute;
-    top: 0px;
+    /*top: 0px;*/
     z-index: 1000;
-    
+    left: 20%
 }
 
 div.playerMsgDiv .box {
     background-color: mintcream;
-    border-radius: 5px;
+    border-radius: 10px;
     border-style: solid;
     padding: 2px;
     font-size: 24px;
+    width: fit-content;
+    text-align: left;
 }
 
 .popupMenu {

@@ -41,8 +41,16 @@ namespace Doppelkopf.Hubs
 
                 for (int i = 1; i <= 4; i++)
                 {
-                    game.PutCard(i.ToString(), game.Player[i].Cards.First().ToCode());
+                    var player = game.Player[i];
+
+                    // put card
+                    game.PutCard(i.ToString(), player.Cards.First().ToCode());
+
+                    // messages
+                    _ = player.AddMessage("short");
+                    _ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
                 }
+
             }
 
             

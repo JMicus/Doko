@@ -384,59 +384,10 @@ connection.on("Layout", function (layout) {
     });
 
     document.body.style.backgroundImage = "Images/" + layoutDict["background"];
-
     document.getElementById("handDiv").style.height = layoutDict["cardHeight"] + "px";
-    //document.getElementById("handDiv").style.paddingTop = "20px";
-    
 
-    for (var i = 1; i <= 4; i++) {
-        //var margin = (110 - parseInt(layoutDict["cardHeight"])) + "px";
-
-        var img = document.getElementById("trick" + playerPosition(i) + "Img");
-        setCardImgLayout(img);
-    }
-
-    var img1 = document.getElementById("trick1Img");
-
-    var space = 20;
-
-    var w = img1.width;
-    var h = img1.height;
-    var hwgap = (h - w) / 2;
-
-    var center = document.getElementById("tableCenterDiv").parentElement;
-    center.style.width = (w * 3 + space + space) + "px";
-    center.style.height = (h + h + space + space) + "px";
-
-    for (var i = 1; i <= 4; i++) {
-        var pp = i;
-        var img = document.getElementById("trick" + i + "Img");
-
-        // left
-        if (pp == 2) {
-            img.style.left = (-1.5 * w - space - hwgap) + "px";
-        }
-        else if (pp == 1 || pp == 3) {
-            img.style.left = (-w / 2) + "px";
-        }
-        else if (pp == 4) {
-            img.style.left = (w / 2 + space + hwgap) + "px";
-        }
-
-        // top
-        if (pp == 3) {
-            img.style.top = "0px";
-        }
-        else if (pp == 2 || pp == 4) {
-            img.style.top = (h - w / 2 - hwgap + space) + "px";
-        }
-        else if (pp == 1) {
-            img.style.top = (h + space + space) + "px";
-        }
-
-        var trickImg = document.getElementById("lastTrick" + i + "Img");
-        setCardImgLayoutSized(trickImg, 0.5);
-    }
+    trickLayout("tableCenterDiv", "trickXImg", 1);
+    trickLayout("lastTrickDiv", "lastTrickXImg", .5);
 });
 
 connection.start()
@@ -638,11 +589,63 @@ function setCardImgLayoutSized(img, size) {
 
     if (layoutDict["cardBorder"] == "true") {
         img.style.border = "1px solid #000";
-        img.style.borderRadius = (h / 15) + "px";
+        img.style.borderRadius = (h / 15 * size) + "px";
     }
     else {
         img.style.border = "none";
         img.style.borderRadius = "0px";
+    }
+}
+
+function trickLayout(parentName, trickImgPattern, size) {
+
+    for (var i = 1; i <= 4; i++) {
+        //var margin = (110 - parseInt(layoutDict["cardHeight"])) + "px";
+
+        var img = document.getElementById(trickImgPattern.replace("X", playerPosition(i)));
+        setCardImgLayoutSized(img, size);
+    }
+
+    var img1 = document.getElementById(trickImgPattern.replace("X", 1));
+
+    var space = 20;
+
+    var w = img1.width;
+    var h = img1.height;
+    var hwgap = (h - w) / 2;
+
+    var center = document.getElementById(parentName).parentElement;
+    center.style.width = (w * 3 + space + space) + "px";
+    center.style.height = (h + h + space + space) + "px";
+
+    for (var i = 1; i <= 4; i++) {
+        var pp = i;
+        var img = document.getElementById(trickImgPattern.replace("X", i));
+
+        // left
+        if (pp == 2) {
+            img.style.left = (-1.5 * w - space - hwgap) + "px";
+        }
+        else if (pp == 1 || pp == 3) {
+            img.style.left = (-w / 2) + "px";
+        }
+        else if (pp == 4) {
+            img.style.left = (w / 2 + space + hwgap) + "px";
+        }
+
+        // top
+        if (pp == 3) {
+            img.style.top = "0px";
+        }
+        else if (pp == 2 || pp == 4) {
+            img.style.top = (h - w / 2 - hwgap + space) + "px";
+        }
+        else if (pp == 1) {
+            img.style.top = (h + space + space) + "px";
+        }
+
+        //var trickImg = document.getElementById("lastTrick" + i + "Img");
+        //setCardImgLayoutSized(trickImg, 0.5);
     }
 }
 

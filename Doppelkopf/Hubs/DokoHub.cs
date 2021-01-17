@@ -62,15 +62,13 @@ namespace Doppelkopf.Hubs
             {
                 foreach (var player in game.Player)
                 {
-                    player.ConnectionIds.RemoveAll(cid => cid == Context.ConnectionId);
+                    if (player.ConnectionIds.RemoveAll(cid => cid == Context.ConnectionId) > 0)
+                    {
+                        _ = sendPlayerJoined(game, player);
+                    }
                 }
             }
-            /*Console.WriteLine("\nCONNECTIONS");
-            foreach (var player in GetGame("Doko").Player)
-            {
-                Console.WriteLine(player.Name);
-                Console.WriteLine(string.Join("\n", player.ConnectionIds) + "\n");
-            }*/
+
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -158,15 +156,15 @@ namespace Doppelkopf.Hubs
 
             await sendInfo(game, player.Name + " ist dem Spiel beigetreten.");
 
-            await Clients.Group(gameName).SendAsync("PlayerJoined", playerNo, player.Name);
+            await sendPlayerJoined(game, player);
+
+            //await Clients.Group(gameName).SendAsync("PlayerJoined", playerNo, player.Name);
 
             await sendLayout(game);
 
             // current state to new client
-            foreach (var p in game.Player.Where(x => !string.IsNullOrEmpty(x.Name)/* && x.No != Convert.ToInt32(playerNo)*/))
-            {
-                await sendToPlayer(player, "PlayerJoined", p.No, p.Name);
-            }
+            await sendPlayerJoined(game, null, player);
+            
             if (!game.Trick.Empty)
             {
                 await sendTrick(game, player);
@@ -480,6 +478,32 @@ namespace Doppelkopf.Hubs
         }
 
         // SEND HELPER
+        private async Task sendPlayerJoined(Game game, Player player = null, Player receivingPlayer = null)
+        {
+            var playerToSend = new List<Player>();
+
+            if (player == null)
+            {
+                playerToSend.AddRange(game.Player.ToList());
+            }
+            else
+            {
+                playerToSend.Add(player);
+            }
+
+            foreach (var p in playerToSend)
+            {
+                if (receivingPlayer == null)
+                {
+                    await sendToAll(game, "PlayerJoined", p.No, p.NameLabel);
+                }
+                else
+                {
+                    await sendToPlayer(receivingPlayer, "PlayerJoined", p.No, p.NameLabel);
+                }
+            }
+        }
+
         private async Task sendTrick(Game game, Player player = null, bool sendToAllExceptPlayer = false)
         {
             if (player == null)

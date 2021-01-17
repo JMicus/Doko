@@ -159,6 +159,15 @@ connection.on("Trick", function (startPlayerNo, cards) {
 
 connection.on("LastTrick", function (startPlayerNo, cards) {
     log("LastTrick");
+
+    var label = document.getElementById("lastTrickLabelDiv");
+    if (cards == "...") {
+        label.innerHTML = "";
+    }
+    else {
+        label.innerHTML = "Letzter Stich:"
+    }
+
     var cardLst = cards.split(".");
 
     for (var i = 1; i <= 4; i++) {
@@ -175,7 +184,7 @@ connection.on("ExternalPage", function (link) {
     var page = document.createElement("object");
     page.type = "text/html";
     page.data = link;
-    page.style = "width:100%;height:1500px;";
+    page.style = "width:100%;height:1600px;";
 
     externalPageDiv.appendChild(page);
 });

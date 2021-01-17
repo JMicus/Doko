@@ -32,6 +32,14 @@ namespace Doppelkopf.App
 
         public string NameShort => (Name.Count() < 2 ? Name : Name.Substring(0, 2)).ToUpper();
 
+        public string NameLabel
+        {
+            get
+            {
+                return ConnectionIds.Count > 0 ? Name : "-"; 
+            }
+        }
+
         public bool IsInitialized => !string.IsNullOrEmpty(Token);
 
         private Rules rules;

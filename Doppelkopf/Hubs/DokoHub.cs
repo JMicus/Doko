@@ -572,7 +572,7 @@ namespace Doppelkopf.Hubs
 
         private async Task sendSymbols(Game game)
         {
-            await sendToAll(game, "Symbols", string.Join(".", game.Player.Select(p => string.Join("-", p.Symbols.Select(pair => pair.Item1 + "+" + pair.Item2)))));
+            await sendToAll(game, "Symbols", string.Join("###", game.Player.Select(p => string.Join("---", p.Symbols.Select(pair => pair.Item1 + "+" + pair.Item2)))));
         }
 
         private async Task sendMessages(Game game)
@@ -594,7 +594,7 @@ namespace Doppelkopf.Hubs
 
         private async Task sendPoints(Game game)
         {
-            await sendToAll(game, "Points", string.Join(".", game.Player.Select(p => p.Name + "-" + p.WonPoints)));
+            await sendToAll(game, "Points", string.Join("###", game.Player.Select(p => p.Name + "---" + p.WonPoints)));
         }
 
         private async Task sendCenter(Game game, bool force = false)

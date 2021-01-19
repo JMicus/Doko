@@ -134,12 +134,12 @@ connection.on("Points", function (points) {
     var tableCenterDiv = document.getElementById("tableCenterDiv");
     tableCenterDiv.innerHTML = "";
 
-    points.split(".").forEach(entry => {
+    points.split("###").forEach(entry => {
 
         var row = document.createElement("div");
         row.className = "row";
 
-        var entryA = entry.split("-");
+        var entryA = entry.split("---");
         row.innerHTML = '<div class="col" ><b>' + entryA[0] + ':</b></div> <div class="col"><b>' + entryA[1] + '</b></div>';
 
         tableCenterDiv.appendChild(row);
@@ -191,11 +191,11 @@ connection.on("ExternalPage", function (link) {
 
 connection.on("Symbols", function (symbols) {
     log("Symbols");
-    var playerSymbols = ("." + symbols).split(".");
+    var playerSymbols = ("###" + symbols).split("###");
     for (var i = 1; i <= 4; i++) {
         var symbolsDiv = document.getElementById("player" + playerPosition(i) + "SymbolsDiv");
         symbolsDiv.innerHTML = "";
-        playerSymbols[i].split("-").forEach(s => {
+        playerSymbols[i].split("---").forEach(s => {
             var imgName = s.split("+")[0];
             var hint = s.split("+")[1];
             if (s.length > 0) {

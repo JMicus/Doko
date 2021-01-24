@@ -110,6 +110,10 @@ namespace Doppelkopf.Hubs
                 {
                     playerNo = nos[pNo].ToString();
                 }
+                if (game.Player[nos[pNo]].ConnectionIds.Count == 0)
+                {
+                    playerNo = nos[pNo].ToString();
+                }
                 pNo++;
             }
             if (playerNo == "")

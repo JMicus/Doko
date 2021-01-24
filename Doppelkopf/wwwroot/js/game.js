@@ -168,11 +168,14 @@ connection.on("LastTrick", function (startPlayerNo, cards) {
     log("LastTrick");
 
     var label = document.getElementById("lastTrickLabelDiv");
+    var button = document.getElementById("lastTrickBackButton");
     if (cards == "...") {
         label.innerHTML = "";
+        button.style.visibility = "hidden";
     }
     else {
-        label.innerHTML = "Letzter Stich:"
+        label.innerHTML = "Letzter<br>Stich:"
+        button.style.visibility = "visible";
     }
 
     var cardLst = cards.split(".");
@@ -397,6 +400,8 @@ connection.on("Layout", function (layout) {
 
     trickLayout("tableCenterDiv", "trickXImg", 1);
     trickLayout("lastTrickDiv", "lastTrickXImg", .5);
+
+    document.getElementById("lastTrickDiv").style.left = layoutDict["cardHeight"] + "px";
 });
 
 connection.start()

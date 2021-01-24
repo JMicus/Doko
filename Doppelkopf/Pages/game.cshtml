@@ -82,6 +82,25 @@
         <div class="row" style="width: 100%">
             <div class="col">
                 @* 2 0 *@
+                <div style="display: inline-block; position: absolute; bottom: 0px; left: 0px">
+                    <div class="row">
+                        <div id="lastTrickLabelDiv" class="col" style="font-weight: bold; text-align: left; position: absolute; left: 20px">
+                        </div>
+                        <div id="lastTrickDiv" class="col">
+                            <div style="position: absolute">
+                                <img id="lastTrick3Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-bottom: 0px" alt="">
+                                <img id="lastTrick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-right: 0px; align-content: end" alt="">
+                                <img id="lastTrick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-left: 0px" alt="">
+                                <img id="lastTrick1Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-top: 0px; align-content: start" alt="">
+                            </div>
+                            <a data-toggle="tooltip" title="Stich zurücklegen">
+                                <img class="circularSmallButton" id="lastTrickBackButton" style="visibility: hidden; position: absolute; left: 30%; bottom: 0px" src="~/Images/lastTrickBackButton.png" alt="Stich zurücklegen">
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
             <div class="col">
                 @* 2 1 *@
@@ -168,25 +187,7 @@
 
     <br />
 
-    <div style="display: inline-block">
-        <div class="row">
-            <div id="lastTrickLabelDiv" class="col" style="font-weight: bold; text-align: left;">
-            </div>
-            <div id="lastTrickDiv" class="col">
-                <div style="position: absolute">
-                    <img id="lastTrick3Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-bottom: 0px" alt="">
-                    <img id="lastTrick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-right: 0px; align-content: end" alt="">
-                    <img id="lastTrick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-left: 0px" alt="">
-                    <img id="lastTrick1Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-top: 0px; align-content: start" alt="">
-                </div>
-                <a data-toggle="tooltip" title="Stich zurücklegen" style="position: absolute; left: 70px; top: 120px">
-                    <img class="circularButton" id="lastTrickBackButton" src="~/Images/lastTrickBackButton.png" alt="Stich zurücklegen">
-                </a>
-            </div>
-            
-        </div>
-
-    </div>
+    
 
 
 

@@ -47,8 +47,8 @@ namespace Doppelkopf.Hubs
                     game.PutCard(i.ToString(), player.Cards.First().ToCode());
 
                     // messages
-                    _ = player.AddMessage("short");
-                    _ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
+                    //_ = player.AddMessage("short");
+                    //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
                 }
 
             }

@@ -147,13 +147,14 @@ div.playerMsgDiv .box {
     text-align: left;
 }
 
-.popupMenu {
+.popupMenu, .popupMenuLeft {
     position: relative;
+    cursor: pointer;
 }
 
 .popupMenu > div:not(:first-child) {
     position: absolute;
-    top: -40px;
+    top: 0px;
     right: 0px;
     z-index: 1100;
     display: none;
@@ -163,9 +164,13 @@ div.playerMsgDiv .box {
     width: auto;
 }
 
-.popupMenu:hover > div:not(:first-child) {
-    display: initial;
+.popupMenuLeft > div:not(:first-child) {
+    right: 30px;
 }
+
+/*.popupMenu:hover > div:not(:first-child) {
+    display: initial;
+}*/
 
 .popupMenuItem {
     color: var(--color-cream);

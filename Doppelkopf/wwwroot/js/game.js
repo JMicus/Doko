@@ -603,7 +603,7 @@ function setCardImgLayoutSized(img, size) {
 
     if (layoutDict["cardBorder"] == "true") {
         img.style.border = "1px solid #000";
-        img.style.borderRadius = (h / 15 * size) + "px";
+        img.style.borderRadius = (h / 15) + "px";
     }
     else {
         img.style.border = "none";

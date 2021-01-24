@@ -28,6 +28,7 @@ document.getElementById("headLabel").innerHTML = gameName + " - (Spieler*in " + 
 var connection = new signalR.HubConnectionBuilder().withUrl("/dokoHub").withAutomaticReconnect().build();
 
 connection.onreconnecting((error) => {
+    alert('Verbindung wird neu aufgebaut');
     log("Reconnect");
     connection.invoke("SayHello", gameName, playerNo);
 });

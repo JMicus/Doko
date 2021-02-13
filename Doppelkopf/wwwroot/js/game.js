@@ -702,6 +702,9 @@ function classesPopupMenu() {
 
     for (let el of document.getElementsByClassName("popupMenu")) {
 
+        //el.lastElementChild.removeEventListener("click", popupClick);
+        //el.lastElementChild.removeEventListener("click", popupClick);
+
         el.removeEventListener("click", popupMenuClick);
         el.addEventListener("click", popupMenuClick);
     }
@@ -712,21 +715,29 @@ function classesPopupMenu() {
 
 function popupMenuClick(event) {
 
-    var popup = event.target.nextElementSibling;
+    if (event.target.className != "ignoreClick") {
 
-    if (popup == null) {
-        popup = event.target.parentElement.nextElementSibling;
+        var popup = event.target.nextElementSibling;
+
+        if (popup == null) {
+            popup = event.target.parentElement.nextElementSibling;
+        }
+
+        var expanded = popup.getAttribute("data-expanded");
+
+        hidePopups();
+
+        if ((expanded == "false" || expanded == null)) {
+            popup.style.display = "block";
+            popup.setAttribute("data-expanded", "true");
+        }
     }
 
-    var expanded = popup.getAttribute("data-expanded");
+    event.stopPropagation();
+    event.preventDefault();
+}
 
-    hidePopups();
-
-    if ((expanded == "false" || expanded == null)) {
-        popup.style.display = "block";
-        popup.setAttribute("data-expanded", "true");
-    }
-
+function popupClick(event) {
     event.stopPropagation();
     event.preventDefault();
 }

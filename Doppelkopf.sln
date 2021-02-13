@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinClient", "WinClient\WinC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AverageHandTest", "AverageHandTest\AverageHandTest.csproj", "{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doppelkopf.BlazorWebApp", "Doppelkopf.BlazorWebApp\Doppelkopf.BlazorWebApp.csproj", "{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

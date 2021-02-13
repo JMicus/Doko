@@ -159,14 +159,16 @@ div.playerMsgDiv .box {
     z-index: 1100;
     display: none;
     border-radius: 5px;
-    background-color: black;
+    background-color: dimgray;
     padding: 3px;
     width: auto;
+    text-align: left;
 }
 
 .popupMenuLeft > div:not(:first-child) {
-    right: 30px;
+    right: 0px;
 }
+
 
 /*.popupMenu:hover > div:not(:first-child) {
     display: initial;
@@ -182,6 +184,7 @@ div.playerMsgDiv .box {
     background-color: #313131;
 }
 
+/*
 div.popup {
     background-color: darkgray;
     visibility: hidden;
@@ -195,7 +198,7 @@ div.popup {
 
     padding: 10px;
     border-radius: 10px;
-}
+}*/
 
 .rules col, .rules select {
     width: 200px;

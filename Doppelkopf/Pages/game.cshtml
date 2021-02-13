@@ -14,168 +14,205 @@
 <div id="data" style="display: none" data-gameName="@Model.GameName" data-playerNo="@Model.PlayerNo" data-playerToken="@Model.PlayerToken"></div>
 
 <div id="gameDiv" style="visibility: visible; text-align: center;">
-    <div>
-        <div class="row" style="width: 100%">
-            <div class="col">
-                @* 0 0 *@
-            </div>
-            <div class="col">
-                @* 0 1 *@
-                <div class="nameLabel" id="playerName3Panel" style="display: inline-block;" data-playerNo="0">-</div>
-                <div id="player3SymbolsDiv" style="display: inline-block;"></div>
-                <div id="player3MsgDiv" class="playerMsgDiv" style="top:50px"></div>
-            </div>
-            <div class="col"></div> @* 0 2 *@
-        </div>
-        <div class="row" style="width: 100%">
-            <div class="col">
-                @* 1 0 *@
-                <div class="nameLabel" id="playerName2Panel" style="display: inline-block;" data-playerNo="0">-</div>
-                <div id="player2SymbolsDiv"></div>
-                <div id="player2MsgDiv" class="playerMsgDiv" style="top:100px"></div>
-            </div>
-            <div class="col" style="display: flex; justify-content: center">
-                @* 1 1 *@
-                @*<div class="row">
-                        <div class="col">
-                        </div>
-                        <div class="col">
-                            <img id="trick3Img" src="~/Images/CardsBasic/c0.png" style="margin-bottom: -90px" alt="">
-                        </div>
-                        <div class="col">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col" style="text-align: right">
-                            <img id="trick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="margin-right: 40px; align-content: end" alt="">
-                        </div>
-                        <div id="tableCenterDiv" class="col" style="max-width: 225px; margin-left: -50px; margin-right: -50px; text-align: left; border-style: none; border-width: 8px; border-color: gray">
-                        </div>
-                        <div class="col" style="text-align: left">
-                            <img id="trick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="margin-left: 40px" alt="">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                        </div>
-                        <div class="col">
-                            <img id="trick1Img" src="~/Images/CardsBasic/c0.png" style="margin-top: -90px; align-content: start" alt="">
-                        </div>
-                        <div class="col">
-                        </div>
-                    </div>*@
-                <div id="tableCenterDiv" class="col" style="width: 100%; height: 100%; position: absolute; top: 40px; border-style: none; border-width: 8px; border-color: gray"></div>
-                <div style="position: absolute">
-                    <img id="trick3Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-bottom: 0px" alt="">
-                    <img id="trick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-right: 0px; align-content: end" alt="">
-                    <img id="trick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-left: 0px" alt="">
-                    <img id="trick1Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-top: 0px; align-content: start" alt="">
-                </div>
-            </div>
-            <div class="col">
-                @* 1 2 *@
-                <div class="nameLabel" id="playerName4Panel" style="display: inline-block;" data-playerNo="0">-</div>
-                <div id="player4SymbolsDiv"></div>
-                <div id="player4MsgDiv" class="playerMsgDiv" style="top: 100px"></div>
-            </div>
-        </div>
-        <div class="row" style="width: 100%">
-            <div class="col">
-                @* 2 0 *@
-                <div style="display: inline-block; position: absolute; bottom: 0px; left: 0px">
-                    <div class="row">
-                        <div id="lastTrickLabelDiv" class="col" style="font-weight: bold; text-align: left; position: absolute; left: 20px">
-                        </div>
-                        <div id="lastTrickDiv" class="col">
-                            <div style="position: absolute">
-                                <img id="lastTrick3Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-bottom: 0px" alt="">
-                                <img id="lastTrick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-right: 0px; align-content: end" alt="">
-                                <img id="lastTrick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-left: 0px" alt="">
-                                <img id="lastTrick1Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-top: 0px; align-content: start" alt="">
-                            </div>
-                            <a data-toggle="tooltip" title="Stich zurücklegen">
-                                <img class="circularSmallButton" id="lastTrickBackButton" style="visibility: hidden; position: absolute; left: 30%; bottom: 0px" src="~/Images/lastTrickBackButton.png" alt="Stich zurücklegen">
-                            </a>
-                        </div>
+    <table>
+        <tr>
+            <td style="width: 100%">
 
-                    </div>
-
-                </div>
-            </div>
-            <div class="col">
-                @* 2 1 *@
-                <div class="nameLabel" id="playerName1Panel" data-playerNo="0" style="display: inline-block;">-</div>
-                <div id="player1SymbolsDiv" style="display: inline-block;"></div>
-                <div id="player1MsgDiv" class="playerMsgDiv" style="top:-50px"></div>
-            </div>
-            <div class="col" style="float: right; margin-top: -100px">
-                @* 2 2 *@
-                <div style="display: inline">
-                    <input id="msgInput" />
-                    <a data-toggle="tooltip" title="Senden">
-                        <img class="circularSmallButton" id="msgButton" src="~/Images/msgButton.png" alt="Senden" />
-                    </a>
-                    <div class="popupMenu popupMenuLeft" style="display: inline">
-                        <a data-toggle="tooltip" title="Schnelle Nachricht">
-                            <img class="circularSmallButton" src="~/Images/announceButton.png" alt="Ansagen" />
-                        </a>
-                        <div id="announceDiv"></div>
-                    </div>
-                </div>
-                <br />
                 <div>
+                    <div class="row" @*style="width: 100%"*@>
+                        <div class="col">
+                            @* 0 0 *@
+                        </div>
+                        <div class="col">
+                            @* 0 1 *@
+                            <div class="nameLabel" id="playerName3Panel" style="display: inline-block;" data-playerNo="0">-</div>
+                            <div id="player3SymbolsDiv" style="display: inline-block;"></div>
+                            <div id="player3MsgDiv" class="playerMsgDiv" style="top:50px"></div>
+                        </div>
+                        <div class="col"></div> @* 0 2 *@
+                    </div>
+                    <div class="row" style="width: 100%">
+                        <div class="col">
+                            @* 1 0 *@
+                            <div class="nameLabel" id="playerName2Panel" style="display: inline-block;" data-playerNo="0">-</div>
+                            <div id="player2SymbolsDiv"></div>
+                            <div id="player2MsgDiv" class="playerMsgDiv" style="top:100px"></div>
+                        </div>
+                        <div class="col" style="display: flex; justify-content: center">
+                            @* 1 1 *@
+                            @*<div class="row">
+                                    <div class="col">
+                                    </div>
+                                    <div class="col">
+                                        <img id="trick3Img" src="~/Images/CardsBasic/c0.png" style="margin-bottom: -90px" alt="">
+                                    </div>
+                                    <div class="col">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col" style="text-align: right">
+                                        <img id="trick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="margin-right: 40px; align-content: end" alt="">
+                                    </div>
+                                    <div id="tableCenterDiv" class="col" style="max-width: 225px; margin-left: -50px; margin-right: -50px; text-align: left; border-style: none; border-width: 8px; border-color: gray">
+                                    </div>
+                                    <div class="col" style="text-align: left">
+                                        <img id="trick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="margin-left: 40px" alt="">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                    </div>
+                                    <div class="col">
+                                        <img id="trick1Img" src="~/Images/CardsBasic/c0.png" style="margin-top: -90px; align-content: start" alt="">
+                                    </div>
+                                    <div class="col">
+                                    </div>
+                                </div>*@
+                            <div id="tableCenterDiv" class="col" style="width: 100%; height: 100%; position: absolute; top: 40px; border-style: none; border-width: 8px; border-color: gray"></div>
+                            <div style="position: absolute">
+                                <img id="trick3Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-bottom: 0px" alt="">
+                                <img id="trick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-right: 0px; align-content: end" alt="">
+                                <img id="trick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-left: 0px" alt="">
+                                <img id="trick1Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-top: 0px; align-content: start" alt="">
+                            </div>
+                        </div>
+                        <div class="col">
+                            @* 1 2 *@
+                            <div class="nameLabel" id="playerName4Panel" style="display: inline-block;" data-playerNo="0">-</div>
+                            <div id="player4SymbolsDiv"></div>
+                            <div id="player4MsgDiv" class="playerMsgDiv" style="top: 100px"></div>
+                        </div>
+                    </div>
+                    <div class="row" style="width: 100%">
+                        <div class="col">
+                            @* 2 0 *@
+                            <div style="display: inline-block; position: absolute; bottom: 0px; left: 0px">
+                                <div class="row">
+                                    <div id="lastTrickLabelDiv" class="col" style="font-weight: bold; text-align: left; position: absolute; left: 20px">
+                                    </div>
+                                    <div id="lastTrickDiv" class="col">
+                                        <div style="position: absolute">
+                                            <img id="lastTrick3Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-bottom: 0px" alt="">
+                                            <img id="lastTrick2Img" class="rotateimg90" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-right: 0px; align-content: end" alt="">
+                                            <img id="lastTrick4Img" class="rotateimg270" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-left: 0px" alt="">
+                                            <img id="lastTrick1Img" src="~/Images/CardsBasic/c0.png" style="position: absolute; margin-top: 0px; align-content: start" alt="">
+                                        </div>
+                                        <a data-toggle="tooltip" title="Stich zurücklegen">
+                                            <img class="circularSmallButton" id="lastTrickBackButton" style="visibility: hidden; position: absolute; left: 30%; bottom: 0px" src="~/Images/lastTrickBackButton.png" alt="Stich zurücklegen">
+                                        </a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            @* 2 1 *@
+                            <div class="nameLabel" id="playerName1Panel" data-playerNo="0" style="display: inline-block;">-</div>
+                            <div id="player1SymbolsDiv" style="display: inline-block;"></div>
+                            <div id="player1MsgDiv" class="playerMsgDiv" style="top:-50px"></div>
+                        </div>
+                        <div class="col" style="float: right; margin-top: -100px">
+                            @* 2 2 *@
+                            <div style="display: inline">
+                               
+                            </div>
+                            <br />
+                            <div>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="width: 80px">
+
+                <div>
+
                     <div class="popupMenu popupMenuLeft" style="display: inline">
                         <a data-toggle="tooltip" title="Karten für Solo sortieren">
-                            <img class="circularSmallButton" src="~/Images/soloButton.png" alt="Solo" />
+                            <img class="circularButton" src="~/Images/soloButton.png" alt="Solo" />
                         </a>
                         <div id="soloDiv"></div>
                     </div>
-                    <a data-toggle="tooltip" title="Regeln">
-                        <img class="circularSmallButton" id="rulesButton" src="~/Images/rulesButton.png" alt="Regeln" />
-                    </a>
-                    <div class="popup rules" id="rulesDiv" style="display: block; text-align: left;">
-                        <div class="row">
-                            <div class="col">
-                                <h3>Regeln</h3>
+
+                    <div class="popupMenu popupMenuLeft" style="display: inline">
+                        <a data-toggle="tooltip" title="Regeln">
+                            <img class="circularButton" id="rulesButton" src="~/Images/rulesButton.png" alt="Regeln" />
+                        </a>
+                        <div class="rules" id="rulesDiv" style="display: block; text-align: left;">
+                            <div class="row">
+                                <div class="col">
+                                    <h3>Regeln</h3>
+                                </div>
+                                <div class="col">
+                                    <img class="circularTinyButton" id="closeRulesButton" src="~/Images/closeButton.png" style="position: absolute; top: 0px; right: 13px;" />
+                                </div>
                             </div>
-                            <div class="col">
-                                <img class="circularTinyButton" id="closeRulesButton" src="~/Images/closeButton.png" style="position: absolute; top: 0px; right: 13px;" />
+                            <div class="row">
+                                <div class="col">
+                                    Mit Neunen:
+                                </div>
+                                <div class="col">
+                                    <select id="rulesNinesSelect">
+                                        <option value="False">Nein</option>
+                                        <option value="True">Ja</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                Mit Neunen:
-                            </div>
-                            <div class="col">
-                                <select id="rulesNinesSelect">
-                                    <option value="False">Nein</option>
-                                    <option value="True">Ja</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                Schweine:
-                            </div>
-                            <div class="col">
-                                <select id="rulesPigsSelect">
-                                    <option value="0">Ohne Schweine</option>
-                                    <option value="1">Ein Schwein, ein Fuchs</option>
-                                    <option value="2">Zwei Schweine</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    Schweine:
+                                </div>
+                                <div class="col">
+                                    <select id="rulesPigsSelect">
+                                        <option value="0">Ohne Schweine</option>
+                                        <option value="1">Ein Schwein, ein Fuchs</option>
+                                        <option value="2">Zwei Schweine</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="popupMenu popupMenuLeft" style="display: inline">
+                        <a data-toggle="tooltip" title="Schnelle Nachricht">
+                            <img class="circularButton" src="~/Images/msgButton.png" alt="Ansagen" />
+                        </a>
+                        <div>
+                            <div id="announceDiv"></div>
+                            @*<table>
+            <tr>
+                <td>
+                    <input id="msgInput" class="ignoreClick" />
+                </td>
+                <td>
+                    <a data-toggle="tooltip" title="Senden">
+                        <img class="circularSmallButton" id="msgButton" src="~/Images/msgButton.png" alt="Senden" />
+                    </a>
+                </td>
+            </tr>
+        </table>*@
+
+                        </div>
+                    </div>
+
+                    <div style="height: 30px">
+                    </div>
+
+                    <a data-toggle="tooltip" title="Geben">
+                        <img class="circularButton" id="dealButton" src="~/Images/dealButton.png" alt="Geben" />
+                    </a>
+
+                    <a data-toggle="tooltip" title="Stich nehmen">
+                        <img class="circularButton" id="takeTrickButton" src="~/Images/takeTrickButton.png" alt="Stich nehmen" />
+                    </a>
+
                 </div>
-                <a data-toggle="tooltip" title="Stich nehmen">
-                    <img class="circularButton" id="takeTrickButton" src="~/Images/takeTrickButton.png" alt="Stich nehmen" />
-                </a>
-                <a data-toggle="tooltip" title="Geben">
-                    <img class="circularButton" id="dealButton" src="~/Images/dealButton.png" alt="Geben" />
-                </a>
-            </div>
-        </div>
-    </div>
+            </td>
+        </tr>
+    </table>
 
 
     <br />

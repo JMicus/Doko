@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DokoCore.App
+namespace Doppelkopf.Core.App
 {
     public class Layout : Dictionary<string, string>
     {

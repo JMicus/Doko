@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.BlazorWebAssembly.Helper
+namespace Doppelkopf.BlazorWebAssembly.Client.Helper
 {
     public class Client : IDisposable
     {

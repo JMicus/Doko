@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
-using Doppelkopf.Hubs;
 using Radzen;
 
 namespace Doppelkopf.BlazorWebAssembly.Server
@@ -66,7 +65,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
-                endpoints.MapHub<DokoHub>("/dokohub");
+                endpoints.MapHub<Hubs.DokoHub>("/dokohub");
             });
         }
     }

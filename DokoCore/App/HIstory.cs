@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 
-namespace DokoCore.App
+namespace Doppelkopf.Core.App
 {
     public class History
     {

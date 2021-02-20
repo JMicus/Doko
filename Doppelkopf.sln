@@ -3,17 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Doppelkopf\Server.csproj", "{7631FD8E-D8AF-472D-9935-B1DA516AF834}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokoTest", "DokoTest\DokoTest.csproj", "{F88A4D78-A03D-485A-944C-4EA8ED6F686B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokoCore", "DokoCore\DokoCore.csproj", "{F32DC26B-318C-44EA-A110-EB5682BD3079}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinClient", "WinClient\WinClient.csproj", "{73848CDF-D87D-4390-9523-7C35099D89CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.Core", "DokoCore\Doppelkopf.Core.csproj", "{F32DC26B-318C-44EA-A110-EB5682BD3079}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AverageHandTest", "AverageHandTest\AverageHandTest.csproj", "{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebApp", "Doppelkopf.BlazorWebApp\Doppelkopf.BlazorWebApp.csproj", "{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebAssembly.Server", "Doppelkopf.BlazorWebAssembly\Server\Doppelkopf.BlazorWebAssembly.Server.csproj", "{46E92CCF-8A84-4066-BBB8-08B37AE07949}"
 EndProject
@@ -25,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7631FD8E-D8AF-472D-9935-B1DA516AF834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7631FD8E-D8AF-472D-9935-B1DA516AF834}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7631FD8E-D8AF-472D-9935-B1DA516AF834}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7631FD8E-D8AF-472D-9935-B1DA516AF834}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F88A4D78-A03D-485A-944C-4EA8ED6F686B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F88A4D78-A03D-485A-944C-4EA8ED6F686B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F88A4D78-A03D-485A-944C-4EA8ED6F686B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,18 +27,10 @@ Global
 		{F32DC26B-318C-44EA-A110-EB5682BD3079}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F32DC26B-318C-44EA-A110-EB5682BD3079}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F32DC26B-318C-44EA-A110-EB5682BD3079}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73848CDF-D87D-4390-9523-7C35099D89CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73848CDF-D87D-4390-9523-7C35099D89CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73848CDF-D87D-4390-9523-7C35099D89CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73848CDF-D87D-4390-9523-7C35099D89CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Release|Any CPU.ActiveCfg = Release|Any CPU

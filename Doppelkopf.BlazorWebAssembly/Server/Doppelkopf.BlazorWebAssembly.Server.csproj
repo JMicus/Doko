@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DokoCore\DokoCore.csproj" />
+    <ProjectReference Include="..\..\DokoCore\Doppelkopf.Core.csproj" />
     <ProjectReference Include="..\Client\Doppelkopf.BlazorWebAssembly.Client.csproj" />
   </ItemGroup>
 

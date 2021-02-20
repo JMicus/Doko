@@ -1,16 +1,16 @@
-﻿using DokoCore.App;
+﻿using C = Doppelkopf.Core.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DokoCore
+namespace Doppelkopf.Core
 {
     public class DokoException : Exception
     {
-        public Player player;
+        public C.Player player;
 
-        public DokoException(Player player, string message) : base(message)
+        public DokoException(C.Player player, string message) : base(message)
         {
             
             this.player = player;

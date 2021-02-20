@@ -1,5 +1,5 @@
-﻿using Core = DokoCore.App;
-using Doppelkopf.BlazorWebApp.ClientCode.Helper;
+﻿using C = Doppelkopf.Core.App;
+using Doppelkopf.BlazorWebAssembly.Client.Helper;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
@@ -30,20 +30,20 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         private string token;
         #endregion
 
-        #region Core Objects
-        public Core.PlayerHolder _players = new Core.PlayerHolder(null);
+        #region C Objects
+        public C.PlayerHolder _players = new C.PlayerHolder(null);
 
-        private Core.Layout _layout = new Core.Layout();
+        private C.Layout _layout = new C.Layout();
         #endregion
 
         #region Client Objects
-        private BlazorWebAssembly.Helper.Client _client;
+        private Helper.Client _client;
 
         private string test = "-";
         #endregion
 
         #region Properties
-        private Core.Player me => _players[playerNo];
+        private C.Player me => _players[playerNo];
         #endregion
 
         protected override void OnInitialized()
@@ -66,7 +66,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         protected override Task OnInitializedAsync()
         {
-            _client = new BlazorWebAssembly.Helper.Client(NavManager);
+            _client = new Helper.Client(NavManager);
 
             initMessagesFromHub();
 
@@ -92,7 +92,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             _client.On("PlayerJoined", (no, name) =>
             {
                 log("PlayerJoined", no + ", " + name);
-                _players[no] = new Core.Player(null, int.Parse(no))
+                _players[no] = new C.Player(null, int.Parse(no))
                 {
                     Name = name
                 };

@@ -90,9 +90,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DokoCore\DokoCore.csproj">
+    <ProjectReference Include="..\DokoCore\Doppelkopf.Core.csproj">
       <Project>{f32dc26b-318c-44ea-a110-eb5682bd3079}</Project>
-      <Name>DokoCore</Name>
+      <Name>Doppelkopf.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

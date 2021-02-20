@@ -1,17 +1,17 @@
-﻿@using Core = DokoCore.App;
+﻿@using C = Doppelkopf.Core.App;
 
 <RadzenImage Path=@getCardLink() Style=@($"width: {Width}") />
 
 @code {
 
     [Parameter]
-    public Core.Card CardObj { get; set; }
+    public C.Card CardObj { get; set; }
 
     [Parameter]
     public string Width { get; set; }
 
     [Parameter]
-    public Core.Layout Layout { get;  set; }
+    public C.Layout Layout { get;  set; }
 
     private string getCardLink()
     {

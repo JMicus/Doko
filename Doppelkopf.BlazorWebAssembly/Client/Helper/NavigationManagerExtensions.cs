@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.BlazorWebApp.ClientCode.Helper
+namespace Doppelkopf.BlazorWebAssembly.Client.Helper
 {
     public static class NavigationManagerExtensions
     {

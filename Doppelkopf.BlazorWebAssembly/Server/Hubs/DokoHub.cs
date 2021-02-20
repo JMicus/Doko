@@ -1,5 +1,4 @@
-﻿using DokoCore;
-using DokoCore.App;
+﻿using C = Doppelkopf.Core.App;
 using Doppelkopf.App.Enums;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -9,12 +8,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Doppelkopf.Core;
 
-namespace Doppelkopf.Hubs
+namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 {
     public class DokoHub : Hub
     {
-        public static List<Game> Games = new List<Game>();
+        public static List<C.Game> Games = new List<C.Game>();
 
         private IHubContext<DokoHub> hubContext;
 
@@ -23,7 +23,7 @@ namespace Doppelkopf.Hubs
 
             if (true)
             {
-                Game game = new Game()
+                C.Game game = new C.Game()
                 {
                     Name = "Doko"
                 };
@@ -75,7 +75,7 @@ namespace Doppelkopf.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        private void Game_OnMessagesChanged(Game game)
+        private void Game_OnMessagesChanged(C.Game game)
         {
             sendMessages(game).Wait();
         }
@@ -90,12 +90,12 @@ namespace Doppelkopf.Hubs
         public async Task Init(string gameName, string playerNo, string playerName)
         {
             Console.WriteLine($"HUB Init {playerNo} {playerName}");
-            Game game = GetGame(gameName);
+            C.Game game = GetGame(gameName);
 
             // create game if not existing
             if (game == null)
             {
-                game = new Game()
+                game = new C.Game()
                 {
                     Name = gameName
                 };
@@ -126,7 +126,7 @@ namespace Doppelkopf.Hubs
             }
 
             // create player if not existing
-            Player player = game.Player[playerNo];
+            C.Player player = game.Player[playerNo];
 
             if (player.IsInitialized && player.ConnectionIds.Any())
             {
@@ -142,7 +142,7 @@ namespace Doppelkopf.Hubs
         public async Task SayHello(string gameName, string playerNo, string playerToken)
         {
             Console.WriteLine($"HUB SayHello {playerNo}");
-            Game game = GetGame(gameName);
+            C.Game game = GetGame(gameName);
 
             if (game == null)
             {
@@ -150,7 +150,7 @@ namespace Doppelkopf.Hubs
                 return;
             }
 
-            Player player = game.Player[playerNo];
+            C.Player player = game.Player[playerNo];
 
             if (player.Token != playerToken)
             {
@@ -211,7 +211,7 @@ namespace Doppelkopf.Hubs
 
         public async Task Deal(string gameName, string playerNo, bool force = false)
         {
-            Game game = GetGame(gameName);
+            C.Game game = GetGame(gameName);
             
             if (game.Deal(game.Player[playerNo], force))
             {
@@ -488,9 +488,9 @@ namespace Doppelkopf.Hubs
         }
 
         // SEND HELPER
-        private async Task sendPlayerJoined(Game game, Player player = null, Player receivingPlayer = null)
+        private async Task sendPlayerJoined(C.Game game, C.Player player = null, C.Player receivingPlayer = null)
         {
-            var playerToSend = new List<Player>();
+            var playerToSend = new List<C.Player>();
 
             if (player == null)
             {
@@ -514,7 +514,7 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        private async Task sendTrick(Game game, Player player = null, bool sendToAllExceptPlayer = false)
+        private async Task sendTrick(C.Game game, C.Player player = null, bool sendToAllExceptPlayer = false)
         {
             if (player == null)
             {
@@ -534,7 +534,7 @@ namespace Doppelkopf.Hubs
             await sendMessages(game);
         }
 
-        private async Task sendLastTrick(Game game, Player player = null)
+        private async Task sendLastTrick(C.Game game, C.Player player = null)
         {
             if (player == null)
             {
@@ -546,12 +546,12 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        private async Task sendHand(Player player)
+        private async Task sendHand(C.Player player)
         {
             await sendToPlayer(player, "Hand", player.GetHandMsg());
         }
 
-        private async Task sendHand(Game game, Player exceptToPlayer = null)
+        private async Task sendHand(C.Game game, C.Player exceptToPlayer = null)
         {
             foreach (var player in game.Player.AllExcept(exceptToPlayer))
             {
@@ -568,7 +568,7 @@ namespace Doppelkopf.Hubs
             }*/
         }
 
-        private async Task sendExternalPage(Game game, Player player = null)
+        private async Task sendExternalPage(C.Game game, C.Player player = null)
         {
             if (player == null)
             {
@@ -580,17 +580,17 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        private async Task sendSymbols(Game game)
+        private async Task sendSymbols(C.Game game)
         {
             await sendToAll(game, "Symbols", string.Join("###", game.Player.Select(p => string.Join("---", p.Symbols.Select(pair => pair.Item1 + "+" + pair.Item2)))));
         }
 
-        private async Task sendMessages(Game game)
+        private async Task sendMessages(C.Game game)
         {
             await sendToAll(game, "Messages", string.Join("###", game.Player.Select(p => string.Join("---", p.Messages))));
         }
 
-        private async Task sendRules(Game game, Player player = null)
+        private async Task sendRules(C.Game game, C.Player player = null)
         {
             if (player == null)
             {
@@ -602,12 +602,12 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        private async Task sendPoints(Game game)
+        private async Task sendPoints(C.Game game)
         {
             await sendToAll(game, "Points", string.Join("###", game.Player.Select(p => p.Name + "---" + p.WonPoints)));
         }
 
-        private async Task sendCenter(Game game, bool force = false)
+        private async Task sendCenter(C.Game game, bool force = false)
         {
             if (force || game.Center.Count > 0)
             {
@@ -615,12 +615,12 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        private async Task sendStats(Game game)
+        private async Task sendStats(C.Game game)
         {
             await sendToAll(game, "Stat", game.Stats());
         }
 
-        private async Task sendLayout(Game game, string layoutName = null)
+        private async Task sendLayout(C.Game game, string layoutName = null)
         {
             if (layoutName != null)
             {
@@ -633,7 +633,7 @@ namespace Doppelkopf.Hubs
         }
 
         // HELPER //////////////////////////////////////////
-        private async Task sendInfo(Game game, string info, Player player = null)
+        private async Task sendInfo(C.Game game, string info, C.Player player = null)
         {
             if (player == null)
             {
@@ -646,17 +646,17 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        public static Game GetGame(string gameName)
+        public static C.Game GetGame(string gameName)
         {
             return Games.Where(x => x.Name == gameName).FirstOrDefault();
         }
 
-        private async Task sendToPlayer(Player player, string method, int msg1, string msg2)
+        private async Task sendToPlayer(C.Player player, string method, int msg1, string msg2)
         {
             await sendToPlayer(player, method, msg1.ToString(), msg2);
         }
 
-        private async Task sendToAll(Game game, string method, object o1, object o2 = null)
+        private async Task sendToAll(C.Game game, string method, object o1, object o2 = null)
         {
             foreach (var player in game.Player)
             {
@@ -664,7 +664,7 @@ namespace Doppelkopf.Hubs
             }
         }
 
-        private async Task sendToPlayer(Player player, string method, object o1, object o2 = null)
+        private async Task sendToPlayer(C.Player player, string method, object o1, object o2 = null)
         {
             foreach (var connectionId in player.ConnectionIds)
             {   

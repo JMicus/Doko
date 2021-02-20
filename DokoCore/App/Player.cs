@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace DokoCore.App
+namespace Doppelkopf.Core.App
 {
     public class Player
     {

@@ -52,9 +52,9 @@
 
     void OnClickLogin()
     {
-        var client = new Helper.Client(NavManager);
+        var client = new Core.Connection.Client(NavManager);
 
-        client.On("Initialized", OnInitialized);
+        client.OnInitialized += OnInitialized;
 
         Console.WriteLine("init " + playerNo + " " + playerName);
         client.Init(gameName, playerNo, playerName);

@@ -12,7 +12,7 @@ using Doppelkopf.Core;
 
 namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 {
-    public class DokoHub : Hub
+    public class DokoHub : Hub, Doppelkopf.Core.Connection.IHub
     {
         public static List<C.Game> Games = new List<C.Game>();
 

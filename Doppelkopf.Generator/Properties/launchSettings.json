@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Doppelkopf.Generator": {
+      "commandName": "Project"
+    },
+    "Connections": {
+      "commandName": "Project",
+      "commandLineArgs": "connection"
+    }
+  }
+}

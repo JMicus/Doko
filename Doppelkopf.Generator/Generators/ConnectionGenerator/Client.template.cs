@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Doppelkopf.BlazorWebAssembly.Clieasdfnt.Helper
+namespace NAMESPACE
 {
     public class Client : IDisposable
     {
@@ -22,8 +21,6 @@ namespace Doppelkopf.BlazorWebAssembly.Clieasdfnt.Helper
 
         #region Fields
         private HubConnection hubConnection;
-
-
         #endregion
 
         #region Properties
@@ -31,9 +28,9 @@ namespace Doppelkopf.BlazorWebAssembly.Clieasdfnt.Helper
         protected NavigationManager NavigationManager { get; set; }
         #endregion
 
-        #region Events
-        public event Action<string, string, string> OnInitialized;
-        #endregion
+        //DELEGATES
+
+        //EVENTS
 
         #region ctor
         public Client(NavigationManager NavManager)
@@ -42,35 +39,30 @@ namespace Doppelkopf.BlazorWebAssembly.Clieasdfnt.Helper
                 .WithUrl(NavManager.ToAbsoluteUri("/dokohub"))
                 .Build();
 
-            /*hubConnection.On<string, string, string>("Initialized", (gameName, playerNo, playerToken) =>
-            {
-                OnInitialized?.Invoke(gameName, playerNo, playerToken);
-            });*/
+            //CTOR
 
-
-       
 
             hubConnection.StartAsync();
         }
         #endregion
 
         #region Methods
-        public void On(string method, Action<string> action)
+        private void On(string method, Action<string> action)
         {
             hubConnection.On<string>(method, action);
         }
 
-        public void On(string method, Action<string, string> action)
+        private void On(string method, Action<string, string> action)
         {
             hubConnection.On<string, string>(method, action);
         }
 
-        public void On(string method, Action<string, string, string> action)
+        private void On(string method, Action<string, string, string> action)
         {
             hubConnection.On<string, string, string>(method, action);
         }
 
-        public void Send(string method, string arg1, string arg2 = null, string arg3 = null)
+        private void Send(string method, string arg1, string arg2 = null, string arg3 = null)
         {
             if (arg3 != null)
             {
@@ -86,10 +78,7 @@ namespace Doppelkopf.BlazorWebAssembly.Clieasdfnt.Helper
             }
         }
 
-        public void Init(string gameName, string playerNo, string playerName)
-        {
-            hubConnection.SendAsync("Init", gameName, playerNo, playerName);
-        }
+        //METHODS
 
         public void Dispose()
         {

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebAssembl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebAssembly.Client", "Doppelkopf.BlazorWebAssembly\Client\Doppelkopf.BlazorWebAssembly.Client.csproj", "{9EB29E96-ED03-4342-8670-4F4B93EBE218}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doppelkopf.Generator", "Doppelkopf.Generator\Doppelkopf.Generator.csproj", "{6C27DF21-E0F5-4DF9-85E9-08ECAF237785}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C27DF21-E0F5-4DF9-85E9-08ECAF237785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C27DF21-E0F5-4DF9-85E9-08ECAF237785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C27DF21-E0F5-4DF9-85E9-08ECAF237785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C27DF21-E0F5-4DF9-85E9-08ECAF237785}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

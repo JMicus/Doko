@@ -37,7 +37,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         #endregion
 
         #region Client Objects
-        private Helper.Client _client;
+        private Core.Connection.Client _client;
 
         private string test = "-";
         #endregion
@@ -66,18 +66,17 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         protected override Task OnInitializedAsync()
         {
-            _client = new Helper.Client(NavManager);
+            _client = new Core.Connection.Client(NavManager);
 
             initMessagesFromHub();
 
-            _client.Send("SayHello", gameName, playerNo, token);
-
+            _client.SayHello(gameName, playerNo, token);
             return base.OnInitializedAsync();
         }
 
         private void initMessagesFromHub()
         {
-            _client.On("Unauthorized", (gameName, playerNo, playerName) => {
+            _client.OnUnauthorized += (gameName, playerNo, playerName) => {
                 Console.WriteLine("Unauthorized");
                 DialogService.Confirm("Spieler*in " + playerNo + " (" + playerName + ") ist bereits im Spiel " + gameName + " angemeldet.",
                                     "Platz belegt",
@@ -87,9 +86,9 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                                         CancelButtonText = "Abbrechen",
                                                        
                                     });
-            });
+            };
 
-            _client.On("PlayerJoined", (no, name) =>
+            _client.OnPlayerJoined += (no, name) =>
             {
                 log("PlayerJoined", no + ", " + name);
                 _players[no] = new C.Player(null, int.Parse(no))
@@ -97,31 +96,31 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                     Name = name
                 };
                 StateHasChanged();
-            });
+            };
 
-            _client.On("Messages", (msgs) =>
+            _client.OnMessages += (msgs) =>
             {
                 log("Messages",msgs);
                 test = msgs;
                 StateHasChanged();
-            });
+            };
 
-            _client.On("Hand", (cards) =>
+            _client.OnHand += (cards) =>
             {
                 me.SetHandByMsg(cards);
                 StateHasChanged();
-            });
+            };
 
-            _client.On("Layout", (layoutCode) =>
+            _client.OnLayout += (layoutCode) =>
             {
                 _layout.FromCode(layoutCode);
                 StateHasChanged();
-            });
+            };
         }
 
         private void onClickTest()
         {
-            _client.Send("PlayerMsg", gameName, playerNo, $"Hi, my name is {playerName}");
+            _client.PlayerMsg(gameName, playerNo, $"Hi, my name is {playerName}");
         }
 
         private void log(string tag, string msg = "")

@@ -1,7 +1,6 @@
 ﻿using AverageHandTest.UI;
-using DokoCore.App;
-using Doppelkopf.App;
 using Doppelkopf.App.Enums;
+using Doppelkopf.Core.App;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

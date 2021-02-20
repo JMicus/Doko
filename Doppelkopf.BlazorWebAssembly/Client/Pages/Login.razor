@@ -1,0 +1,68 @@
+﻿@page "/login"
+
+@using Doppelkopf.BlazorWebApp.ClientCode.Helper
+
+@inject NavigationManager NavManager
+@*@inject IJSRuntime JSRuntime*@ 
+
+<div style="display: flex;align-items: center; justify-content: center; height: 100%;">
+
+<RadzenCard Style="width: fit-content">
+    <div class="row">
+        <div class="col-xl-6">
+            <p class="input">Spiel</p>
+            <RadzenTextBox @bind-value=@gameName Name="GameName" Style=@inputStyle />
+            <RadzenRequiredValidator Component="GameName" Text="Spiel angeben!" Popup=@popup Style="position: absolute" />
+
+            <p class="input">Dein Name</p>
+            <RadzenTextBox @bind-value=@playerName Style=@inputStyle />
+
+            <p class="input">Spieler*innennummer</p>
+            <RadzenDropDown @bind-Value=@playerNo AllowClear="false" TValue="string"
+                            Data=@playerNoOptions
+                            Style=@inputStyle />
+
+            <p class="input"></p>
+            <RadzenButton Click=@(args => OnClickLogin()) Text="Login" Style="margin-left: 60px; width: 120px" />
+        </div>
+    </div>
+</RadzenCard>
+</div>
+
+
+@code {
+
+    private string inputStyle = "margin-bottom: 20px; width: 250px";
+
+    private List<string> playerNoOptions = new List<string>() { "Auto", "1", "2", "3", "4" };
+
+    private string gameName;
+    private string playerName;
+    private string playerNo = "Auto";
+
+    private bool popup;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        NavManager.TryGetQueryString<string>("game", out gameName, "Doko");
+        NavManager.TryGetQueryString<string>("player", out playerName, "XY");
+    }
+
+    void OnClickLogin()
+    {
+        var client = new Helper.Client(NavManager);
+
+        client.On("Initialized", OnInitialized);
+
+        Console.WriteLine("init " + playerNo + " " + playerName);
+        client.Init(gameName, playerNo, playerName);
+    }
+
+    void OnInitialized(string gameName, string playerNo, string playerToken)
+    {
+        NavManager.NavigateTo($"/game?game={gameName}&player={playerNo}&name={playerName}&token={playerToken}");
+    }
+
+}

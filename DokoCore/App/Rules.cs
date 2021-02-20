@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.App
+namespace DokoCore.App
 {
     public class Rules
     {
@@ -29,12 +29,6 @@ namespace Doppelkopf.App
         public int Pigs = 1;
 
         public bool Nines = false;
-
-        //public string CardLayout = "Basic";
-        //public string CardImageType = "png";
-        //public string CardHeight = "128";
-        //public int CardBorder = 10;
-        public Dictionary<string, string> Layout;
 
 
         // //////////////////////////
@@ -65,21 +59,7 @@ namespace Doppelkopf.App
         }
 
 
-        public Rules()
-        {
-            ResetLayout();
-        }
-
-        public void ResetLayout()
-        {
-            Layout = new Dictionary<string, string>();
-            Layout.Add("cardLayout", "Basic");
-            Layout.Add("cardImageType", "png");
-            Layout.Add("cardHeight", "128");
-            Layout["cardWidth"] = "95";
-            Layout.Add("cardBorder", "false");
-            Layout.Add("background", "green.png");
-        }
+        
 
         //private string cardOrderRegular = "sa.h1.kd.pd.hd.cd.kb.pb.hb.cb.ca.c1.ck.ka.k1.kk.pa.p1.pk.ha.hk";
 

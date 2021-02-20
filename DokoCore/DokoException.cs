@@ -1,10 +1,10 @@
-﻿using Doppelkopf.App;
+﻿using DokoCore.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doppelkopf
+namespace DokoCore
 {
     public class DokoException : Exception
     {

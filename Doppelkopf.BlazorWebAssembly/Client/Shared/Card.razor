@@ -1,0 +1,29 @@
+﻿@using Core = DokoCore.App;
+
+<RadzenImage Path=@getCardLink() Style=@($"width: {Width}") />
+
+@code {
+
+    [Parameter]
+    public Core.Card CardObj { get; set; }
+
+    [Parameter]
+    public string Width { get; set; }
+
+    [Parameter]
+    public Core.Layout Layout { get;  set; }
+
+    private string getCardLink()
+    {
+
+        var file = "c0";
+
+        if (CardObj != null && CardObj.ToCode().Length >= 3) {
+            file = CardObj.ToCode().Substring(0, 3);
+        }
+        //info("load img: " + url + "Images/" + short + ".png")
+
+        return "Images/Cards" + Layout["cardLayout"] + "/" + file + "." + Layout["cardImageType"];
+    }
+
+}

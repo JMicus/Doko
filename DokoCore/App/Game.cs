@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.App
+namespace DokoCore.App
 {
     public class Game
     {
         public string Name;
 
         public Rules Rules = new Rules();
+        public Layout Layout = new Layout();
         public History History = new History();
 
         public Trick Trick = new Trick();
@@ -24,66 +25,6 @@ namespace Doppelkopf.App
         private Random rnd = new Random();
 
         public string ExternalPage = "";
-
-        public class PlayerHolder : IEnumerable<Player>
-        {
-            private App.Player[] _player = new App.Player[4];
-
-            public PlayerHolder(Rules rules)
-            {
-                for (int i = 1; i <= 4; i++)
-                {
-                    this[i] = new Player(rules, i);
-                }
-            }
-
-            private int s2i(string playerNo)
-            {
-                return Convert.ToInt32(playerNo) - 1;
-            }
-
-            public IEnumerator<Player> GetEnumerator()
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    yield return _player[i];
-                }
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public Player this[string playerNo]
-            {
-                get
-                {
-                    return _player[s2i(playerNo)];
-                }
-                set
-                {
-                    _player[s2i(playerNo)] = value;
-                }
-            }
-
-            public Player this[int playerNo]
-            {
-                get
-                {
-                    return _player[playerNo - 1];
-                }
-                set
-                {
-                    _player[playerNo - 1] = value;
-                }
-            }
-
-            public List<Player> AllExcept(Player player)
-            {
-                return _player.Where(p => player == null || p != player).ToList();
-            }
-        }
 
         public PlayerHolder Player;
 

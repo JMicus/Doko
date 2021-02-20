@@ -1,0 +1,27 @@
+﻿@page "/game"
+
+@using Radzen.Blazor
+
+<div class="row">
+    @foreach (var player in _players)
+    {
+        <div class="col">
+            <Player Name=@(player.Name) Test=@(player.GetHandMsg())/>
+        </div>
+    }
+</div>
+
+<div>
+    <Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>
+</div>
+
+<div>
+
+
+    <RadzenCard Style="width: fit-content; left: 50%; top: 20%; margin-left: -150px">
+        <RadzenLabel Text=@test />
+
+        <RadzenButton Text="Send Test" Click=@(args => onClickTest()) />
+    </RadzenCard>
+</div>
+

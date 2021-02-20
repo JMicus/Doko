@@ -1,0 +1,21 @@
+﻿@page "/"
+
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+@code{
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        JSRuntime.InvokeVoidAsync("MainPage.setPageTitle", "doko");
+
+        NavManager.NavigateTo("game?game=Doko&player=1&name=Spieler 1&token=0");
+    }
+}

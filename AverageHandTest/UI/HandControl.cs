@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Doppelkopf.App;
 using System.Runtime.Remoting.Channels;
 using AverageHandTest.Properties;
+using DokoCore.App;
 
 namespace AverageHandTest.UI
 {

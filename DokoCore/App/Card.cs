@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.App
+namespace DokoCore.App
 {
     public class Card
     {
@@ -33,6 +33,9 @@ namespace Doppelkopf.App
 
         public int No { get; set; }
 
+        /// <summary>
+        /// Two chars name related to <see cref="ECard"/>
+        /// </summary>
         public string NameCode => NameCodeOf(Name);
 
         public bool IsTrumpf => IsDame || IsBube || IsKaro || Name == ECard.H1;
@@ -93,6 +96,13 @@ namespace Doppelkopf.App
         {
             Name = name;
             No = no;
+        }
+
+        public Card(string code)
+        {
+            Name = (ECard)Enum.Parse(typeof(ECard), code.Substring(0, 2).ToUpper());
+            No = int.Parse(code[2].ToString());
+            ColorChar = code[3].ToString();
         }
 
         /// <summary>

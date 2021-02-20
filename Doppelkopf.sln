@@ -13,7 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinClient", "WinClient\WinC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AverageHandTest", "AverageHandTest\AverageHandTest.csproj", "{B3DD65C8-78B1-4DF1-B3D3-585C3A7167CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doppelkopf.BlazorWebApp", "Doppelkopf.BlazorWebApp\Doppelkopf.BlazorWebApp.csproj", "{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebApp", "Doppelkopf.BlazorWebApp\Doppelkopf.BlazorWebApp.csproj", "{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebAssembly.Server", "Doppelkopf.BlazorWebAssembly\Server\Doppelkopf.BlazorWebAssembly.Server.csproj", "{46E92CCF-8A84-4066-BBB8-08B37AE07949}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.BlazorWebAssembly.Client", "Doppelkopf.BlazorWebAssembly\Client\Doppelkopf.BlazorWebAssembly.Client.csproj", "{9EB29E96-ED03-4342-8670-4F4B93EBE218}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BDEBBBE-1A1E-4C46-BC6A-594AB9A6C4CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46E92CCF-8A84-4066-BBB8-08B37AE07949}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EB29E96-ED03-4342-8670-4F4B93EBE218}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,6 @@
-﻿using Doppelkopf.App;
+﻿using DokoCore;
+using DokoCore.App;
+using Doppelkopf.App;
 using Doppelkopf.App.Enums;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -394,22 +396,22 @@ namespace Doppelkopf.Hubs
                         //await PlayerMsg(gameName, playerNo, "cmd.cards.HP.200.gif");
                         var height = 240;
 
-                        game.Rules.Layout["cardLayout"] = "HP";
-                        game.Rules.Layout["cardImageType"] = "gif";
-                        game.Rules.Layout["cardHeight"] = "" + height;
-                        game.Rules.Layout["cardWidth"] = "" + (int)(height * 0.605);
-                        game.Rules.Layout["cardBorder"] = "true";
-                        game.Rules.Layout["background"] = "pergament.jpg";
+                        game.Layout["cardLayout"] = "HP";
+                        game.Layout["cardImageType"] = "gif";
+                        game.Layout["cardHeight"] = "" + height;
+                        game.Layout["cardWidth"] = "" + (int)(height * 0.605);
+                        game.Layout["cardBorder"] = "true";
+                        game.Layout["background"] = "pergament.jpg";
                         refreshLayout = true;
                         break;
 
                     case "default":
-                        game.Rules.ResetLayout();
+                        game.Layout.ResetLayout();
                         refreshLayout = true;
                         break;
 
                     case "layout":
-                        game.Rules.Layout[c[2]] = c[3];
+                        game.Layout[c[2]] = c[3];
                         refreshLayout = true;
                         break;
 
@@ -618,11 +620,11 @@ namespace Doppelkopf.Hubs
         {
             if (layoutName != null)
             {
-                await sendToAll(game, "Layout", layoutName + ":" + game.Rules.Layout[layoutName]);
+                await sendToAll(game, "Layout", layoutName + ":" + game.Layout[layoutName]);
             }
             else
             {
-                await sendToAll(game, "Layout", string.Join(".", game.Rules.Layout.Select(pair => pair.Key + ":" + pair.Value)));
+                await sendToAll(game, "Layout", string.Join(".", game.Layout.Select(pair => pair.Key + ":" + pair.Value)));
             }
         }
 

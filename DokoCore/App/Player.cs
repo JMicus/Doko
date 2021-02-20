@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Doppelkopf.App
+namespace DokoCore.App
 {
     public class Player
     {
@@ -76,6 +76,11 @@ namespace Doppelkopf.App
             return string.Join(".", Cards.Select(x => x.ToCode()));
         }
 
+        public void SetHandByMsg(string handMsg)
+        {
+            Cards = handMsg.Split('.').Select(code => new Card(code)).ToList();
+        }
+
         public Card PutCard(string cardCode)
         {
             foreach (var c in Cards)
@@ -88,16 +93,6 @@ namespace Doppelkopf.App
                 }
             }
             return null;
-        }
-
-        public void SetCardsFromMsg(string msg)
-        {
-            ClearHand();
-
-            foreach (var c in msg.Split('.'))
-            {
-                AddCard(new Card((ECard)Enum.Parse(typeof(ECard), c)));
-            }
         }
 
         public async Task AddMessage(string msg, bool addPlayerName = false)

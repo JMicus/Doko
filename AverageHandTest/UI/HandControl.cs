@@ -30,7 +30,7 @@ namespace AverageHandTest.UI
                 _cards.Clear();
                 foreach (var card in value)
                 {
-                    _cards.Add(new Card(card.Name));
+                    _cards.Add(new Card(card.Name.Value));
                 }
                 //this.Refresh();
             }

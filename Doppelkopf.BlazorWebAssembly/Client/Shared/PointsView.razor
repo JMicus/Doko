@@ -1,0 +1,30 @@
+﻿@using C = Doppelkopf.Core.App;
+@using Radzen;
+
+@inject DialogService dialogService;
+
+<div class="fcol">
+    @foreach (var pp in Points.ToList())
+    {
+        <div class="frow">
+            <div class="fcol fcol-1">
+                @pp.PlayerName
+            </div>
+            <div class="fcol" style="width: 50px">
+                @pp.Points
+            </div>
+        </div>
+    }
+
+<div class="frow" Style="margin-top: 20px">
+    <RadzenButton Click="@((args) => dialogService.Close(true))" Text="OK" Style="width: 100px" />
+    <RadzenButton Click="@((args) => dialogService.Close(false))" ButtonStyle="ButtonStyle.Secondary" Text="Karten Geben" Style="width: 150px" />
+</div>
+</div>
+
+@code {
+
+    [Parameter]
+    public C.Points Points { get; set; }
+
+}

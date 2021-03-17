@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.App.Enums
+namespace Doppelkopf.Core.App.Enums
 {
     public static class Parsenum
     {
@@ -17,5 +17,7 @@ namespace Doppelkopf.App.Enums
         {
             return (T)Enum.Parse(typeof(T), s);
         }
+
+
     }
 }

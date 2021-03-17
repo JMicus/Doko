@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DokoCore.App.Enums
+namespace DokoCore.Core.App.Enums
 {
     public enum EGameState
     {

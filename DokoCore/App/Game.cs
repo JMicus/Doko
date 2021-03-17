@@ -1,6 +1,5 @@
-﻿using DokoCore.App;
-using DokoCore.App.Enums;
-using Doppelkopf.App.Enums;
+﻿using DokoCore.Core.App.Enums;
+using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -103,7 +102,7 @@ namespace Doppelkopf.Core.App
         {
             var player = Player[playerNo];
             
-            if (Trick.GetCard(player) != null)
+            if (Trick[player].Name.HasValue)
             {
                 return false;
             }
@@ -125,7 +124,7 @@ namespace Doppelkopf.Core.App
 
         public bool TakeCardBack(Player player)
         {
-            if (Trick.GetCard(player) == null)
+            if (!Trick[player].Name.HasValue)
             {
                 return false;
             }
@@ -146,7 +145,7 @@ namespace Doppelkopf.Core.App
                 return false;
             }
 
-            player.AddWonCards(Trick.Cards.ToList());
+            player.AddWonCards(Trick.ToList());
 
             LastTrick = Trick.CopyFrom(Trick);
             LastTrick.WonPlayer = player;

@@ -5,7 +5,7 @@
 @inject NavigationManager NavManager
 @*@inject IJSRuntime JSRuntime*@ 
 
-<div style="display: flex;align-items: center; justify-content: center; height: 100%;">
+<div style="display: flex;align-items: center; justify-content: center; height: 100%; width: 100%">
 
 <RadzenCard Style="width: fit-content">
     <div class="row">
@@ -52,12 +52,12 @@
 
     void OnClickLogin()
     {
-        var client = new Core.Connection.Client(NavManager);
+        var client = new Core.Connection.Client(NavManager.ToAbsoluteUri("/dokohub"), gameName, playerNo);
 
         client.OnInitialized += OnInitialized;
 
         Console.WriteLine("init " + playerNo + " " + playerName);
-        client.Init(gameName, playerNo, playerName);
+        client.Init(playerName);
     }
 
     void OnInitialized(string gameName, string playerNo, string playerToken)

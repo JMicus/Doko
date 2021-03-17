@@ -1,29 +1,122 @@
 ﻿@using C = Doppelkopf.Core.App;
+@using Newtonsoft.Json
 
-<RadzenImage Path=@getCardLink() Style=@($"width: {Width}") />
+<div class=@_class>
+
+    <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(_style) @onclick=@(() => OnClick.InvokeAsync(CardObj)) />
+</div>
+@*<p>@CardObj.ToCode()</p>*@
+
 
 @code {
 
     [Parameter]
-    public C.Card CardObj { get; set; }
+    public C.Card CardObj { get; set; } = new C.Card();
+
 
     [Parameter]
     public string Width { get; set; }
 
     [Parameter]
-    public C.Layout Layout { get;  set; }
+    public string Height { get; set; }
+
+    [Parameter]
+    public int Rotation { get; set; } = 0;
+
+    [Parameter]
+    public bool AbsolutPosition { get; set; }
+
+    [Parameter]
+    public string Left { get; set; }
+
+    [Parameter]
+    public string Top { get; set; }
+
+    [Parameter]
+    public int ZIndex { get; set; } = 0;
+
+    [Parameter]
+    public bool Hover { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<C.Card> OnClick { get; set; }
+
+    [Parameter]
+    public C.Layout Layout { get; set; }
+
+    private RadzenImage _image { get; set; }
+
+    private string _style { get; set; }
+
+    private string _class = "lift";
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Hover == false)
+        {
+            _class = "";
+        }
+
+        //Console.WriteLine(JsonConvert.SerializeObject(this, Formatting.Indented));
+
+        _style = "";
+
+        _style += $"position: {(AbsolutPosition ? "absolute" : "relative")};";
+        _style += $"left: {Left};";
+        _style += $"top: {Top};";
+        _style += $"z-index: {ZIndex};";
+
+        //if (Rotation % 2 != 0)
+        //{
+        //    var temp = Width;
+        //    Width = Height;
+        //    Height = temp;
+        //}
+        _style += $"width: {Width};";
+        _style += $"height: {Height};";
+
+
+        if (Layout["cardBorder"] == "true")
+        {
+            _style += "border: 1px solid #000;";
+            //_style += "border-radius: " + (h / 15) + "px;";
+        }
+        else
+        {
+            _style += "border: none;";
+            _style += "border-radius: 0px;";
+        }
+
+        if (Rotation != 0)
+        {
+            var r = (Rotation % 4) * 90;
+
+            _style += $"-webkit-transform: rotate({r}deg);";
+            _style += $"-moz-transform: rotate({r}deg);";
+            _style += $"-ms-transform: rotate({r}deg);";
+            _style += $"-o-transform: rotate({r}deg);";
+            _style += $"-transform: rotate({r}deg);";
+        }
+
+    }
+
 
     private string getCardLink()
     {
+        //Console.WriteLine(CardObj.ToCode());
+        return "Images/Cards" + Layout["cardLayout"] + "/" + CardObj.FileName + "." + Layout["cardImageType"];
+    }
 
-        var file = "c0";
-
-        if (CardObj != null && CardObj.ToCode().Length >= 3) {
-            file = CardObj.ToCode().Substring(0, 3);
+    public void Refresh(C.Card card)
+    {
+        if (CardObj.FileName != card.FileName)
+        {
+            CardObj = card;
         }
-        //info("load img: " + url + "Images/" + short + ".png")
-
-        return "Images/Cards" + Layout["cardLayout"] + "/" + file + "." + Layout["cardImageType"];
+        //Trick = new C.Trick(code);
+        StateHasChanged();
     }
 
 }

@@ -1,0 +1,18 @@
+﻿<div class="msgbox" style="width: 100%">
+    @foreach (var message in _messages)
+    {
+        <p >
+            @message
+        </p>
+    }
+</div>
+
+@code {
+    private List<string> _messages = new List<string>();
+
+    public void Refresh(List<string> messages)
+    {
+        _messages = messages;
+        StateHasChanged();
+    }
+}

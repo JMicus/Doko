@@ -47,7 +47,8 @@ app {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    /*background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);*/
+    background: rgb(5, 39, 103);
 }
 
     .sidebar .top-row {
@@ -185,4 +186,82 @@ app {
 p.input {
     font-size: larger;
     width: fit-content;
+}
+
+.frow {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.fcol {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.frow-1 {
+    flex: 1;
+}
+
+.fcol-1 {
+    flex: 1;
+}
+
+.square-parent {
+    /*background-color: red;*/
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+}
+
+.square-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    font-size: 20px;
+    /*color: white;*/
+}
+
+.lift {
+    margin-top: 8px;
+}
+
+    .lift *:hover {
+        /*position: relative;
+        top: -15px;*/
+        margin-top: -8px;
+    }
+
+.RegularButton, .SmallButton, .TinyButton {
+    max-width: 60px;
+    cursor: pointer;
+}
+
+    .RegularButton:hover, .SmallButton:hover, .TinyButton:hover {
+        filter: brightness(120%);
+    }
+
+    .SmallButton {
+        max-width: 40px;
+    }
+
+    .TinyButton {
+        max-width: 20px;
+    }
+
+.msgbox * {
+    background-color: mintcream;
+    border-radius: 5px;
+    border-style: solid;
+    padding: 2px;
+    font-size: 24px;
+    margin: 0 10px;
+}
+
+.nav-link img {
+    height: 30px;
 }

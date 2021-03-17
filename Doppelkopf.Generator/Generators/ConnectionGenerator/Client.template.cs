@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Doppelkopf.Core.App;
+using Doppelkopf.Core.App.Enums;
+using Newtonsoft.Json;
 
 namespace NAMESPACE
 {
@@ -21,6 +24,9 @@ namespace NAMESPACE
 
         #region Fields
         private HubConnection hubConnection;
+
+        private string gameName;
+        private string playerNo;
         #endregion
 
         #region Properties
@@ -33,11 +39,14 @@ namespace NAMESPACE
         //EVENTS
 
         #region ctor
-        public Client(NavigationManager NavManager)
+        public Client(Uri hubUri, string myGameName, string myPlayerNo)
         {
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavManager.ToAbsoluteUri("/dokohub"))
+                .WithUrl(hubUri)
                 .Build();
+
+            this.gameName = myGameName;
+            this.playerNo = myPlayerNo;
 
             //CTOR
 
@@ -47,6 +56,11 @@ namespace NAMESPACE
         #endregion
 
         #region Methods
+        private void On(string method, Action action)
+        {
+            hubConnection.On(method, action);
+        }
+
         private void On(string method, Action<string> action)
         {
             hubConnection.On<string>(method, action);

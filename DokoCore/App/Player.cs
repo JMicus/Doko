@@ -1,5 +1,4 @@
-﻿using Doppelkopf.App.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -78,7 +77,8 @@ namespace Doppelkopf.Core.App
 
         public void SetHandByMsg(string handMsg)
         {
-            Cards = handMsg.Split('.').Select(code => new Card(code)).ToList();
+            Cards.Clear();
+            Cards.AddRange(handMsg.Split('.').Select(code => new Card(code)).ToList());
         }
 
         public Card PutCard(string cardCode)

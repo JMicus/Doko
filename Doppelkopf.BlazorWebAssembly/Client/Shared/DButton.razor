@@ -1,0 +1,61 @@
+﻿@using C = Doppelkopf.Core.App;
+@using Newtonsoft.Json
+
+<div class=@_class>
+
+    <RadzenImage Path=@getCardLink() @onclick=@(() => OnClick.InvokeAsync(null)) Style=@($"width: {(int)Size}px; height: {(int)Size}px; visibility: {(Visible ? "visible" : "hidden")}")/>
+</div>
+@*<p>@CardObj.ToCode()</p>*@
+
+
+@code {
+    public enum ButtonSize : int
+    {
+        Regular = 60,
+        Small = 40,
+        Tiny = 20
+    }
+
+
+    public enum ButtonImgName
+    {
+        deal, takeTrick, msg, lastTrickBack
+    }
+
+    [Parameter]
+    public ButtonSize Size { get; set; } = ButtonSize.Regular;
+
+    [Parameter]
+    public ButtonImgName ImgName { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnClick { get; set; }
+
+    [Parameter]
+    public bool Visible { get; set; } = true;
+
+    private string _class;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _class = Size + "Button";
+    }
+
+
+    private string getCardLink()
+    {
+        return $"Images/{ImgName}Button.png";
+    }
+
+    public void Refresh(bool visible)
+    {
+        if (Visible != visible)
+        {
+            Visible = visible;
+            StateHasChanged();
+        }
+    }
+
+}

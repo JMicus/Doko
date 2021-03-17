@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Doppelkopf.App.Enums
+namespace Doppelkopf.Core.App.Enums
 {
     public enum EColor
     {

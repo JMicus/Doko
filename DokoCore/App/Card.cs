@@ -1,5 +1,4 @@
-﻿
-using Doppelkopf.App.Enums;
+﻿using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,13 +10,17 @@ namespace Doppelkopf.Core.App
 {
     public class Card
     {
-        public static string NameCodeOf(ECard eCard)
+        public static string NameCodeOf(ECard? eCard)
         {
+            if (eCard == null)
+            {
+                return "";
+            }
             return Enum.GetName(typeof(ECard), eCard).ToLower();
         }
 
-        private ECard _name;
-        public ECard Name
+        private ECard? _name;
+        public ECard? Name
         {
             get
             {
@@ -36,7 +39,9 @@ namespace Doppelkopf.Core.App
         /// <summary>
         /// Two chars name related to <see cref="ECard"/>
         /// </summary>
-        public string NameCode => NameCodeOf(Name);
+        public string NameCode => NameCodeOf(Name.Value);
+
+        public string FileName => Name == null ? "c0" : NameCode + No;
 
         public bool IsTrumpf => IsDame || IsBube || IsKaro || Name == ECard.H1;
         public bool IsDame => ToCode()[1] == 'd';
@@ -100,10 +105,15 @@ namespace Doppelkopf.Core.App
 
         public Card(string code)
         {
-            Name = (ECard)Enum.Parse(typeof(ECard), code.Substring(0, 2).ToUpper());
-            No = int.Parse(code[2].ToString());
-            ColorChar = code[3].ToString();
+            if (code != "")
+            {
+                Name = (ECard)Enum.Parse(typeof(ECard), code.Substring(0, 2).ToUpper());
+                No = int.Parse(code[2].ToString());
+                ColorChar = code[3].ToString();
+            }
         }
+
+        public Card() { }
 
         /// <summary>
         /// Returns NCT: CardColor, Card-Number/Head, Trumpf/Fehl-Color
@@ -111,6 +121,10 @@ namespace Doppelkopf.Core.App
         /// <returns></returns>
         public string ToCode()
         {
+            if (Name == null)
+            {
+                return "";
+            }
             return NameCode + No + ColorChar;
         }
     }

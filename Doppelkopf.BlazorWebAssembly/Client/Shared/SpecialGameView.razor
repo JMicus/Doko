@@ -1,0 +1,39 @@
+﻿@using C = Doppelkopf.Core.App;
+@using Doppelkopf.Core.App.Enums;
+@using Radzen;
+
+@inject DialogService dialogService;
+
+<div class="fcol">
+
+    @foreach (var button in _buttonList)
+    {
+        <RadzenButton Click="@((args) => dialogService.Close(button.Type))" Text=@button.Type.GetText() Style=@($"width: 300px; margin-top: {button.TopSpace + 10}px") />
+
+    }
+</div>
+
+@code {
+
+    private List<(C.Enums.EGameType Type, int TopSpace)> _buttonList;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _buttonList = new List<(C.Enums.EGameType, int)>()
+{
+            (C.Enums.EGameType.SoloQueen, 0),
+            (C.Enums.EGameType.SoloJack, 0),
+            (C.Enums.EGameType.SoloClubs, 0),
+            (C.Enums.EGameType.SoloSpades, 0),
+            (C.Enums.EGameType.SoloHearts, 0),
+            (C.Enums.EGameType.SoloDiamonds, 0),
+            (C.Enums.EGameType.SoloNoTrumps, 0),
+            (C.Enums.EGameType.Poverty, 40),
+            (C.Enums.EGameType.Regular, 40)
+        };
+    }
+
+
+}

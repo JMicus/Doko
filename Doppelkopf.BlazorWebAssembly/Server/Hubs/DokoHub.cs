@@ -1,5 +1,4 @@
 ﻿using C = Doppelkopf.Core.App;
-using Doppelkopf.App.Enums;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -9,11 +8,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Doppelkopf.Core;
+using Newtonsoft.Json;
 
 namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 {
-    public class DokoHub : Hub, Doppelkopf.Core.Connection.IHub
+    public class DokoHub : Hub, Core.Connection.IHub
     {
+        public static string testgame = "Doko";
+
         public static List<C.Game> Games = new List<C.Game>();
 
         private IHubContext<DokoHub> hubContext;
@@ -21,11 +23,11 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
         public DokoHub() : base() {
             //Console.WriteLine(GetHttpContextExtensions.GetHttpContext(this.Context).s)
 
-            if (true)
+            if (testgame != null)
             {
                 C.Game game = new C.Game()
                 {
-                    Name = "Doko"
+                    Name = testgame
                 };
                 game.OnMessagesChanged += Game_OnMessagesChanged;
 
@@ -48,7 +50,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     game.PutCard(i.ToString(), player.Cards.First().ToCode());
 
                     // messages
-                    //_ = player.AddMessage("short");
+                    //_ = player.AddMessage("my name is " + player.Name);
                     //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
                 }
 
@@ -249,8 +251,18 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 {
                     var player = game.Player[playerNo];
 
-                    await sendHand(player);
+                    if (false && testgame == gameName)
+                    {
+                        foreach (var p in game.Player.Where(p => p.No != player.No))
+                        {
+                            game.PutCard(p.No.ToString(), p.Cards.FirstOrDefault()?.ToCode());
+                        }
+                    }
+
+
                     await sendTrick(game);
+                    await sendHand(player);
+
 
 
                     //if (deleyTrickUpdate)
@@ -331,19 +343,19 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             }
         }
 
-        public async Task ChangeCardOrder(string gameName, string orderName)
+        public async Task ChangeCardOrder(string gameName, string playerNo, string orderNameE)
         {
             var game = GetGame(gameName);
 
             try
             {
-                game.Rules.Order = CardOrder.OrderByName(orderName);
+                game.Rules.Order = C.Enums.CardOrder.OrderByGameType(C.Enums.Parsenum.S2E<C.Enums.EGameType>(orderNameE));
                 game.SortHandCards();
                 await sendHand(game);
             }
             catch (Exception ex)
             {
-                await sendInfo(game, $"CardOrder: {orderName} -> ERROR\n{ex.Message}");
+                await sendInfo(game, $"CardOrder: {orderNameE} -> ERROR\n{ex.Message}");
             }
         }
 
@@ -355,7 +367,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             await sendExternalPage(game);
         }
 
-        public async Task LastTrickBack(string gameName)
+        public async Task LastTrickBack(string gameName, string playerNo)
         {
             var game = GetGame(gameName);
 
@@ -380,6 +392,12 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
             await sendHand(player);
             await sendHand(targetPlayer);
+        }
+
+
+        public Task GiveCardsToPlayer(string gameName, string playerNo, string receivingPlayerNo, string cardsCT)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task PlayerMsg(string gameName, string playerNo, string msg)
@@ -536,6 +554,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
         private async Task sendLastTrick(C.Game game, C.Player player = null)
         {
+            Console.WriteLine("HUB send last trick;");
             if (player == null)
             {
                 await sendToAll(game, "LastTrick", game.LastTrick.StartPlayer?.No ?? 1, game.LastTrick.ToCode());
@@ -587,7 +606,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
         private async Task sendMessages(C.Game game)
         {
-            await sendToAll(game, "Messages", string.Join("###", game.Player.Select(p => string.Join("---", p.Messages))));
+            await sendToAll(game, "Messages", JsonConvert.SerializeObject(game.Player.Select(p => p.Messages).ToList())); //(  string.Join("###", game.Player.Select(p => string.Join("---", p.Messages))));
         }
 
         private async Task sendRules(C.Game game, C.Player player = null)
@@ -604,7 +623,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
         private async Task sendPoints(C.Game game)
         {
-            await sendToAll(game, "Points", string.Join("###", game.Player.Select(p => p.Name + "---" + p.WonPoints)));
+            await sendToAll(game, "Points", new C.Points(game.Player).ToCode());
         }
 
         private async Task sendCenter(C.Game game, bool force = false)
@@ -679,6 +698,5 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 }
             }
         }
-
     }
 }

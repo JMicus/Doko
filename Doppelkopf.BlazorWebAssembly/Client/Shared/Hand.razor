@@ -1,0 +1,42 @@
+﻿@using C = Doppelkopf.Core.App;
+@using Microsoft.AspNetCore.Components
+
+<div class="frow frow-1">
+
+    <div class="frow frow-1" style="max-width: @((int.Parse(Layout["cardWidth"]) * (Cards.Count - 1)) + "px"); margin: auto">
+
+        @for (int i = 0; i < Cards.Count; i++)
+        {
+
+            <Card CardObj=@Cards[i]
+                  Layout=@Layout
+                  AbsolutPosition=@true
+                  Left=@((i * 100f / (Cards.Count - 1)).ToString().Replace(',', '.') + "%")
+                  Top=@((int.Parse(Layout["cardHeight"]) / -2) + "px")
+                  ZIndex=@(100 + i)
+                  Hover=true
+                  OnClick=@((C.Card c)  => OnClick.InvokeAsync(c)) />
+        }
+
+    </div>
+    <div class="frow" style="width: @(Layout["cardWidth"] + "px")">
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public List<C.Card> Cards { get; set; }
+
+    [Parameter]
+    public C.Layout Layout { get; set; }
+
+    [Parameter]
+    public EventCallback<C.Card> OnClick { get; set; }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}

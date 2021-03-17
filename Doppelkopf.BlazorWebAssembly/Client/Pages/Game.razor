@@ -1,27 +1,107 @@
 ﻿@page "/game"
 
 @using Radzen.Blazor
+@using Enums;
 
-<div class="row">
-    @foreach (var player in _players)
-    {
-        <div class="col">
-            <Player Name=@(player.Name) Test=@(player.GetHandMsg())/>
-        </div>
-    }
+
+
+<div class="fcol fcol-1">
+
+
+
+    <div class="frow">
+        @foreach (var player in _players)
+        {
+            if (player.No.ToString() != playerNo)
+            {
+                <div class="fcol fcol-1">
+                    <PlayerView
+                        @ref=@_playerViews[player.No - 1]
+                        Player=@player
+                    />
+                </div>
+            }
+        }
+    </div>
+
+
+    @*<div class="row" style="height: 100%">
+
+
+            <RadzenCard Style="width: fit-content; left: 50%; top: 20%; margin-left: -150px">
+                <RadzenLabel Text=@test />
+
+                <RadzenButton Text="Send Test" Click=@(args => onClickTest()) />
+            </RadzenCard>
+        </div>*@
+
+<div class="frow frow-1" style="width: 100%; height: 100%">
+
+    <div style="width: 100%; height: 100%; display: flex">
+        @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
+        <TrickView @ref=@_trickView
+                   Trick=@_trick
+                   PlayerNo=@playerNo
+                   Layout=@_layout
+                   RelSize=@(1)
+                   Button=@TrickView.ButtonType.Take
+                   OnButtonClick=@onTakeTrick
+                   OnOwnCardClick=@onLastCardBack />
+    </div>
+
+    <div style="position: absolute; left: 0px; bottom: 0px; width: 200px; height: 200px">
+        @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
+        <TrickView @ref=@_lastTrickView
+                   Trick=@_lastTrick
+                   PlayerNo=@playerNo
+                   Layout=@_layout
+                   RelSize=@(.3)
+                   Button=@TrickView.ButtonType.Back
+                   ButtonSize=@DButton.ButtonSize.Small
+                   OnButtonClick=@onTakeTrickBack />
+    </div>
+
+    <div style="position: absolute; right: 0px; bottom: 0px; margin-bottom: 30px; width: 33.33%">
+
+        @*<div style="margin-bottom: 50px">
+            <DButton ImgName=@DButton.ButtonImgName.deal
+                     Size=@DButton.ButtonSize.Regular
+                     OnClick=@onDealClick />
+        </div>*@
+
+        <div style="width: 100%">
+            <input 
+                   @oninput=@onSendTextChanged
+                            @bind=@_chatInputText
+                            Placeholder="Senden mit Enter"
+                            style="width: 100%"
+                            @onkeyup=@onSendOnEnter />
+
+            @*<RadzenTextArea @ref=@_chatTextArea
+                             bind-value-onchange=@_chatInputText
+                             Placeholder="Senden mit Enter"
+                             Style="width: 100%"
+                             @onkeypress=@onSendOnEnter />
+
+            x<DButton OnClick=@onSendMsgClick
+                      ImgName=@DButton.ButtonImgName.msg
+                      Size=@DButton.ButtonSize.Small />*@
+                </div>
+
+        <PlayerView @ref=@_playerViews[me.No - 1]
+                    MsgDirUp=true
+                    Width="30%"
+                    Player=@me />
+    </div>
+
+
+
 </div>
 
-<div>
-    <Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>
+    <div class="frow" style="height: @(_layout["cardHeight"] + "px"); margin-bottom: 20px">
+        @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
+        <Hand @ref=@_handView Layout=@_layout Cards=@me.Cards OnClick=@onHandClick />
+    </div>
 </div>
 
-<div>
-
-
-    <RadzenCard Style="width: fit-content; left: 50%; top: 20%; margin-left: -150px">
-        <RadzenLabel Text=@test />
-
-        <RadzenButton Text="Send Test" Click=@(args => onClickTest()) />
-    </RadzenCard>
-</div>
 

@@ -1,0 +1,15 @@
+﻿
+
+<div style=@($"position: relative; width: 100%") >
+
+    <RadzenCard>
+
+        <RadzenLabel Text=@Player.Name />
+
+    </RadzenCard>
+
+    <div style=@($"position: absolute; {(MsgDirUp ? "bottom" : "top")}: 80px")>
+        <PlayerMessageView @ref=@_msgView/>
+    </div>
+
+</div>

@@ -17,7 +17,14 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             {
                 Method.GameAndPlayer("Init", "playerName"),
                 Method.GameAndPlayer("SayHello", "playerToken"),
-                Method.GameAndPlayer("PlayerMsg", "msg")
+                Method.GameAndPlayer("PlayerMsg", "msg"),
+                Method.GameAndPlayer("PutCard", "cardCode"),
+                Method.GameAndPlayer("TakeTrick"),
+                Method.GameAndPlayer("LastTrickBack"),
+                Method.GameAndPlayer("TakeCardBack"),
+                Method.GameAndPlayer("Deal", "force.bool"),
+                Method.GameAndPlayer("GiveCardsToPlayer", "receivingPlayerNo", "cards.List<Card>"),
+                Method.GameAndPlayer("ChangeCardOrder", "cardOrder.e-EGameType")
             };
 
             var sToC = new List<Method>()
@@ -27,7 +34,12 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 Method.OnMsgFromHub("PlayerJoined", "no", "name"),
                 Method.OnMsgFromHub("Messages", "msgs"),
                 Method.OnMsgFromHub("Hand", "hand"),
-                Method.OnMsgFromHub("Layout", "layout")
+                Method.OnMsgFromHub("Layout", "layout"),
+                Method.OnMsgFromHub("Trick", "startPlayerNo", "trick"),
+                Method.OnMsgFromHub("LastTrick", "startPlayerNo", "trick"),
+                Method.OnMsgFromHub("Points", "points"),
+                Method.OnMsgFromHub("Symbols", "symbols"),
+                new Method("DealQuestion")
             };
 
             #region CLIENT
@@ -51,10 +63,10 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             var cCtorCode = "";
             foreach (var method in cToS)
             {
-                cMethodCode += createMethod($"public void {method.Name}({method.paramsStringFull})",
-                                            $"hubConnection.SendAsync(\"{method.Name}\", {method.paramsString});");
+                cMethodCode += createMethod($"public void {method.Name}({method.Params.ToString(true, true)})",
+                                            $"hubConnection.SendAsync(\"{method.Name}\", {method.Params.ToString(false, true, true, true)});");
 
-                hMethodCode += createMethod($"Task {method.Name}({method.paramsStringFull})");
+                hMethodCode += createMethod($"Task {method.Name}({method.Params.ToString(true, true, true, false, true)})");
 
 
                 //public void On(string method, Action<string> action)
@@ -67,7 +79,7 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 var strings = string.Join(", ", method.Params.Select(p => "string"));
                 var delName = $"{ method.Name }Action";
 
-                cDelegateCode += $"\r\n        public delegate void {delName}({method.paramsStringFull});";
+                cDelegateCode += $"\r\n        public delegate void {delName}({method.Params.StringFull});";
 
                 cEventsCode += $"\r\n        public event {delName} On{method.Name};";
 
@@ -75,7 +87,7 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 //cMethodCode += createMethod($"private void _{method.Name}({delName} action)",
                 //                            $"hubConnection.On<{strings}>(\"{method.Name}\", ({method.paramsStringFull}) => action({method.paramsString}));");
 
-                cCtorCode += $"\r\n            On(\"{method.Name}\", ({method.paramsStringFull}) => On{method.Name}?.Invoke({method.paramsString}));";
+                cCtorCode += $"\r\n            On(\"{method.Name}\", ({method.Params.StringFull}) => On{method.Name}?.Invoke({method.Params.StringNames}));";
 
                 
             }
@@ -120,11 +132,104 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
 
         class Method
         {
-            internal string Name;
-            internal List<string> Params = new List<string>();
+            internal enum TypeType
+            {
+                Basic, Complex, Enum
+            }
 
-            internal string paramsStringFull => string.Join(", ", Params.Select(p => "string " + p));
-            internal string paramsString => string.Join(", ", Params);
+            internal class ParamList : List<(string Name, string Type, TypeType TypeType, bool IsHidden)>
+            {
+
+                internal string StringFull => string.Join(", ", this.Select(p => p.Type + " " + p.Name));
+                internal string StringNames => string.Join(", ", this.Select(p => p.Name));
+                internal string StringTypes => string.Join(", ", this.Select(p => p.Type));
+
+
+                internal string ToString(bool type, bool name, bool showHidden = false, bool serializeComplexName = false, bool complexIsString = false)
+                {
+                    return string.Join(", ", this.Where(p => showHidden || !p.IsHidden).Select(p =>
+                    {
+                        var res = "";
+
+                        if (type)
+                        {
+                            if (complexIsString && p.TypeType != TypeType.Basic)
+                            {
+                                res += "string";
+                            }
+                            else
+                            {
+                                res += p.Type;
+                            }
+                        }
+
+                        res += " ";
+
+                        if (name)
+                        {
+                            if (serializeComplexName && p.TypeType == TypeType.Complex)
+                            {
+                                res += $"JsonConvert.SerializeObject({p.Name})";
+                            }
+                            else if (serializeComplexName && p.TypeType == TypeType.Enum)
+                            {
+                                res += $"Parsenum.E2S({p.Name})";
+                            }
+                            else
+                            {
+                                res += p.Name;
+                            }
+                        }
+
+                        return res.Trim();
+                    }));
+                }
+
+                internal void Add(string param)
+                {
+                    var type = "string";
+                    if (param.Contains('.'))
+                    {
+                        type = param.Split('.')[1];
+                    }
+
+                    var name = param.Split('.')[0];
+                    
+                    var typeType = TypeType.Basic;
+                    
+                    if (type.StartsWith("e-"))
+                    {
+                        type = type.Substring(2);
+                        typeType = TypeType.Enum;
+                    }
+                    else if (!(new[] { "string", "bool", "int" }).Contains(type))
+                    {
+                        typeType = TypeType.Complex;
+                    }
+
+
+
+                    var isHidden = name.StartsWith("-");
+
+                    name = name.Replace("-", "");
+
+                    if (typeType == TypeType.Complex)
+                    {
+                        name += "CT";
+                    }
+                    if (typeType == TypeType.Enum)
+                    {
+                        name += "E";
+                    }
+
+                    base.Add((name, type, typeType, isHidden));
+                }
+            }
+
+            internal string Name;
+            internal ParamList Params = new ParamList();
+
+            
 
             internal Method(string name)
             {
@@ -146,9 +251,22 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 Params.Add(param3);
             }
 
+            internal static Method GameAndPlayer(string name)
+            {
+                return new Method(name, "-gameName", "-playerNo");
+            }
             internal static Method GameAndPlayer(string name, string param3)
             {
-                return new Method(name, "gameName", "playerNo", param3);
+                var m = GameAndPlayer(name);
+                m.Params.Add(param3);
+                return m;
+            }
+
+            internal static Method GameAndPlayer(string name, string param3, string param4)
+            {
+                var m = GameAndPlayer(name, param3);
+                m.Params.Add(param4);
+                return m;
             }
 
             internal static Method OnMsgFromHub(string name, string param1)

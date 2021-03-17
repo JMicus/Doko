@@ -7,19 +7,40 @@ namespace Doppelkopf.Core.App
 {
     public class Trick
     {
+        public event Action OnChanged;
+
         public Player StartPlayer;
         public Player WonPlayer;
 
-        public Card[] Cards { get; private set; } = new Card[4];
+        public Card[] _cards { get; private set; } = new Card[4];
 
-        public Card GetCard(Player player)
+        public Card this[int i]
         {
-            return Cards[player.No - 1];
+            get
+            {
+                return _cards[i - 1] ?? new Card();
+            }
+            set
+            {
+                _cards[i - 1] = value;
+            }
         }
 
-        public Card GetCard(int player)
+        public Card this[Player p]
         {
-            return Cards[player - 1];
+            get
+            {
+                return this[p.No];
+            }
+            set
+            {
+                this[p.No] = value;
+            }
+        }
+
+        public List<Card> ToList()
+        {
+            return new List<Card>(_cards);
         }
 
         public void SetCard(Player player, Card card)
@@ -29,23 +50,23 @@ namespace Doppelkopf.Core.App
 
         public Card TakeCard(Player player)
         {
-            var card = Cards[player.No - 1];
-            Cards[player.No - 1] = null;
+            var card = _cards[player.No - 1];
+            _cards[player.No - 1] = null;
             return card;
         }
 
         public void SetCard(int player, Card card)
         {
-            Cards[player - 1] = card;
+            _cards[player - 1] = card;
         }
 
         public bool Empty
         {
             get
             {
-                foreach (var c in Cards)
+                foreach (var c in _cards)
                 {
-                    if (c != null)
+                    if (c?.Name != null)
                     {
                         return false;
                     }
@@ -54,18 +75,28 @@ namespace Doppelkopf.Core.App
             }
         }
 
+        public Trick()
+        {
+
+        }
+
+        public Trick(string code)
+        {
+            this.FromCode(code);
+        }
+
         public void Clear()
         {
-            Cards = new Card[4];
+            _cards = new Card[4];
         }
 
         public bool Complete
         {
             get
             {
-                foreach (var c in Cards)
+                foreach (var c in _cards)
                 {
-                    if (c == null)
+                    if (c?.Name == null)
                     {
                         return false;
                     }
@@ -74,9 +105,26 @@ namespace Doppelkopf.Core.App
             }
         }
 
+        public void FromCode(string code)
+        {
+            _cards = new Card[4];
+            int i = 0;
+            foreach (var cardCode in code.Split('.'))
+            {
+                _cards[i++] = new Card(cardCode);
+            }
+
+            OnChanged?.Invoke();
+        }
+
         public string ToCode()
         {
-            return $"{code(Cards[0])}.{code(Cards[1])}.{code(Cards[2])}.{code(Cards[3])}"; 
+            return $"{code(_cards[0])}.{code(_cards[1])}.{code(_cards[2])}.{code(_cards[3])}"; 
+        }
+
+        public override string ToString()
+        {
+            return ToCode();
         }
 
         private static string code(Card c)
@@ -89,7 +137,7 @@ namespace Doppelkopf.Core.App
             var trick = new Trick();
             for (int i = 1; i <= 4; i++)
             {
-                trick.SetCard(i, src.GetCard(i));
+                trick.SetCard(i, src[i]);
             }
             trick.StartPlayer = src.StartPlayer;
             return trick;

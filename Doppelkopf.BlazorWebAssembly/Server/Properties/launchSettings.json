@@ -19,6 +19,7 @@
     "Doppelkopf.BlazorWebAssembly.Server": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "game?game=Doko&player=1&name=Spieler%201&token=0",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

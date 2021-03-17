@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Radzen;
+using Doppelkopf.BlazorWebAssembly.Client.Services;
 
 namespace Doppelkopf.BlazorWebAssembly.Server
 {

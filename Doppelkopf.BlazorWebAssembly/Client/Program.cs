@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Radzen;
+using Doppelkopf.BlazorWebAssembly.Client.Services;
 
 namespace Doppelkopf.BlazorWebAssembly.Client
 {
@@ -21,6 +22,8 @@ namespace Doppelkopf.BlazorWebAssembly.Client
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.Services.AddScoped<DialogService>();
+
+            builder.Services.AddSingleton<MenuService>();
 
             await builder.Build().RunAsync();
         }

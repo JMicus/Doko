@@ -8,13 +8,15 @@
         @for (int i = 0; i < Cards.Count; i++)
         {
 
-            <Card CardObj=@Cards[i]
+            <Card 
+                  CardObj=@Cards[i]
                   Layout=@Layout
                   AbsolutPosition=@true
                   Left=@((i * 100f / (Cards.Count - 1)).ToString().Replace(',', '.') + "%")
                   Top=@((int.Parse(Layout["cardHeight"]) / -2) + "px")
                   ZIndex=@(100 + i)
                   Hover=true
+                  SelectionMode=@SelectionMode
                   OnClick=@((C.Card c)  => OnClick.InvokeAsync(c)) />
         }
 
@@ -34,6 +36,18 @@
 
     [Parameter]
     public EventCallback<C.Card> OnClick { get; set; }
+
+    [Parameter]
+    public bool SelectionMode { get; set; }
+
+    private Card[] _cardViews;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _cardViews = new Card[Cards.Count];
+    }
 
     public void Refresh()
     {

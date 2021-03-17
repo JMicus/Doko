@@ -72,6 +72,11 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         private C.Player me => _players[playerNo];
         #endregion
 
+        protected override bool ShouldRender()
+        {
+            return false;
+        }
+
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -276,32 +281,35 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         private void Close(dynamic result)
         {
-            switch (_openDialog)
+            if (result != null)
             {
-                case EDialog.Login:
-                    NavManager.NavigateTo($"/login?game={gameName}&player={playerName}");
-                    break;
-                case EDialog.Deal when result == true:
-                    _client.Deal(true);
-                    break;
-                case EDialog.Points when result = false:
-                    _client.Deal(false);
-                    break;
-                case EDialog.SpecialGame:
-                    if (result == C.Enums.EGameType.Poverty)
-                    {
-                        log("DIALOG", "armut");
-                    }
-                    else
-                    {
-                        log("DIALOG", result.ToString());
-                        _client.ChangeCardOrder(result);
-                    }
-                    break;
-                case EDialog.Poverty:
-                    log("Poverty", result);
-                    break;
+                switch (_openDialog)
+                {
+                    case EDialog.Login:
+                        NavManager.NavigateTo($"/login?game={gameName}&player={playerName}");
+                        break;
+                    case EDialog.Deal when result == true:
+                        _client.Deal(true);
+                        break;
+                    case EDialog.Points when result = false:
+                        _client.Deal(false);
+                        break;
+                    case EDialog.SpecialGame:
+                        if (result == C.Enums.EGameType.Poverty)
+                        {
+                            log("DIALOG", "armut");
+                        }
+                        else
+                        {
+                            log("DIALOG", result.ToString());
+                            _client.ChangeCardOrder(result);
+                        }
+                        break;
+                    case EDialog.Poverty:
+                        log("Poverty", result);
+                        break;
 
+                }
             }
             _openDialog = null;
         }

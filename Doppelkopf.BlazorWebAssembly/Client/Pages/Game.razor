@@ -100,7 +100,7 @@
 
     <div class="frow" style="height: @(_layout["cardHeight"] + "px"); margin-bottom: 20px">
         @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
-        <Hand @ref=@_handView Layout=@_layout Cards=@me.Cards OnClick=@onHandClick />
+        <Hand @ref=@_handView Layout=@_layout Cards=@me.Cards SelectionMode=false OnClick=@onHandClick />
     </div>
 </div>
 

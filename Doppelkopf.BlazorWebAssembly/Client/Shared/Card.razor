@@ -3,8 +3,19 @@
 
 <div class=@_class>
 
-    <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(_style) @onclick=@(() => OnClick.InvokeAsync(CardObj)) />
+    <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(_style) @onclick=@(() =>
+                                                                               {
+                                                                                   onClick();
+                                                                                   OnClick.InvokeAsync(CardObj);
+                                                                               }) />
 </div>
+
+@if (SelectionMode)
+            {
+                <div style=@($"height: {(int.Parse(Layout["cardHeight"]) + 40) * RelativeSize}px")>
+                    </div>
+            } 
+
 @*<p>@CardObj.ToCode()</p>*@
 
 
@@ -12,13 +23,6 @@
 
     [Parameter]
     public C.Card CardObj { get; set; } = new C.Card();
-
-
-    [Parameter]
-    public string Width { get; set; }
-
-    [Parameter]
-    public string Height { get; set; }
 
     [Parameter]
     public int Rotation { get; set; } = 0;
@@ -28,6 +32,12 @@
 
     [Parameter]
     public string Left { get; set; }
+
+    [Parameter]
+    public string Width { get; set; }
+
+    [Parameter]
+    public string Height { get; set; }
 
     [Parameter]
     public string Top { get; set; }
@@ -43,6 +53,14 @@
 
     [Parameter]
     public C.Layout Layout { get; set; }
+
+    [Parameter]
+    public double RelativeSize { get; set; } = 1;
+
+    [Parameter]
+    public bool SelectionMode { get; set; } = false;
+
+    public bool IsSelected { get; set; } = false;
 
     private RadzenImage _image { get; set; }
 
@@ -74,8 +92,12 @@
         //    Width = Height;
         //    Height = temp;
         //}
-        _style += $"width: {Width};";
-        _style += $"height: {Height};";
+
+        var cw = int.Parse(Layout["cardWidth"]);
+        var ch = int.Parse(Layout["cardHeight"]);
+
+        _style += $"width: {(string.IsNullOrEmpty(Width) ? (cw * RelativeSize) + "px;" : Width)};";
+        _style += $"height: {(string.IsNullOrEmpty(Height) ? (ch * RelativeSize + (SelectionMode ? 40 : 0)) + "px;" : Height)};";
 
 
         if (Layout["cardBorder"] == "true")
@@ -100,6 +122,10 @@
             _style += $"-transform: rotate({r}deg);";
         }
 
+        if (SelectionMode)
+        {
+            _style += $"padding-{(IsSelected ? "bottom" : "top")}: 40px;";
+        }
     }
 
 
@@ -107,6 +133,15 @@
     {
         //Console.WriteLine(CardObj.ToCode());
         return "Images/Cards" + Layout["cardLayout"] + "/" + CardObj.FileName + "." + Layout["cardImageType"];
+    }
+
+    private void onClick()
+    {
+        if (SelectionMode)
+        {
+            IsSelected = !IsSelected;
+            StateHasChanged();
+        }
     }
 
     public void Refresh(C.Card card)

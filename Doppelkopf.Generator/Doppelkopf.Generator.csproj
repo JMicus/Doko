@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Generators\ConnectionGenerator\AbstractHubBase.template.cs" />
     <Compile Remove="Generators\ConnectionGenerator\Client.template.cs" />
     <Compile Remove="Generators\ConnectionGenerator\IHub.template.cs" />
   </ItemGroup>

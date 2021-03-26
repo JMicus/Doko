@@ -1,34 +1,46 @@
-﻿using System;
+﻿using Doppelkopf.Core.App.Enums;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using static Doppelkopf.Core.App.Enums.Symbol;
 
 namespace Doppelkopf.Core.App
 {
     public class Player
     {
-        public DateTime InitDateTime;
+        [JsonIgnore]
+        public DateTime InitDateTime { get; set; }
 
         public string Name;
 
         public int No;
 
-        public string Token;
+        [JsonIgnore]
+        public string Token { get; set; }
 
-        public List<string> ConnectionIds = new List<string>();
+        [JsonIgnore]
+        public List<string> ConnectionIds { get; set; } = new List<string>();
 
-        public List<Card> Cards = new List<Card>();
+        [JsonIgnore]
+        public List<Card> Cards { get; set; } = new List<Card>();
 
-        private List<Card> wonCards = new List<Card>();
+        [JsonIgnore]
+        private List<Card> wonCards { get; set; } = new List<Card>();
 
-        public List<(string, string)> Symbols = new List<(string, string)>();
+        [JsonIgnore]
+        public List<Symbol> Symbols { get; set; } = new List<Symbol>();
 
-        public List<string> Messages = new List<string>();
+        [JsonIgnore]
+        public List<string> Messages { get; set; } = new List<string>();
 
+        [JsonIgnore]
         public int WonPoints => rules.CountPoints(wonCards);
 
+        [JsonIgnore]
         public string NameShort => (Name.Count() < 2 ? Name : Name.Substring(0, 2)).ToUpper();
 
         public string NameLabel
@@ -39,13 +51,13 @@ namespace Doppelkopf.Core.App
             }
         }
 
+        [JsonIgnore]
         public bool IsInitialized => !string.IsNullOrEmpty(Token);
 
         private Rules rules;
 
         //public Card CenterCard;
 
-        public event Action OnMessagesChanged;
 
         public Player(Rules rules, int no)
         {
@@ -81,11 +93,17 @@ namespace Doppelkopf.Core.App
             Cards.AddRange(handMsg.Split('.').Select(code => new Card(code)).ToList());
         }
 
-        public Card PutCard(string cardCode)
+        public void SetHand(List<Card> cards)
+        {
+            Cards.Clear();
+            Cards.AddRange(cards);
+        }
+
+        public Card PutCard(Card card)
         {
             foreach (var c in Cards)
             {
-                if (c.ToCode() == cardCode)
+                if (c.ToCode() == card.ToCode())
                 {
                     Cards.Remove(c);
                     //CenterCard = c;
@@ -134,9 +152,9 @@ namespace Doppelkopf.Core.App
 
         private void updateTricksSymbol()
         {
-            var toRemove = Symbols.Where(s => s.Item1.Contains("deckCount")).FirstOrDefault();
+            var toRemove = Symbols.Where(s => s.Type == ESymbol.trickCount).FirstOrDefault();
 
-            if (toRemove != default((string, string)))
+            if (toRemove != null)
             {
                 Symbols.Remove(toRemove);
 
@@ -145,7 +163,7 @@ namespace Doppelkopf.Core.App
             var tricks = wonCards.Count() / 4;
             if (tricks > 0)
             {
-                Symbols.Add(("deckCount" + tricks + "Symbol", tricks + " Striche"));
+                Symbols.Add(new Symbol(ESymbol.trickCount, tricks));
             }
         }
     }

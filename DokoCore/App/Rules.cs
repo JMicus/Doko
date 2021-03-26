@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Doppelkopf.Core.App
@@ -13,6 +14,7 @@ namespace Doppelkopf.Core.App
 
         private string _order = CardOrder.Regular.Replace(" ", "");
 
+        [JsonIgnore]
         public string Order
         {
             get
@@ -33,6 +35,7 @@ namespace Doppelkopf.Core.App
         // //////////////////////////
 
 
+        [JsonIgnore]
         public List<Card> Deck
         {
             get

@@ -227,13 +227,19 @@ p.input {
 }
 
 .lift {
-    margin-top: 8px;
+    /*margin-top: 8px;*/
 }
+
+    .lift * {
+        /*position: relative;
+        top: -15px;*/
+        margin-top: 8px;
+    }
 
     .lift *:hover {
         /*position: relative;
         top: -15px;*/
-        margin-top: -8px;
+        margin-top: 0px;
     }
 
 .RegularButton, .SmallButton, .TinyButton {

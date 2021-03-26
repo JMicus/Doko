@@ -10,8 +10,9 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
     {
         public enum MenuClick
         {
+            Debug,
             Deal,
-            SpecialGame
+            SpecialGame,
         }
 
         public class MenuEntry

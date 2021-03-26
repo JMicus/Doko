@@ -7,10 +7,14 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Enums
 {
     public enum EDialog
     {
+        None,
         Login,
         Deal,
         Points,
         SpecialGame,
-        Poverty
+        Poverty,
+        PovertyReturn,
+        ReceiveCards,
+        ReceiveCardsAndReturn
     }
 }

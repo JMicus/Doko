@@ -64,13 +64,30 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         private string test = "-";
 
-        private EDialog? _openDialog;
+        private EDialog _openDialog = EDialog.None;
+        private EDialog openDialog
+        {
+            get
+            {
+                return _openDialog;
+            }
+            set
+            {
+                _openDialog = value;
+                log("OPENDIALOG", _openDialog.ToString());
+            }
+        }
 
         #endregion
 
         #region Properties
         private C.Player me => _players[playerNo];
         #endregion
+
+        private void debug()
+        {
+            _client.Debug("poverty");
+        }
 
         protected override bool ShouldRender()
         {
@@ -123,7 +140,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         {
             _client.OnUnauthorized += (gameName, playerNo, playerName) => {
                 log("Unauthorized");
-                _openDialog = EDialog.Login;
+                openDialog = EDialog.Login;
                 DialogService.Confirm("Spieler*in " + playerNo + " (" + playerName + ") ist bereits im Spiel " + gameName + " angemeldet.",
                                     "Platz belegt",
                                     new ConfirmOptions()
@@ -146,27 +163,37 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
             _client.OnMessages += (msgs) =>
             {
-                log("Messages",msgs);
-                var m = JsonConvert.DeserializeObject<List<List<string>>>(msgs);
+                log("Messages", msgs.ToString());
                 for (int i = 0; i < 4; i++)
                 {
-                    _playerViews[i].RefreshMsg(m[i]);
+                    _playerViews[i].RefreshMsg(msgs[i]);
                 }
                 //StateHasChanged();
             };
 
             _client.OnHand += (cards) =>
             {
-                log("Hand", cards);
-                me.SetHandByMsg(cards);
+                // TODO debug
+                var first = me.Cards == null || me.Cards.Count == 0;
+
+
+                log("Hand", cards.ToString());
+                me.SetHand(cards);
+
                 _handView.Refresh();
                 //_handView.Refresh();
                 //StateHasChanged();
+
+                if (false)
+                {
+                    openDialog = EDialog.SpecialGame;
+                    Close(C.Enums.EGameType.Poverty);
+                }
             };
 
-            _client.OnTrick += (startPlayerNo, trick) =>
+            _client.OnTrick += (trick) =>
             {
-                log("Trick", trick);
+                log("Trick", trick.ToString());
 
                 //_trick.FromCode(trick);
                 //_trickView.Trick = new Trick(trick);
@@ -177,32 +204,47 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                 //StateHasChanged();
             };
 
-            _client.OnLastTrick += (startPlayerNo, trick) =>
+            _client.OnLastTrick += (trick) =>
             {
-                log("LastTrick", trick);
+                log("LastTrick", trick.ToString());
                 _lastTrickView.Refresh(trick);
                 //_lastTrickView.Refresh();
                 //StateHasChanged();
             };
 
-            _client.OnLayout += (layoutCode) =>
+            _client.OnLayout += (layout) =>
             {
                 log("Layout");
-                _layout.FromCode(layoutCode);
+                //_layout.FromCode(layoutCode);
+                _layout = layout;
                 //StateHasChanged();
             };
 
             _client.OnDealQuestion += () =>
             {
-                _openDialog = EDialog.Deal;
+                openDialog = EDialog.Deal;
                 DialogService.Confirm("Soll wirklich neu gegeben werden?", "Neu Geben", new ConfirmOptions() { OkButtonText = "Ja", CancelButtonText = "Nein" });
             };
 
             _client.OnPoints += (points) =>
             {
-                _openDialog = EDialog.Points;
+                openDialog = EDialog.Points;
                 DialogService.Open<PointsView>("Ergebnis",
-                                               new Dictionary<string, object>() { { "Points", new C.Points(points) } });
+                                               new Dictionary<string, object>() { { "Points", points } });
+            };
+
+            _client.OnCardsFromPlayer += (player, cards, cardsBack) =>
+            {
+                openDialog = cardsBack ? EDialog.ReceiveCardsAndReturn : EDialog.ReceiveCards;
+                DialogService.Open<SelectCardsView>("Trumpfarmut",
+                                                    new SelectCardsView.SelectCardsViewParameters()
+                                                    {
+                                                        Text = $"{player.Name} gibt dir diese Karten:",
+                                                        Players = new List<Player>() { player },
+                                                        Cards = cards,
+                                                        Layout = _layout,
+                                                        SelectionMode = false
+                                                    }.ToDict());
             };
         }
 
@@ -218,17 +260,21 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                 case MenuClick.Deal:
                     onDealClick(null);
                     break;
+
                 case MenuClick.SpecialGame:
-                    _openDialog = EDialog.SpecialGame;
+                    openDialog = EDialog.SpecialGame;
                     DialogService.Open<SpecialGameView>("Sonderspiel");
                     break;
 
+                case MenuClick.Debug:
+                    debug();
+                    break;
             }
         }
 
         private void onHandClick(C.Card card)
         {
-            _client.PutCard(card.ToCode());
+            _client.PutCard(card);
         }
 
         private void onTakeTrick(object o)
@@ -281,37 +327,115 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         private void Close(dynamic result)
         {
-            if (result != null)
-            {
-                switch (_openDialog)
-                {
-                    case EDialog.Login:
-                        NavManager.NavigateTo($"/login?game={gameName}&player={playerName}");
-                        break;
-                    case EDialog.Deal when result == true:
-                        _client.Deal(true);
-                        break;
-                    case EDialog.Points when result = false:
-                        _client.Deal(false);
-                        break;
-                    case EDialog.SpecialGame:
-                        if (result == C.Enums.EGameType.Poverty)
-                        {
-                            log("DIALOG", "armut");
-                        }
-                        else
-                        {
-                            log("DIALOG", result.ToString());
-                            _client.ChangeCardOrder(result);
-                        }
-                        break;
-                    case EDialog.Poverty:
-                        log("Poverty", result);
-                        break;
+            var closedDialog = openDialog;
+            openDialog = EDialog.None;
 
-                }
+            if (result == null)
+            {
+                log("DIALOG", "Closed with no result");
+                return;
             }
-            _openDialog = null;
+
+            SelectCardsView.SelectCardsViewResult viewResult;
+
+            switch (closedDialog)
+            {
+                case EDialog.Login:
+                    NavManager.NavigateTo($"/login?game={gameName}&player={playerName}");
+                    break;
+
+                case EDialog.Deal when result == true:
+                    _client.Deal(true);
+                    break;
+
+                case EDialog.Points when result = false:
+                    _client.Deal(false);
+                    break;
+
+                case EDialog.SpecialGame:
+                    if (result == C.Enums.EGameType.Poverty)
+                    {
+                        //log("DIALOG", "armut");
+                        openDialog = EDialog.Poverty;
+                        DialogService.Open<SelectCardsView>("Trumpfarmut",
+                                                            new SelectCardsView.SelectCardsViewParameters()
+                                                            {
+                                                                Cards = me.Cards,
+                                                                Players = _players.Where(p => p != me).ToList(),
+                                                                Layout = _layout,
+                                                                SelectionMode = true
+                                                            }.ToDict());
+                    }
+                    else
+                    {
+                        log("CHANGECARDORDER", result);
+
+                        _client.ChangeCardOrder(result);
+                    }
+                    break;
+
+                case EDialog.Poverty:
+
+                    viewResult = result as SelectCardsView.SelectCardsViewResult;
+
+                    if (viewResult == null)
+                    {
+                        log("Poverty", "");
+                        //_openDialog = EDialog.ReceiveCardsAndReturn;
+                        // TODO re open dialog
+                        break;
+                    }
+
+                    log("Poverty", $"{string.Join(".", viewResult.Cards.Select(c => c.ToCode()))} to {viewResult.Player.NameLabel}");
+                    _client.GiveCardsToPlayer(viewResult.Player.No, viewResult.Cards, true);
+                    break;
+
+                case EDialog.ReceiveCards:
+                    // do nothing
+                    break;
+
+                case EDialog.ReceiveCardsAndReturn:
+
+                    viewResult = result as SelectCardsView.SelectCardsViewResult;
+
+                    if (viewResult == null)
+                    {
+                        log("DIALOG", "ReceiveCardsAndReturn");
+                        break;
+                    }
+
+                    log("DIALOG", "ReceiveCardsAndReturn - " + openDialog);
+                    openDialog = EDialog.PovertyReturn;
+                    DialogService.Open<SelectCardsView>("Trumpfarmut",
+                                                        new SelectCardsView.SelectCardsViewParameters()
+                                                        {
+                                                            Text = "Karten zurückgeben:",
+                                                            Cards = me.Cards,
+                                                            Players = new List<C.Player>() { viewResult.Player },
+                                                            Layout = _layout,
+                                                            SelectionMode = true
+                                                        }.ToDict());
+                    break;
+
+                case EDialog.PovertyReturn:
+
+                    viewResult = result as SelectCardsView.SelectCardsViewResult;
+
+                    if (viewResult == null)
+                    {
+                        log("PovertyReturn", "");
+                        break;
+                    }
+
+                    log("PovertyReturn", $"{string.Join(".", viewResult.Cards.Select(c => c.ToCode()))} to {viewResult.Player.NameLabel}");
+                    _client.GiveCardsToPlayer(viewResult.Player.No, viewResult.Cards, false);
+                    break;
+
+                default:
+                    log("DIALOG", "default - " + openDialog);
+                    break;
+            }
+            
         }
     }
 }

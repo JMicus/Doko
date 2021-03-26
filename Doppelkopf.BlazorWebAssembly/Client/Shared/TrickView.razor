@@ -202,9 +202,9 @@
     //max-width: @(((_ch + _gap - _whGap) * 2 + _cw) + "px");
     //        max-height: @((int.Parse(Layout["cardHeight"]) + _gap* 2) + "px");
 
-    public void Refresh(string code)
+    public void Refresh(C.Trick trick)
     {
-        Trick = new C.Trick(code);
+        Trick = trick;
         for (int i = 1; i <= 4; i++)
         {
             _cardViews[i - 1].Refresh(Trick[positionPlayer(i)]);

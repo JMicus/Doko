@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Doppelkopf.Core.App.Enums.Symbol;
 
 namespace Doppelkopf.Core.App
 {
@@ -32,10 +33,6 @@ namespace Doppelkopf.Core.App
         public Game()
         {
             Player = new PlayerHolder(Rules);
-            foreach (var p in Player)
-            {
-                p.OnMessagesChanged += () => OnMessagesChanged(this);
-            }
         }
 
 
@@ -84,7 +81,7 @@ namespace Doppelkopf.Core.App
             if (player != null)
             {
                 History.DealCount[player.No]++;
-                player.Symbols.Add(("dealSymbol", player.Name + " hat als letztes gegeben"));
+                player.Symbols.Add(new Symbol(ESymbol.dealer));
             }
 
             return true;
@@ -98,10 +95,8 @@ namespace Doppelkopf.Core.App
             }
         }
 
-        public bool PutCard(string playerNo, string card)
+        public bool PutCard(Player player, Card card)
         {
-            var player = Player[playerNo];
-            
             if (Trick[player].Name.HasValue)
             {
                 return false;
@@ -136,10 +131,8 @@ namespace Doppelkopf.Core.App
             return true;
         }
 
-        public bool TakeTrick(string playerNo)
+        public bool TakeTrick(Player player)
         {
-            var player = Player[playerNo];
-
             if (!Trick.Complete)
             {
                 return false;
@@ -170,11 +163,11 @@ namespace Doppelkopf.Core.App
             return true;
         }
 
-        public void CardToCenter(string playerNo, string card)
-        {
-            var player = Player[playerNo];
-            Center.Add(player.PutCard(card));
-        }
+        //public void CardToCenter(string playerNo, string card)
+        //{
+        //    var player = Player[playerNo];
+        //    Center.Add(player.PutCard(card));
+        //}
 
         public void CardFromCenter(string playerNo, string card)
         {
@@ -183,18 +176,11 @@ namespace Doppelkopf.Core.App
             SortHandCards();
         }
 
-        private void clearSymbols(string symbol = "")
+        private void clearSymbols()
         {
             foreach (var p in Player)
             {
-                if (symbol != "")
-                {
-                    p.Symbols.RemoveAll(s => s.Item1 == symbol);
-                }
-                else
-                {
-                    p.Symbols.Clear();
-                }
+                p.Symbols.Clear();
             }
         }
 

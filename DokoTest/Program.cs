@@ -1,4 +1,4 @@
-﻿using Doppelkopf.App.Enums;
+﻿using Doppelkopf.Core.App.Enums;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

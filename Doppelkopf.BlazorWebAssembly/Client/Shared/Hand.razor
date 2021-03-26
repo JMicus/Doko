@@ -3,19 +3,19 @@
 
 <div class="frow frow-1">
 
-    <div class="frow frow-1" style="max-width: @((int.Parse(Layout["cardWidth"]) * (Cards.Count - 1)) + "px"); margin: auto">
+    <div class="frow frow-1" style="max-width: @((int.Parse(Layout["cardWidth"]) * (Cards.Count - 1)) + "px"); margin: auto; height: 100%">
 
         @for (int i = 0; i < Cards.Count; i++)
         {
 
-            <Card 
+            <Card @ref=@CardRef
                   CardObj=@Cards[i]
                   Layout=@Layout
                   AbsolutPosition=@true
                   Left=@((i * 100f / (Cards.Count - 1)).ToString().Replace(',', '.') + "%")
-                  Top=@((int.Parse(Layout["cardHeight"]) / -2) + "px")
+                  Top="0px"
                   ZIndex=@(100 + i)
-                  Hover=true
+                  Hover=@CardHover
                   SelectionMode=@SelectionMode
                   OnClick=@((C.Card c)  => OnClick.InvokeAsync(c)) />
         }
@@ -38,15 +38,28 @@
     public EventCallback<C.Card> OnClick { get; set; }
 
     [Parameter]
-    public bool SelectionMode { get; set; }
+    public bool SelectionMode { get; set; } = false;
 
-    private Card[] _cardViews;
+    [Parameter]
+    public bool CardHover { get; set; } = true;
+
+    public List<C.Card> SelectedCards => _cardViews.Where(cv => cv.IsSelected).Select(cv => cv.CardObj).ToList();
+
+    private List<Card> _cardViews = new List<Card>();
+
+    private Card CardRef
+    {
+        set
+        {
+            _cardViews.Add(value);
+        }
+    }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-
-        _cardViews = new Card[Cards.Count];
+        Console.WriteLine("Hand param set: Hover " + CardHover);
+        StateHasChanged();
     }
 
     public void Refresh()

@@ -1,0 +1,111 @@
+﻿@using C = Doppelkopf.Core.App;
+@using Radzen;
+
+@inject DialogService dialogService;
+
+<div class="fcol">
+    <h5>@Params.Text</h5>
+
+    @if (Params.Players != null && Params.Players.Count > 1)
+    {
+
+        <RadzenDropDown @bind-Value=@_selectedPlayer
+                        Placeholder="Spieler*in wählen"
+                        AllowClear="false"
+                        TValue="C.Player"
+                        Data=@Params.Players>
+            <Template>
+                @((context as C.Player).Name)
+            </Template>
+        </RadzenDropDown>
+    }
+
+    <div style="background: green; padding: 30px">
+
+        <Hand @ref=@_handView
+              Cards=@Params.Cards
+              Layout=@Params.Layout
+              SelectionMode=@Params.SelectionMode
+              CardHover=@(Params.SelectionMode)/>
+
+    </div>
+
+    <div class="frow" Style="margin-top: 20px">
+        <RadzenButton Click="@((args) => dialogService.Close(new SelectCardsViewResult(_selectedPlayer ?? Params.Players.FirstOrDefault(), _handView.SelectedCards)))" Text="OK" Style="width: 150px" />
+        @if (Params.SelectionMode)
+        {
+            <RadzenButton Click="@((args) => dialogService.Close(null))" ButtonStyle="ButtonStyle.Secondary" Text="Abbrechen" Style="width: 150px" />
+
+        }
+    </div>
+
+</div>
+
+@code {
+
+    public class SelectCardsViewParameters
+    {
+        public List<C.Card> Cards { get; set; }
+
+        public C.Layout Layout { get; set; }
+
+        public List<C.Player> Players { get; set; }
+
+        public bool SelectionMode { get; set; }
+
+        public string Text { get; set; }
+
+        public Dictionary<string, object> ToDict()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "Params",
+                    this
+                }
+            };
+        }
+    }
+
+    public class SelectCardsViewResult
+    {
+        public List<C.Card> Cards { get; set; }
+
+        public C.Player Player { get; set; }
+
+        public SelectCardsViewResult(C.Player p, List<C.Card> c)
+        {
+            Player = p;
+            Cards = c;
+        }
+    }
+
+    [Parameter]
+    public SelectCardsViewParameters Params { get; set; }
+
+    /*[Parameter]
+    public List<C.Card> Cards { get; set; }
+
+    [Parameter]
+    public C.Layout Layout { get; set; }
+
+    [Parameter]
+    public List<C.Player> Players { get; set; }*/
+
+    private C.Player _selectedPlayer { get; set; }
+
+    private Hand _handView;
+
+    private RadzenDropDown<C.Player> _dropDown;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        
+    }
+}

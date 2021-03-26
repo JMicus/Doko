@@ -1,4 +1,5 @@
 ﻿using Doppelkopf.Core.App.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -39,19 +40,27 @@ namespace Doppelkopf.Core.App
         /// <summary>
         /// Two chars name related to <see cref="ECard"/>
         /// </summary>
+        [JsonIgnore]
         public string NameCode => NameCodeOf(Name.Value);
 
+        [JsonIgnore]
         public string FileName => Name == null ? "c0" : NameCode + No;
 
+        [JsonIgnore]
         public bool IsTrumpf => IsDame || IsBube || IsKaro || Name == ECard.H1;
+        [JsonIgnore]
         public bool IsDame => ToCode()[1] == 'd';
+        [JsonIgnore]
         public bool IsBube => ToCode()[1] == 'b';
+        [JsonIgnore]
         public bool IsKaro => ToCode()[0] == 'c' && !IsDame && !IsBube;
 
+        [JsonIgnore]
         public bool IsTrumpfKaro => IsTrumpf && IsKaro;
 
         public EColor Color;
 
+        [JsonIgnore]
         public string ColorChar
         {
             get
@@ -111,6 +120,13 @@ namespace Doppelkopf.Core.App
                 No = int.Parse(code[2].ToString());
                 ColorChar = code[3].ToString();
             }
+        }
+
+        public Card(Card card)
+        {
+            Name = card.Name;
+            No = card.No;
+            ColorChar = card.ColorChar;
         }
 
         public Card() { }

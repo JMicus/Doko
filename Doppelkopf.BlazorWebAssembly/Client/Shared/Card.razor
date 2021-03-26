@@ -1,7 +1,7 @@
 ﻿@using C = Doppelkopf.Core.App;
 @using Newtonsoft.Json
 
-<div class=@_class>
+<div class=@_class style=@($"height: {int.Parse(Layout["cardHeight"]) + (SelectionMode ? 40 : 0) + 10}px; /*padding-top: {(SelectionMode ? 40 : 0)}px; {(SelectionMode ? "margin-top: 60px" : "")}*/") >
 
     <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(_style) @onclick=@(() =>
                                                                                {
@@ -10,11 +10,6 @@
                                                                                }) />
 </div>
 
-@if (SelectionMode)
-            {
-                <div style=@($"height: {(int.Parse(Layout["cardHeight"]) + 40) * RelativeSize}px")>
-                    </div>
-            } 
 
 @*<p>@CardObj.ToCode()</p>*@
 
@@ -71,6 +66,8 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+
+        Console.WriteLine("Card param set: Hover " + Hover);
 
         if (Hover == false)
         {
@@ -149,9 +146,9 @@
         if (CardObj.FileName != card.FileName)
         {
             CardObj = card;
+            StateHasChanged();
         }
         //Trick = new C.Trick(code);
-        StateHasChanged();
     }
 
 }

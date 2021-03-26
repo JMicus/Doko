@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,19 +11,20 @@ namespace Doppelkopf.Core.App
         public event Action OnChanged;
 
         public Player StartPlayer;
+        
         public Player WonPlayer;
 
-        public Card[] _cards { get; private set; } = new Card[4];
+        public Card[] Cards { get; set; } = new Card[4];
 
         public Card this[int i]
         {
             get
             {
-                return _cards[i - 1] ?? new Card();
+                return Cards[i - 1] ?? new Card();
             }
             set
             {
-                _cards[i - 1] = value;
+                Cards[i - 1] = value;
             }
         }
 
@@ -40,7 +42,7 @@ namespace Doppelkopf.Core.App
 
         public List<Card> ToList()
         {
-            return new List<Card>(_cards);
+            return new List<Card>(Cards);
         }
 
         public void SetCard(Player player, Card card)
@@ -50,23 +52,40 @@ namespace Doppelkopf.Core.App
 
         public Card TakeCard(Player player)
         {
-            var card = _cards[player.No - 1];
-            _cards[player.No - 1] = null;
+            var card = Cards[player.No - 1];
+            Cards[player.No - 1] = null;
             return card;
         }
 
         public void SetCard(int player, Card card)
         {
-            _cards[player - 1] = card;
+            Cards[player - 1] = card;
         }
 
+        [JsonIgnore]
         public bool Empty
         {
             get
             {
-                foreach (var c in _cards)
+                foreach (var c in Cards)
                 {
                     if (c?.Name != null)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        [JsonIgnore]
+        public bool Complete
+        {
+            get
+            {
+                foreach (var c in Cards)
+                {
+                    if (c?.Name == null)
                     {
                         return false;
                     }
@@ -87,31 +106,16 @@ namespace Doppelkopf.Core.App
 
         public void Clear()
         {
-            _cards = new Card[4];
-        }
-
-        public bool Complete
-        {
-            get
-            {
-                foreach (var c in _cards)
-                {
-                    if (c?.Name == null)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
+            Cards = new Card[4];
         }
 
         public void FromCode(string code)
         {
-            _cards = new Card[4];
+            Cards = new Card[4];
             int i = 0;
             foreach (var cardCode in code.Split('.'))
             {
-                _cards[i++] = new Card(cardCode);
+                Cards[i++] = new Card(cardCode);
             }
 
             OnChanged?.Invoke();
@@ -119,7 +123,7 @@ namespace Doppelkopf.Core.App
 
         public string ToCode()
         {
-            return $"{code(_cards[0])}.{code(_cards[1])}.{code(_cards[2])}.{code(_cards[3])}"; 
+            return $"{code(Cards[0])}.{code(Cards[1])}.{code(Cards[2])}.{code(Cards[3])}"; 
         }
 
         public override string ToString()
@@ -137,7 +141,7 @@ namespace Doppelkopf.Core.App
             var trick = new Trick();
             for (int i = 1; i <= 4; i++)
             {
-                trick.SetCard(i, src[i]);
+                trick.SetCard(i, new Card(src[i]));
             }
             trick.StartPlayer = src.StartPlayer;
             return trick;

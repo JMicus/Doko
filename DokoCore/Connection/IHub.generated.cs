@@ -10,25 +10,33 @@ namespace Doppelkopf.Core.Connection
     public interface IHub
     {
         
-        Task Init(string gameName, string playerNo, string playerName);
+        Task AddSymbol(string gameName, string playerNo, string playerOfSymbol, string symbolCT);
 
-        Task SayHello(string gameName, string playerNo, string playerToken);
+        Task ChangeCardOrder(string gameName, string playerNo, string cardOrderE);
 
-        Task PlayerMsg(string gameName, string playerNo, string msg);
+        Task Deal(string gameName, string playerNo, string force);
 
-        Task PutCard(string gameName, string playerNo, string cardCode);
+        Task Debug(string gameName, string playerNo, string tag);
 
-        Task TakeTrick(string gameName, string playerNo);
+        Task GiveCardsToPlayer(string gameName, string playerNo, string receivingPlayerNo, string cardsCT, string cardsBack);
+
+        Task Init(string newGameName, string myPlayerNo, string myPlayerName);
 
         Task LastTrickBack(string gameName, string playerNo);
 
+        Task PlayerMsg(string gameName, string playerNo, string msg);
+
+        Task PutCard(string gameName, string playerNo, string cardCT);
+
+        Task SayHello(string gameName, string playerNo, string playerToken);
+
+        Task SetExternalPage(string gameName, string playerNo, string url);
+
+        Task SetRules(string gameName, string playerNo, string rulesCT);
+
         Task TakeCardBack(string gameName, string playerNo);
 
-        Task Deal(string gameName, string playerNo, bool force);
-
-        Task GiveCardsToPlayer(string gameName, string playerNo, string receivingPlayerNo, string cardsCT);
-
-        Task ChangeCardOrder(string gameName, string playerNo, string cardOrderE);
+        Task TakeTrick(string gameName, string playerNo);
 
 
     }

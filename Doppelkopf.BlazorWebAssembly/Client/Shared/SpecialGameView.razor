@@ -8,7 +8,11 @@
 
     @foreach (var button in _buttonList)
     {
-        <RadzenButton Click="@((args) => dialogService.Close(button.Type))" Text=@button.Type.GetText() Style=@($"width: 300px; margin-top: {button.TopSpace + 10}px") />
+        <RadzenButton Click="@((args) =>
+                               {
+                                   Console.WriteLine("Click: " + button.Type.ToString());
+                                   dialogService.Close(button.Type);
+                               })" Text=@button.Type.GetText() Style=@($"width: 300px; margin-top: {button.TopSpace + 10}px") />
 
     }
 </div>

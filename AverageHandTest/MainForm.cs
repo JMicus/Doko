@@ -1,6 +1,6 @@
 ﻿using AverageHandTest.UI;
-using Doppelkopf.App.Enums;
 using Doppelkopf.Core.App;
+using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

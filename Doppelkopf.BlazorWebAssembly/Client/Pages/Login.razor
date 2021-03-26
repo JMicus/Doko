@@ -56,11 +56,14 @@
 
         client.OnInitialized += OnInitialized;
 
+        var playerNoInt = 0;
+        int.TryParse(playerNo, out playerNoInt);
+
         Console.WriteLine("init " + playerNo + " " + playerName);
-        client.Init(playerName);
+        client.Init(gameName, playerNoInt, playerName);
     }
 
-    void OnInitialized(string gameName, string playerNo, string playerToken)
+    void OnInitialized(string gameName, int playerNo, string playerToken)
     {
         NavManager.NavigateTo($"/game?game={gameName}&player={playerNo}&name={playerName}&token={playerToken}");
     }

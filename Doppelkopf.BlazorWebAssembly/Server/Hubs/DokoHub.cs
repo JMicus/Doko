@@ -9,16 +9,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Doppelkopf.Core;
 using Newtonsoft.Json;
+using Doppelkopf.Core.Connection;
 
 namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 {
-    public class DokoHub : Hub, Core.Connection.IHub
+    public class DokoHub : AbstractHubBase
     {
         public static string testgame = "Doko";
 
-        public static List<C.Game> Games = new List<C.Game>();
-
-        private IHubContext<DokoHub> hubContext;
+         
 
         public DokoHub() : base() {
             //Console.WriteLine(GetHttpContextExtensions.GetHttpContext(this.Context).s)
@@ -42,21 +41,26 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
                 game.Deal();
 
-                for (int i = 1; i <= 4; i++)
-                {
-                    var player = game.Player[i];
+                //for (int i = 1; i <= 4; i++)
+                //{
+                //    var player = game.Player[i];
 
-                    // put card
-                    game.PutCard(i.ToString(), player.Cards.First().ToCode());
+                //    // put card
+                //    game.PutCard(player, player.Cards.First());
 
-                    // messages
-                    //_ = player.AddMessage("my name is " + player.Name);
-                    //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
-                }
+                //    // messages
+                //    //_ = player.AddMessage("my name is " + player.Name);
+                //    //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
+                //}
 
             }
 
             
+        }
+
+        protected override async Task Debug(C.Game game, C.Player player, string tag)
+        {
+            await GiveCardsToPlayer(game, game.Player[2], 1, game.Player[2].Cards.Take(3).ToList(), true);
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
@@ -69,7 +73,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     if (player.ConnectionIds.RemoveAll(cid => cid == Context.ConnectionId) > 0)
                     {
                         Console.WriteLine("HUB DISCONNECT " + player.Name);
-                        _ = sendPlayerJoined(game, player);
+                        _ = SendPlayerJoined(game, player.No, player.Name);
                     }
                 }
             }
@@ -84,15 +88,11 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
 
         // Client Methods //////////////////////
-        public async Task SendMessage(string user, string message)
-        {
-            await Clients.All.SendAsync("Test", user, message);
-        }
 
-        public async Task Init(string gameName, string playerNo, string playerName)
+        protected override async Task Init(string gameName, int playerNo, string playerName)
         {
             Console.WriteLine($"HUB Init {playerNo} {playerName}");
-            C.Game game = GetGame(gameName);
+            var game = getGame(gameName);
 
             // create game if not existing
             if (game == null)
@@ -102,7 +102,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     Name = gameName
                 };
                 Games.Add(game);
-                await sendInfo(game, $"Game created: {gameName}");
+                await SendInfo(game, $"Game created: {gameName}");
             }
 
             // find playerNo if not set
@@ -110,21 +110,21 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             var nos = new int[]{ 1, 2, 3, 4 };
             var rand = new Random();
             nos = nos.OrderBy(x => rand.Next()).ToArray();
-            while (Int32.TryParse(playerNo, out int _) == false && pNo < 4)
+            while (playerNo == 0 && pNo < 4)
             {
                 if (string.IsNullOrEmpty(game.Player[nos[pNo]].Name))
                 {
-                    playerNo = nos[pNo].ToString();
+                    playerNo = nos[pNo];
                 }
                 if (game.Player[nos[pNo]].ConnectionIds.Count == 0)
                 {
-                    playerNo = nos[pNo].ToString();
+                    playerNo = nos[pNo];
                 }
                 pNo++;
             }
-            if (Int32.TryParse(playerNo, out int _) == false)
+            if (playerNo == 0)
             {
-                playerNo = game.Player.OrderBy(x => x.InitDateTime).First().No.ToString();
+                playerNo = game.Player.OrderBy(x => x.InitDateTime).First().No;
             }
 
             // create player if not existing
@@ -132,66 +132,66 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
             if (player.IsInitialized && player.ConnectionIds.Any())
             {
-                await Clients.Caller.SendAsync("Initialized", game.Name, playerNo, "");
+                await SendInitialized(game, game.Name, playerNo, "");
             }
             else
             {
                 player.Init(playerName);
-                await Clients.Caller.SendAsync("Initialized", game.Name, playerNo, player.Token);
+                await SendInitializedToCaller(game.Name, playerNo, player.Token);
             }
         }
 
-        public async Task SayHello(string gameName, string playerNo, string playerToken)
+        protected override async Task SayHello(C.Game game, C.Player player, string playerToken)
         {
-            Console.WriteLine($"HUB SayHello {playerNo}");
-            C.Game game = GetGame(gameName);
+            Console.WriteLine($"HUB SayHello {player?.No}");
 
             if (game == null)
             {
-                await Clients.Caller.SendAsync("Info", $"Es existiert kein Spiel mit dem Namen \"{gameName}\"");
+                await SendInfoToCaller("Es existiert kein solches Spiel.");
                 return;
             }
-
-            C.Player player = game.Player[playerNo];
 
             if (player.Token != playerToken)
             {
-                await Clients.Caller.SendAsync("Unauthorized", gameName, playerNo, player.Name);
+                await SendUnauthorizedToCaller(game.Name, player.No, player.Name);
                 return;
             }
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, gameName);
+            //await Groups.AddToGroupAsync(Context.ConnectionId, gameName);
 
             player.ConnectionIds.Add(Context.ConnectionId);
 
             Console.WriteLine("HUB SayHello conns: " + string.Join(", ", game.Player.Select(p => p.No + " " + string.Join(" ", p.ConnectionIds))));
 
-            await sendInfo(game, player.Name + " ist dem Spiel beigetreten.");
+            await SendInfo(game, player.Name + " ist dem Spiel beigetreten.");
 
-            await sendPlayerJoined(game, player);
+            await SendPlayerJoined(game, player.No, player.Name);
 
+            foreach (var p in game.Player)
+            {
+                await SendPlayerJoined(player, p.No, p.Name);
+            }
             //await Clients.Group(gameName).SendAsync("PlayerJoined", playerNo, player.Name);
 
-            await sendLayout(game);
+            await SendLayout(player, game.Layout);
 
             // current state to new client
-            await sendPlayerJoined(game, null, player);
             
             if (!game.Trick.Empty)
             {
-                await sendTrick(game, player);
+                await SendTrick(player, game.Trick);
             }
             if (!game.LastTrick.Empty)
             {
-                await sendLastTrick(game, player);
+                await SendLastTrick(player, game.Trick);
             }
             if (player.Cards.Count > 0)
             {
-                await sendHand(player);
+                await SendHand(player, player.Cards);
             }
             if (!string.IsNullOrEmpty(game.ExternalPage))
             {
-                await sendExternalPage(game, player);
+                await SendExternalPage(player, game.ExternalPage);
             }
             await sendSymbols(game);
 
@@ -200,68 +200,58 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 await sendMessages(game);
             }
 
-            await sendRules(game, player);
+            await SendRules(player, game.Rules);
 
-            await sendCenter(game);
-
-            await sendStats(game);
+           //TODO await SendStatistics(player, game.Stats);
 
             //await sendLayout(game);
         }
 
         //public static async Task SayHelloStatic(string gameName, string playerNo, string playerName) { }
 
-        public async Task Deal(string gameName, string playerNo, bool force = false)
+        protected override async Task Deal(C.Game game, C.Player player, bool force = false)
         {
-            C.Game game = GetGame(gameName);
-            
-            if (game.Deal(game.Player[playerNo], force))
+            if (game.Deal(player, force))
             {
-                await sendHand(game);
-                await sendTrick(game);
-                await sendLastTrick(game);
+                await sendHandToAll(game);
+                await SendTrick(game, game.Trick);
+                await SendLastTrick(game, game.Trick);
                 await sendSymbols(game);
-                await sendCenter(game, true);
-                await sendStats(game);
+                // TODO await sendStats(game);
             }
             else
             {
-                await Clients.Caller.SendAsync("DealQuestion");
+                await SendDealQuestion(player);
             }
 
             
         }
 
-        public async Task PutCard(string gameName, string playerNo, string card)
+        protected override async Task PutCard(C.Game game, C.Player player, C.Card card)
         {
-            var game = GetGame(gameName);
-
             try
             {
                 // try take trick first
                 //bool deleyTrickUpdate = false;
                 if (game.Trick.Complete)
                 {
-                    await TakeTrick(gameName, playerNo);
+                    game.TakeTrick(player);
                     //deleyTrickUpdate = true;
                 }
 
                 // put card
-                if (game.PutCard(playerNo, card))
+                if (game.PutCard(player, card))
                 {
-                    var player = game.Player[playerNo];
-
-                    if (false && testgame == gameName)
+                    if (false && testgame == game.Name)
                     {
                         foreach (var p in game.Player.Where(p => p.No != player.No))
                         {
-                            game.PutCard(p.No.ToString(), p.Cards.FirstOrDefault()?.ToCode());
+                            game.PutCard(p, p.Cards.FirstOrDefault());
                         }
                     }
 
-
-                    await sendTrick(game);
-                    await sendHand(player);
+                    await SendTrick(game, game.Trick);
+                    await SendHand(player, player.Cards);
 
 
 
@@ -275,137 +265,107 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             }
             catch (DokoException e)
             {
-                await sendInfo(game, $"Player {playerNo} put card {card} -> ERROR\n{e.Message}");
+                await SendInfo(game, $"Player {player?.No} put card {card} -> ERROR\n{e.Message}");
             }
         }
 
-        public async Task TakeCardBack(string gameName, string playerNo)
+        protected override async Task TakeCardBack(C.Game game, C.Player player)
         {
-            var game = GetGame(gameName);
-
             try
             {
-                var player = game.Player[playerNo];
-                
                 if (game.TakeCardBack(player))
                 {
-                    await sendHand(player);
-                    await sendTrick(game);
+                    await SendHand(player, player.Cards);
+                    await SendTrick(game, game.Trick);
                     //sendInfo(gameName, $"{game.Trick.StartPlayer.N} - {game.Trick.ToCode()}");
 
                 }
             }
             catch (DokoException e)
             {
-                await sendInfo(game, $"Player {playerNo} takes card back -> ERROR\n{e.Message}");
+                await SendInfo(game, $"Player {player?.No} takes card back -> ERROR\n{e.Message}");
             }
         }
 
-        public async Task TakeTrick(string gameName, string player)
+        protected override async Task TakeTrick(C.Game game, C.Player player)
         {
-            await takeTrick(gameName, player);
-        }
-
-        private async Task takeTrick(string gameName, string player, bool noUpdateForPlayer = false)
-        {
-            var game = GetGame(gameName);
-
             try
             {
                 if (game.TakeTrick(player))
                 {
-                    if (noUpdateForPlayer)
-                    {
-                        await sendTrick(game, game.Player[player], true);
-                    }
-                    else
-                    {
-                        await sendTrick(game); 
-                    }
-                    await sendLastTrick(game);
-                    await sendInfo(game, $"{game.Player[player].Name} nimmt den Stich.");
+                    await SendTrick(player, game.Trick);
+                    await SendLastTrick(player, game.LastTrick);
                     await sendSymbols(game);
+                    await SendInfo(game, $"{player.Name} nimmt den Stich.");
                 }
                 else
                 {
-                    await sendInfo(game, "Der Stich ist nicht vollständig", game.Player[player]);
+                    await SendInfo(player, "Der Stich ist nicht vollständig");
                 }
             }
             catch (Exception e)
             {
-                await sendInfo(game, $"{game.Player[player].Name} takes the trick -> ERROR\n{e.Message}");
+                await SendInfo(game, $"{player?.Name} takes the trick -> ERROR\n{e.Message}");
             }
 
             // game ends
             if (game.Player.Count(x => x.Cards.Count > 0) == 0 && game.Trick.Empty)
             {
-                await sendPoints(game);
+                await SendPoints(game, new C.Points(game.Player));
             }
         }
 
-        public async Task ChangeCardOrder(string gameName, string playerNo, string orderNameE)
+        protected override async Task ChangeCardOrder(C.Game game, C.Player player, C.Enums.EGameType eGameType)
         {
-            var game = GetGame(gameName);
-
             try
             {
-                game.Rules.Order = C.Enums.CardOrder.OrderByGameType(C.Enums.Parsenum.S2E<C.Enums.EGameType>(orderNameE));
+                game.Rules.Order = C.Enums.CardOrder.OrderByGameType(eGameType);
                 game.SortHandCards();
-                await sendHand(game);
+                await SendHand(game, player.Cards);
             }
             catch (Exception ex)
             {
-                await sendInfo(game, $"CardOrder: {orderNameE} -> ERROR\n{ex.Message}");
+                await SendInfo(game, $"CardOrder: {eGameType} -> ERROR\n{ex.Message}");
             }
         }
 
-        public async Task SetExternalPage(string gameName, string link)
+        protected override async Task SetExternalPage(C.Game game, C.Player player, string url)
         {
-            var game = GetGame(gameName);
-            game.ExternalPage = link;
-
-            await sendExternalPage(game);
+            game.ExternalPage = url;
+            await SendExternalPage(game, url);
         }
 
-        public async Task LastTrickBack(string gameName, string playerNo)
+        protected override async Task LastTrickBack(C.Game game, C.Player player)
         {
-            var game = GetGame(gameName);
-
             if (game.LastTrickBack())
             {
-                await sendTrick(game);
-                await sendLastTrick(game);
+                await SendTrick(game, game.Trick);
+                await SendLastTrick(game, game.LastTrick);
                 await sendSymbols(game);
             }
         }
 
-        public async Task GiveCardToPlayer(string gameName, string playerNo, string cardCode, string targetPlayerNo)
-        {
-            var game = GetGame(gameName);
 
-            var player = game.Player[playerNo];
-            var targetPlayer = game.Player[targetPlayerNo];
-            var card = player.Cards.Where(x => x.ToCode() == cardCode).FirstOrDefault();
-            player.Cards.Remove(card);
-            targetPlayer.Cards.Add(card);
+        protected override async Task GiveCardsToPlayer(C.Game game, C.Player player, int receivingPlayerNo, List<C.Card> cards, bool cardsBack)
+        {
+            var toPlayer = game.Player[receivingPlayerNo];
+
+            foreach (var cardx in cards)
+            {
+                var card = player.Cards.Where(x => x.ToCode() == cardx.ToCode()).FirstOrDefault();
+                player.Cards.Remove(card);
+                toPlayer.Cards.Add(card);
+            }
+
             game.SortHandCards();
 
-            await sendHand(player);
-            await sendHand(targetPlayer);
+            await SendHand(player, player.Cards);
+            await SendHand(toPlayer, toPlayer.Cards);
+            await SendCardsFromPlayer(toPlayer, player, cards, cardsBack);
         }
 
-
-        public Task GiveCardsToPlayer(string gameName, string playerNo, string receivingPlayerNo, string cardsCT)
+        protected override async Task PlayerMsg(C.Game game, C.Player player, string msg)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task PlayerMsg(string gameName, string playerNo, string msg)
-        {
-            var game = GetGame(gameName);
-            var player = game.Player[playerNo];
-
-
             // command
             if (msg.StartsWith("cmd."))
             {
@@ -444,10 +404,10 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
                 if (refreshLayout)
                 {
-                    await sendLayout(game);
-                    await sendHand(game);
-                    await sendTrick(game);
-                    await sendLastTrick(game);
+                    await SendLayout(game, game.Layout);
+                    await SendHand(game, player.Cards);
+                    await SendTrick(player, game.Trick);
+                    await SendLastTrick(player, game.LastTrick);
                 }
 
                 return;
@@ -459,244 +419,47 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             await sendMessages(game);
         }
 
-        public async Task SetRules(string gameName, string rulesCode)
+        protected override async Task SetRules(C.Game game, C.Player player, C.Rules rules)
         {
-            var game = GetGame(gameName);
+            game.Rules = rules;
 
-            game.Rules.FromCode(rulesCode);
-
-            await sendRules(game);
+            await SendRules(game, game.Rules);
         }
 
-        public async Task AddSymbol(string gameName, string playerNo, string symbol, string hint)
+        protected override async Task AddSymbol(C.Game game, C.Player player, int playerOfSymbolNo, C.Enums.Symbol symbol)
         {
-            var game = GetGame(gameName);
-            var player = game.Player[playerNo];
+            var symbolPlayer = game.Player[playerOfSymbolNo];
 
-            if (symbol == "clear")
+            if (false) // TODO
             {
-                player.Symbols.RemoveAll(s => s.Item1 != "dealSymbol" && !s.Item1.StartsWith("deckCount"));
+                //player.Symbols.RemoveAll(s => s.Item1 != "dealSymbol" && !s.Item1.StartsWith("deckCount"));
             }
             else
             {
-                player.Symbols.Add((symbol, hint));
+                symbolPlayer.Symbols.Add(symbol);
             }
 
             await sendSymbols(game);
         }
 
-        public async Task CardToCenter(string gameName, string playerNo, string card)
-        {
-            var game = GetGame(gameName);
-
-            game.CardToCenter(playerNo, card);
-
-            await sendHand(game.Player[playerNo]);
-            await sendCenter(game);
-        }
-
-        public async Task CardFromCenter(string gameName, string playerNo, string card)
-        {
-            var game = GetGame(gameName);
-
-            game.CardFromCenter(playerNo, card);
-
-            await sendHand(game.Player[playerNo]);
-            await sendCenter(game, true);
-        }
-
         // SEND HELPER
-        private async Task sendPlayerJoined(C.Game game, C.Player player = null, C.Player receivingPlayer = null)
+
+        private async Task sendHandToAll(C.Game game)
         {
-            var playerToSend = new List<C.Player>();
-
-            if (player == null)
+            foreach (var player in game.Player)
             {
-                playerToSend.AddRange(game.Player.ToList());
-            }
-            else
-            {
-                playerToSend.Add(player);
-            }
-
-            foreach (var p in playerToSend)
-            {
-                if (receivingPlayer == null)
-                {
-                    await sendToAll(game, "PlayerJoined", p.No, p.NameLabel);
-                }
-                else
-                {
-                    await sendToPlayer(receivingPlayer, "PlayerJoined", p.No, p.NameLabel);
-                }
-            }
-        }
-
-        private async Task sendTrick(C.Game game, C.Player player = null, bool sendToAllExceptPlayer = false)
-        {
-            if (player == null)
-            {
-                await sendToAll(game, "Trick", game.Trick.StartPlayer?.No ?? 1, game.Trick.ToCode());
-            }
-            else if (sendToAllExceptPlayer == false)
-            {
-                await sendToPlayer(player, "Trick", game.Trick.StartPlayer?.No ?? 1, game.Trick.ToCode());
-            }
-            else
-            {
-                foreach (var p in game.Player.AllExcept(player))
-                {
-                    await sendToPlayer(p, "Trick", game.Trick.StartPlayer?.No ?? 1, game.Trick.ToCode());
-                }
-            }
-            await sendMessages(game);
-        }
-
-        private async Task sendLastTrick(C.Game game, C.Player player = null)
-        {
-            Console.WriteLine("HUB send last trick;");
-            if (player == null)
-            {
-                await sendToAll(game, "LastTrick", game.LastTrick.StartPlayer?.No ?? 1, game.LastTrick.ToCode());
-            }
-            else
-            {
-                await sendToPlayer(player, "LastTrick", game.LastTrick.StartPlayer?.No ?? 1, game.LastTrick.ToCode());
-            }
-        }
-
-        private async Task sendHand(C.Player player)
-        {
-            await sendToPlayer(player, "Hand", player.GetHandMsg());
-        }
-
-        private async Task sendHand(C.Game game, C.Player exceptToPlayer = null)
-        {
-            foreach (var player in game.Player.AllExcept(exceptToPlayer))
-            {
-                await sendToPlayer(player, "Hand", player.GetHandMsg());
-            }
-            /*for (int i = 1; i <= 4; i++)
-            {
-                var player = game.Player[i];
-
-                if (exceptToPlayer == null || exceptToPlayer != player)
-                {
-                    
-                }
-            }*/
-        }
-
-        private async Task sendExternalPage(C.Game game, C.Player player = null)
-        {
-            if (player == null)
-            {
-                await sendToAll(game, "ExternalPage", game.ExternalPage);
-            }
-            else
-            {
-                await sendToPlayer(player, "ExternalPage", game.ExternalPage);
+                await SendHand(player, player.Cards);
             }
         }
 
         private async Task sendSymbols(C.Game game)
         {
-            await sendToAll(game, "Symbols", string.Join("###", game.Player.Select(p => string.Join("---", p.Symbols.Select(pair => pair.Item1 + "+" + pair.Item2)))));
+            await SendSymbols(game, game.Player.Select(p => p.Symbols).ToList());
         }
 
         private async Task sendMessages(C.Game game)
         {
-            await sendToAll(game, "Messages", JsonConvert.SerializeObject(game.Player.Select(p => p.Messages).ToList())); //(  string.Join("###", game.Player.Select(p => string.Join("---", p.Messages))));
-        }
-
-        private async Task sendRules(C.Game game, C.Player player = null)
-        {
-            if (player == null)
-            {
-                await sendToAll(game, "Rules", game.Rules.ToCode());
-            }
-            else
-            {
-                await sendToPlayer(player, "Rules", game.Rules.ToCode());
-            }
-        }
-
-        private async Task sendPoints(C.Game game)
-        {
-            await sendToAll(game, "Points", new C.Points(game.Player).ToCode());
-        }
-
-        private async Task sendCenter(C.Game game, bool force = false)
-        {
-            if (force || game.Center.Count > 0)
-            {
-                await sendToAll(game, "Center", game.Center.ToCode());
-            }
-        }
-
-        private async Task sendStats(C.Game game)
-        {
-            await sendToAll(game, "Stat", game.Stats());
-        }
-
-        private async Task sendLayout(C.Game game, string layoutName = null)
-        {
-            if (layoutName != null)
-            {
-                await sendToAll(game, "Layout", layoutName + ":" + game.Layout[layoutName]);
-            }
-            else
-            {
-                await sendToAll(game, "Layout", game.Layout.ToCode());
-            }
-        }
-
-        // HELPER //////////////////////////////////////////
-        private async Task sendInfo(C.Game game, string info, C.Player player = null)
-        {
-            if (player == null)
-            {
-                //await Clients.Group(game).SendAsync("Info", info);
-                await sendToAll(game, "Info", info);
-            }
-            else
-            {
-                await sendToPlayer(player, "info", info);
-            }
-        }
-
-        public static C.Game GetGame(string gameName)
-        {
-            return Games.Where(x => x.Name == gameName).FirstOrDefault();
-        }
-
-        private async Task sendToPlayer(C.Player player, string method, int msg1, string msg2)
-        {
-            await sendToPlayer(player, method, msg1.ToString(), msg2);
-        }
-
-        private async Task sendToAll(C.Game game, string method, object o1, object o2 = null)
-        {
-            foreach (var player in game.Player)
-            {
-                await sendToPlayer(player, method, o1, o2);
-            }
-        }
-
-        private async Task sendToPlayer(C.Player player, string method, object o1, object o2 = null)
-        {
-            foreach (var connectionId in player.ConnectionIds)
-            {   
-                if (method.Contains("Join") )Console.WriteLine("HUB sendToPlayer " + player.No + " " + method + " " + o1 + " " + o2);
-                if (o2 == null)
-                {
-                    await Clients.Client(connectionId).SendAsync(method, o1.ToString());
-                }
-                else
-                {
-                    await Clients.Client(connectionId).SendAsync(method, o1.ToString(), o2.ToString());
-                }
-            }
+            await SendMessages(game, game.Player.Select(p => p.Messages).ToList()); //(  string.Join("###", game.Player.Select(p => string.Join("---", p.Messages))));
         }
     }
 }

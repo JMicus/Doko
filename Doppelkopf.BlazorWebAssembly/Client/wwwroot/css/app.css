@@ -181,6 +181,12 @@ app {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+
+    .lift *:hover {
+        /*position: relative;
+        top: -15px;*/
+        margin-top: 0px;
+    }
 }
 
 p.input {
@@ -226,21 +232,20 @@ p.input {
     /*color: white;*/
 }
 
-.lift {
-    /*margin-top: 8px;*/
+
+.lift * {
+    /*position: relative;
+    top: -15px;*/
+    margin-top: 8px;
 }
 
-    .lift * {
-        /*position: relative;
-        top: -15px;*/
-        margin-top: 8px;
-    }
 
-    .lift *:hover {
-        /*position: relative;
-        top: -15px;*/
-        margin-top: 0px;
-    }
+
+.nolift * {
+    /*position: relative;
+    top: -15px;*/
+    margin-top: 8px;
+}
 
 .RegularButton, .SmallButton, .TinyButton {
     max-width: 60px;

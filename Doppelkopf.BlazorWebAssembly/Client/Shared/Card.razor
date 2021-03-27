@@ -61,7 +61,7 @@
 
     private string _style { get; set; }
 
-    private string _class = "lift";
+    private string _class = "nolift";
 
     protected override void OnParametersSet()
     {
@@ -69,9 +69,9 @@
 
         Console.WriteLine("Card param set: Hover " + Hover);
 
-        if (Hover == false)
+        if (Hover)
         {
-            _class = "";
+            _class = "lift";
         }
 
         //Console.WriteLine(JsonConvert.SerializeObject(this, Formatting.Indented));

@@ -33,7 +33,9 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         [Inject]
         private MenuService MenuService { get; set; }
 
-        #endregion
+        [Inject]
+        private StateService StateService { get; set; }
+                #endregion
 
         #region Basic fields
         private string gameName;
@@ -105,13 +107,12 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             if (!string.IsNullOrEmpty(gameName))
             {
                 JSRuntime.InvokeVoidAsync("MainPage.setMenuTitle", gameName);
-                //JSRuntime.InvokeVoidAsync("MainPage.setMenuTitle", gameName);
             }
 
             DialogService.OnClose += Close;
 
             MenuService.OnClick += onMenuClick;
-            MenuService.InGame = true;
+            StateService.InGame = true;
 
             log("INIT");
         }
@@ -253,20 +254,26 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             _client.PlayerMsg($"Hi, my name is {playerName}");
         }
 
-        private void onMenuClick(MenuClick click)
+        private void onMenuClick(EMenuAction click)
         {
             switch (click)
             {
-                case MenuClick.Deal:
-                    onDealClick(null);
+                case EMenuAction.Deal:
+                    _client.Deal(false);
                     break;
 
-                case MenuClick.SpecialGame:
+                case EMenuAction.SpecialGame:
                     openDialog = EDialog.SpecialGame;
                     DialogService.Open<SpecialGameView>("Sonderspiel");
                     break;
 
-                case MenuClick.Debug:
+                case EMenuAction.LeaveGame:
+                    _client.Dispose();
+                    StateService.InGame = false;
+                    NavManager.NavigateTo("login");
+                    break;
+
+                case EMenuAction.Debug:
                     debug();
                     break;
             }
@@ -285,11 +292,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         private void onTakeTrickBack(object o)
         {
             _client.LastTrickBack();
-        }
-
-        private void onDealClick(object o)
-        {
-            _client.Deal(false);
         }
 
         private void onLastCardBack(object o)

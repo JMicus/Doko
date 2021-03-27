@@ -59,10 +59,17 @@ namespace NAMESPACE
         {
             if (!string.IsNullOrEmpty(debugOutputDir))
             {
-                var extension = param.StartsWith("{") || param.StartsWith("[") ? "json" : "txt";
-                var fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ff")}_{method}_{paramName}.{extension}";
-                var path = Path.Combine(debugOutputDir, fileName);
-                File.WriteAllText(path, param.ToString());
+                try
+                {
+                    var extension = param.StartsWith("{") || param.StartsWith("[") ? "json" : "txt";
+                    var fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ff")}_{method}_{paramName}.{extension}";
+                    var path = Path.Combine(debugOutputDir, fileName);
+                    File.WriteAllText(path, param.ToString());
+                }
+                catch (Exception)
+                {
+                    debugOutputDir = null;
+                }
             }
         }
     }

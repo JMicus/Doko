@@ -1,7 +1,10 @@
 ﻿@using Doppelkopf.BlazorWebAssembly.Client.Services;
+@using Doppelkopf.BlazorWebAssembly.Client.Enums;
 
 @inject MenuService MenuService
-@implements IDisposable 
+@inject StateService stateService
+
+@implements IDisposable
 
 <div class="top-row pl-4 navbar navbar-dark">
     <a id="menuTitle" class="navbar-brand" href="">Doko</a>
@@ -13,32 +16,32 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
 
-        @if (MenuService.InGame)
-        {
+        <li class="nav-item px-3" style="margin-top: 30px; background-color: orangered">
+            <a>TESTVERSION</a>
+            <a class="nav-link" href="http://doko.click" target="_self">
+                <span class="oi oi-loop-circular" aria-hidden="true"></span> Zur alten Version
+            </a>
+        </li>
 
-            <li class="nav-item px-3" @onclick=@(() => MenuService.Click(MenuService.MenuClick.Debug))>
-                <NavLink class="nav-link">
+        @foreach (var item in getItems())
+        {
+            @*<li class="nav-item px-3" @onclick=@(() => MenuService.Click(MenuService.MenuClick.Debug))>
                     <NavLink class="nav-link">
                         <span class="oi oi-star" aria-hidden="true"></span> TEST
                     </NavLink>
-                </NavLink>
-            </li>
+                </li>*@
 
-            <li class="nav-item px-3" @onclick=@(() => MenuService.Click(MenuService.MenuClick.Deal))>
+            <li class="nav-item px-3" @onclick=@(() => MenuService.Click(item.Action)) style=@(item.Space ?  "margin-top: 30px" : "")>
                 <NavLink class="nav-link">
-                    <img src="Images/dealSymbolWhite.png" /> Karten geben
-                </NavLink>
-            </li>
-
-            <li class="nav-item px-3" @onclick=@(() => MenuService.Click(MenuService.MenuClick.SpecialGame))>
-                <NavLink class="nav-link">
-                    <span class="oi oi-star" aria-hidden="true"></span> Sonderspiel
-                </NavLink>
-            </li>
-
-            <li class="nav-item px-3" style="margin-top: 30px">
-                <NavLink class="nav-link" href="login">
-                    <span class="oi oi-account-logout" aria-hidden="true"></span> Spiel verlassen
+                    @if (item.Image.StartsWith("oi-"))
+                    {
+                        <span class=@("oi " + item.Image) aria-hidden="true"></span>
+                    }
+                    else
+                    {
+                        <img src="Images/dealSymbolWhite.png" />
+                    }
+                    @item.Text
                 </NavLink>
             </li>
         }
@@ -46,6 +49,22 @@
 </div>
 
 @code {
+    private class Entry
+    {
+        internal EMenuAction Action;
+        internal string Text;
+        internal string Image;
+        internal bool Space;
+
+        internal Entry(string text, string image, EMenuAction action, bool space = false)
+        {
+            Text = text;
+            Image = image;
+            Action = action;
+            Space = space;
+        }
+    }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -55,13 +74,35 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
+    private List<Entry> getItems()
+    {
+        var items = new List<Entry>();
+
+        if (stateService.InGame)
+        {
+            items.Add(new Entry("TEST", "oi-star", EMenuAction.Debug));
+            items.Add(new Entry("Karten geben", "dealSymbolWhite", EMenuAction.Deal));
+            items.Add(new Entry("Sonderspiel", "oi-star", EMenuAction.SpecialGame));
+            items.Add(new Entry("Tisch verlassen", "oi-account-logout", EMenuAction.LeaveGame, true));
+        }
+        else
+        {
+            items.Add(new Entry("TEST2", "oi-star", EMenuAction.Debug));
+
+        }
+
+        return items;
+    }
+
     protected override void OnInitialized()
     {
-        MenuService.OnChange += StateHasChanged;
+        base.OnInitialized();
+        stateService.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        MenuService.OnChange -= StateHasChanged;
+        Console.WriteLine("NavMenu disposed");
+        stateService.OnChange -= StateHasChanged;
     }
 }

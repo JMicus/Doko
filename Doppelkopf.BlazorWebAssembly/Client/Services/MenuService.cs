@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Doppelkopf.BlazorWebAssembly.Client.Enums;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,44 +9,13 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 {
     public class MenuService
     {
-        public enum MenuClick
-        {
-            Debug,
-            Deal,
-            SpecialGame,
-        }
+        public event Action<EMenuAction> OnClick;
 
-        public class MenuEntry
-        {
-            public string Label { get; set; }
-            public string Text { get; set; }
-        }
-
-        public event Action OnChange;
-
-        public event Action<MenuClick> OnClick;
-
-        private List<MenuEntry> _entries = new List<MenuEntry>();
-
-        private bool _inGame = false;
-
-        public bool InGame
-        {
-            get { 
-                return _inGame;
-            }
-            set {
-                _inGame = value;
-                NotifyStateChanged();
-            }
-        }
-
-        public void Click(MenuClick click)
+        public void Click(EMenuAction click)
         {
             OnClick?.Invoke(click);
         }
 
-
-        private void NotifyStateChanged() => OnChange?.Invoke();
+         
     }
 }

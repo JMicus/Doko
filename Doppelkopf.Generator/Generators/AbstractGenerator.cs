@@ -18,6 +18,11 @@ namespace Doppelkopf.Generator.Generators
             return File.ReadAllText(Path.Combine(PROJECT_DIR, relativePath));
         }
 
+        protected static string getRootFile(string relativePath)
+        {
+            return File.ReadAllText(Path.Combine(ROOT, relativePath));
+        }
+
         protected static void writeRootFile(string relativePath, string content)
         {
             File.WriteAllText(Path.Combine(ROOT, relativePath), content);

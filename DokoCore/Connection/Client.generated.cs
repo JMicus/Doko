@@ -34,6 +34,8 @@ namespace Doppelkopf.Core.Connection
         protected NavigationManager NavigationManager { get; set; }
         #endregion
 
+
+        #region (generated) delegates
         
         public delegate void CardsFromPlayerAction(Player playerCT, List<Card> cardsCT, bool cardsBack);
         public delegate void DealQuestionAction();
@@ -51,7 +53,9 @@ namespace Doppelkopf.Core.Connection
         public delegate void SymbolsAction(List<List<Symbol>> symbolsCT);
         public delegate void TrickAction(Trick trickCT);
         public delegate void UnauthorizedAction(string gameName, int playerNo, string playerName);
+        #endregion
 
+        #region (generated) events
         
         public event CardsFromPlayerAction OnCardsFromPlayer;
         public event DealQuestionAction OnDealQuestion;
@@ -69,6 +73,8 @@ namespace Doppelkopf.Core.Connection
         public event SymbolsAction OnSymbols;
         public event TrickAction OnTrick;
         public event UnauthorizedAction OnUnauthorized;
+        #endregion
+
 
         #region ctor
         public Client(Uri hubUri, string myGameName, string myPlayerNo)
@@ -80,6 +86,7 @@ namespace Doppelkopf.Core.Connection
             this.gameName = myGameName;
             this.playerNo = myPlayerNo;
 
+            #region (generated) ctor
             
             On("CardsFromPlayer", (string playerCT, string cardsCT, string cardsBack) => OnCardsFromPlayer?.Invoke(JsonConvert.DeserializeObject<Player>(playerCT), JsonConvert.DeserializeObject<List<Card>>(cardsCT), bool.Parse(cardsBack)));
             On("DealQuestion", () => OnDealQuestion?.Invoke());
@@ -97,8 +104,8 @@ namespace Doppelkopf.Core.Connection
             On("Symbols", (string symbolsCT) => OnSymbols?.Invoke(JsonConvert.DeserializeObject<List<List<Symbol>>>(symbolsCT)));
             On("Trick", (string trickCT) => OnTrick?.Invoke(JsonConvert.DeserializeObject<Trick>(trickCT)));
             On("Unauthorized", (string gameName, string playerNo, string playerName) => OnUnauthorized?.Invoke(gameName, int.Parse(playerNo), playerName));
-
-
+            #endregion
+            
             hubConnection.StartAsync();
         }
         #endregion
@@ -140,77 +147,79 @@ namespace Doppelkopf.Core.Connection
             }
         }
 
+        #region (generated) methods
         
         public void AddSymbol(int playerOfSymbol, Symbol symbolCT)
         {
             hubConnection.SendAsync("AddSymbol_H", gameName, playerNo.ToString(), playerOfSymbol.ToString(), JsonConvert.SerializeObject(symbolCT));
         }
-
+        
         public void ChangeCardOrder(EGameType cardOrderE)
         {
             hubConnection.SendAsync("ChangeCardOrder_H", gameName, playerNo.ToString(), Parsenum.E2S(cardOrderE));
         }
-
+        
         public void Deal(bool force)
         {
             hubConnection.SendAsync("Deal_H", gameName, playerNo.ToString(), force.ToString());
         }
-
+        
         public void Debug(string tag)
         {
             hubConnection.SendAsync("Debug_H", gameName, playerNo.ToString(), tag);
         }
-
+        
         public void GiveCardsToPlayer(int receivingPlayerNo, List<Card> cardsCT, bool cardsBack)
         {
             hubConnection.SendAsync("GiveCardsToPlayer_H", gameName, playerNo.ToString(), receivingPlayerNo.ToString(), JsonConvert.SerializeObject(cardsCT), cardsBack.ToString());
         }
-
+        
         public void Init(string newGameName, int myPlayerNo, string myPlayerName)
         {
             hubConnection.SendAsync("Init_H", newGameName, myPlayerNo.ToString(), myPlayerName);
         }
-
+        
         public void LastTrickBack()
         {
             hubConnection.SendAsync("LastTrickBack_H", gameName, playerNo.ToString());
         }
-
+        
         public void PlayerMsg(string msg)
         {
             hubConnection.SendAsync("PlayerMsg_H", gameName, playerNo.ToString(), msg);
         }
-
+        
         public void PutCard(Card cardCT)
         {
             hubConnection.SendAsync("PutCard_H", gameName, playerNo.ToString(), JsonConvert.SerializeObject(cardCT));
         }
-
+        
         public void SayHello(string playerToken)
         {
             hubConnection.SendAsync("SayHello_H", gameName, playerNo.ToString(), playerToken);
         }
-
+        
         public void SetExternalPage(string url)
         {
             hubConnection.SendAsync("SetExternalPage_H", gameName, playerNo.ToString(), url);
         }
-
+        
         public void SetRules(Rules rulesCT)
         {
             hubConnection.SendAsync("SetRules_H", gameName, playerNo.ToString(), JsonConvert.SerializeObject(rulesCT));
         }
-
+        
         public void TakeCardBack()
         {
             hubConnection.SendAsync("TakeCardBack_H", gameName, playerNo.ToString());
         }
-
+        
         public void TakeTrick()
         {
             hubConnection.SendAsync("TakeTrick_H", gameName, playerNo.ToString());
         }
-
+        
+        #endregion
 
         public void Dispose()
         {

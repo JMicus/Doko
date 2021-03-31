@@ -12,9 +12,20 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
         {
             string nameSpace = "Doppelkopf.Core.Connection";
 
-            string c = getProjectFile(@"Generators\ConnectionGenerator\Client.template.cs");
-            string i = getProjectFile(@"Generators\ConnectionGenerator\IHub.template.cs");
-            string h = getProjectFile(@"Generators\ConnectionGenerator\AbstractHubBase.template.cs");
+            string cFile = @"DokoCore\Connection\Client.generated.cs";
+            string iFile = @"DokoCore\Connection\IHub.generated.cs";
+            string hFile = @"DokoCore\Connection\AbstractHubBase.generated.cs";
+
+            string c = getRootFile(cFile);
+            string i = getRootFile(iFile);
+            string h = getRootFile(hFile);
+
+
+            
+
+
+           
+
 
             var cToS = new List<Method>()
             {
@@ -57,20 +68,20 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             #region CLIENT
             // NAMESPACE
 
-            c = c.Replace("NAMESPACE", nameSpace);
+            //c = c.Replace("NAMESPACE", nameSpace);
             #endregion
 
 
             #region IHUB
             // NAMESPACE
 
-            i = i.Replace("NAMESPACE", nameSpace);
+            //i = i.Replace("NAMESPACE", nameSpace);
             #endregion
 
             #region HUB
             // NAMESPACE
 
-            h = h.Replace("NAMESPACE", nameSpace);
+            //h = h.Replace("NAMESPACE", nameSpace);
             #endregion
 
             #region BOTH
@@ -111,15 +122,15 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 var strings = string.Join(", ", method.Params.Select(p => "string"));
                 var delName = $"{ method.Name }Action";
 
-                cDelegateCode += $"\r\n        public delegate void {delName}({method.Params.StringFull});";
+                cDelegateCode += $"\r\npublic delegate void {delName}({method.Params.StringFull});";
 
-                cEventsCode += $"\r\n        public event {delName} On{method.Name};";
+                cEventsCode += $"\r\npublic event {delName} On{method.Name};";
 
                 //var actionName = $"action_{string.Join("_", method.Params.Select(p => p))}";
                 //cMethodCode += createMethod($"private void _{method.Name}({delName} action)",
                 //                            $"hubConnection.On<{strings}>(\"{method.Name}\", ({method.paramsStringFull}) => action({method.paramsString}));");
 
-                cCtorCode += $"\r\n            On(\"{method.Name}\", ({method.Params.ToString(true, true, complexIsString: true)}) => On{method.Name}?.Invoke({method.Params.ToString(false, true, serializeComplexName: Method.ESerialize.Des)}));";
+                cCtorCode += $"\r\nOn(\"{method.Name}\", ({method.Params.ToString(true, true, complexIsString: true)}) => On{method.Name}?.Invoke({method.Params.ToString(false, true, serializeComplexName: Method.ESerialize.Des)}));";
 
                 //var logData = string.Join("", method.Params.Select(p => $"logTransferObj(\"{method.Name}\", \"{p.Name}\", {p.Name});"));
                 //Func<string, string> logSer = (string p) => (p.Contains("Json")
@@ -150,27 +161,47 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
 
 
             }
-            c = c.Replace("//METHODS", cMethodCode);
-            c = c.Replace("//DELEGATES", cDelegateCode);
-            c = c.Replace("//EVENTS", cEventsCode);
-            c = c.Replace("//CTOR", cCtorCode);
-            i = i.Replace("//METHODS", iMethodCode);
-            h = h.Replace("//METHODS", hMethodCode);
+            c = replaceRegion(c, "delegates", cDelegateCode);
+            c = replaceRegion(c, "events", cEventsCode);
+            c = replaceRegion(c, "methods", cMethodCode);
+            c = replaceRegion(c, "ctor", cCtorCode);
+            i = replaceRegion(i, "methods", iMethodCode);
+            h = replaceRegion(h, "methods", hMethodCode);
             #endregion
 
 
+            writeRootFile(cFile, c);
+            writeRootFile(iFile, i);
+            writeRootFile(hFile, h);
+        }
+
+        private static string replaceRegion(string text, string regionName, string regionContent)
+        {
+            var head = "#region (generated) " + regionName;
+            var foot = "#endregion";
+
+            var xStart = text.IndexOf(head);
+
+            if (xStart < 0)
+            {
+                Console.WriteLine($"Region {regionName} not found.");
+                Console.ReadKey();
+                return text;
+            }
+
+            var t = "";
+            for (int x = xStart - 1; text[x] == ' '; x--) t += " ";
 
 
-
-            //Console.WriteLine(c);
-            writeRootFile(@"DokoCore\Connection\Client.generated.cs", c);
-            writeRootFile(@"DokoCore\Connection\IHub.generated.cs", i);
-            writeRootFile(@"DokoCore\Connection\AbstractHubBase.generated.cs", h);
+            return text.Substring(0, xStart) +
+                   head + "\r\n" +
+                   t + regionContent.Replace("\n", "\n" + t) + "\r\n" +
+                   t + text.Substring(text.IndexOf(foot, xStart));
         }
 
         private static string createMethod(string def, string body = null)
         {
-            var t = "        ";
+            var t = ""; // "        ";
             var m = "";
 
             m += "\r\n" + t + def + "";

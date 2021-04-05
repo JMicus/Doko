@@ -10,13 +10,13 @@
 
 
     <div class="frow">
-        @foreach (var player in _players)
+        @foreach (var player in gs.Players)
         {
-            if (player.No.ToString() != playerNo)
+            if (player.No != StateService.PlayerNo)
             {
                 <div class="fcol fcol-1">
                     <PlayerView
-                        @ref=@_playerViews[player.No - 1]
+                        @ref=@PlayerViews[player.No - 1]
                         Player=@player
                     />
                 </div>
@@ -39,10 +39,10 @@
 
     <div style="width: 100%; height: 100%; display: flex">
         @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
-        <TrickView @ref=@_trickView
-                   Trick=@_trick
-                   PlayerNo=@playerNo
-                   Layout=@_layout
+        <TrickView @ref=@TrickView
+                   Trick=@gs.Trick
+                   PlayerNo=@StateService.PlayerNo
+                   Layout=@gs.Layout
                    RelSize=@(1)
                    Button=@TrickView.ButtonType.Take
                    OnButtonClick=@onTakeTrick
@@ -51,10 +51,10 @@
 
     <div style="position: absolute; left: 0px; bottom: 0px; width: 200px; height: 200px">
         @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
-        <TrickView @ref=@_lastTrickView
-                   Trick=@_lastTrick
-                   PlayerNo=@playerNo
-                   Layout=@_layout
+        <TrickView @ref=@LastTrickView
+                   Trick=@gs.LastTrick
+                   PlayerNo=@StateService.PlayerNo
+                   Layout=@gs.Layout
                    RelSize=@(.3)
                    Button=@TrickView.ButtonType.Back
                    ButtonSize=@DButton.ButtonSize.Small
@@ -88,19 +88,19 @@
                       Size=@DButton.ButtonSize.Small />*@
                 </div>
 
-        <PlayerView @ref=@_playerViews[me.No - 1]
+        <PlayerView @ref=@PlayerViews[gs.Me.No - 1]
                     MsgDirUp=true
                     Width="30%"
-                    Player=@me />
+                    Player=@gs.Me />
     </div>
 
 
 
 </div>
 
-    <div class="frow" style="height: @(_layout["cardHeight"] + "px"); margin-bottom: 20px">
+    <div class="frow" style="height: @(gs.Layout["cardHeight"] + "px"); margin-bottom: 20px">
         @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
-        <Hand @ref=@_handView Layout=@_layout Cards=@me.Cards SelectionMode=false OnClick=@onHandClick />
+        <Hand @ref=@HandView Layout=@gs.Layout Cards=@gs.Me.Cards SelectionMode=false OnClick=@onHandClick />
     </div>
 </div>
 

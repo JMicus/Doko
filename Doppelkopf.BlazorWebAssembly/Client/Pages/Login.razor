@@ -1,32 +1,35 @@
 ﻿@page "/login"
 
 @using Doppelkopf.BlazorWebAssembly.Client.Helper
+@using Doppelkopf.BlazorWebAssembly.Client.Services
 
 @inject NavigationManager NavManager
-@*@inject IJSRuntime JSRuntime*@ 
+@inject StateService StateService
+@inject Doppelkopf.Core.Connection.Client Client
+@inject IJSRuntime JSRuntime
 
 <div style="display: flex;align-items: center; justify-content: center; height: 100%; width: 100%">
 
-<RadzenCard Style="width: fit-content">
-    <div class="row">
-        <div class="col-xl-6">
-            <p class="input">Spiel</p>
-            <RadzenTextBox @bind-value=@gameName Name="GameName" Style=@inputStyle />
-            <RadzenRequiredValidator Component="GameName" Text="Spiel angeben!" Popup=@popup Style="position: absolute" />
+    <RadzenCard Style="width: fit-content">
+        <div class="row">
+            <div class="col-xl-6">
+                <p class="input">Spiel</p>
+                <RadzenTextBox @bind-value=@gameName Name="GameName" Style=@inputStyle />
+                <RadzenRequiredValidator Component="GameName" Text="Spiel angeben!" Popup=@popup Style="position: absolute" />
 
-            <p class="input">Dein Name</p>
-            <RadzenTextBox @bind-value=@playerName Style=@inputStyle />
+                <p class="input">Dein Name</p>
+                <RadzenTextBox @bind-value=@playerName Style=@inputStyle />
 
-            <p class="input">Spieler*innennummer</p>
-            <RadzenDropDown @bind-Value=@playerNo AllowClear="false" TValue="string"
-                            Data=@playerNoOptions
-                            Style=@inputStyle />
+                <p class="input">Spieler*innennummer</p>
+                <RadzenDropDown @bind-Value=@playerNo AllowClear="false" TValue="string"
+                                Data=@playerNoOptions
+                                Style=@inputStyle />
 
-            <p class="input"></p>
-            <RadzenButton Click=@(args => OnClickLogin()) Text="Login" Style="margin-left: 60px; width: 120px" />
+                <p class="input"></p>
+                <RadzenButton Click=@(args => OnClickLogin()) Text="Login" Style="margin-left: 60px; width: 120px" />
+            </div>
         </div>
-    </div>
-</RadzenCard>
+    </RadzenCard>
 </div>
 
 
@@ -46,26 +49,26 @@
     {
         base.OnInitialized();
 
-        NavManager.TryGetQueryString<string>("game", out gameName, "Doko");
-        NavManager.TryGetQueryString<string>("player", out playerName, "XY");
     }
 
     void OnClickLogin()
     {
-        var client = new Core.Connection.Client(NavManager.ToAbsoluteUri("/dokohub"), gameName, playerNo);
+        //Client.Init(NavManager.ToAbsoluteUri("/dokohub"), gameName, int.Parse(playerNo.Length > 1 ? "0" : playerNo));
 
-        client.OnInitialized += OnInitialized;
+        Client.OnInitialized += OnInitialized;
 
         var playerNoInt = 0;
         int.TryParse(playerNo, out playerNoInt);
 
         Console.WriteLine("init " + playerNo + " " + playerName);
-        client.Init(gameName, playerNoInt, playerName);
+        Client.Init(gameName, playerNoInt, playerName);
     }
 
     void OnInitialized(string gameName, int playerNo, string playerToken)
     {
-        NavManager.NavigateTo($"/game?game={gameName}&player={playerNo}&name={playerName}&token={playerToken}");
+        StateService.Init(Client, NavManager, JSRuntime);
+        
+        NavManager.NavigateTo(StateService.CreateUrl("game"));
     }
 
 }

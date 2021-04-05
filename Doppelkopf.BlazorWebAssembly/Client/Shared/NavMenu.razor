@@ -25,25 +25,30 @@
 
         @foreach (var item in getItems())
         {
-            @*<li class="nav-item px-3" @onclick=@(() => MenuService.Click(MenuService.MenuClick.Debug))>
-                    <NavLink class="nav-link">
-                        <span class="oi oi-star" aria-hidden="true"></span> TEST
-                    </NavLink>
-                </li>*@
+            @if (item == null)
+            {
+                <li style="height: 30px"></li>
+            }
+            else
+            {
 
-            <li class="nav-item px-3" @onclick=@(() => MenuService.Click(item.Action)) style=@(item.Space ?  "margin-top: 30px" : "")>
-                <NavLink class="nav-link">
-                    @if (item.Image.StartsWith("oi-"))
-                    {
-                        <span class=@("oi " + item.Image) aria-hidden="true"></span>
-                    }
-                    else
-                    {
-                        <img src="Images/dealSymbolWhite.png" />
-                    }
-                    @item.Text
-                </NavLink>
-            </li>
+
+                <li class="nav-item px-3" @onclick=@(() => MenuService.Click(item.Action, !string.IsNullOrEmpty(item.Navigate)))>
+                    <NavLink class="nav-link"
+                             style=@(item.Action == MenuService.OpenTab ? "background-color: rgba(255,255,255,0.25);color: white;" : "")
+                             href=@(string.IsNullOrEmpty(item.Navigate) ? null : stateService.CreateUrl(item.Navigate))>
+                        @if (item.Image.StartsWith("oi-"))
+                        {
+                            <span class=@("oi " + item.Image) aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <img src="Images/dealSymbolWhite.png" />
+                        }
+                        @item.Text
+                    </NavLink>
+                </li>
+            }
         }
     </ul>
 </div>
@@ -54,15 +59,16 @@
         internal EMenuAction Action;
         internal string Text;
         internal string Image;
-        internal bool Space;
+        internal string Navigate;
 
-        internal Entry(string text, string image, EMenuAction action, bool space = false)
+        internal Entry(string text, string image, EMenuAction action, string navigate = null)
         {
             Text = text;
             Image = image;
             Action = action;
-            Space = space;
+            Navigate = navigate;
         }
+
     }
 
     private bool collapseNavMenu = true;
@@ -78,16 +84,34 @@
     {
         var items = new List<Entry>();
 
+        items.Add(new Entry("TEST", "oi-star", EMenuAction.Debug));
+
         if (stateService.InGame)
         {
-            items.Add(new Entry("TEST", "oi-star", EMenuAction.Debug));
-            items.Add(new Entry("Karten geben", "dealSymbolWhite", EMenuAction.Deal));
-            items.Add(new Entry("Sonderspiel", "oi-star", EMenuAction.SpecialGame));
-            items.Add(new Entry("Tisch verlassen", "oi-account-logout", EMenuAction.LeaveGame, true));
+            items.Add(new Entry("Zum Tisch", "oi-star", EMenuAction.PageTable, "game"));
+            items.Add(new Entry("Punkte", "oi-clipboad", EMenuAction.PagePoints, "points"));
+            items.Add(new Entry("Verlauf", "oi-bar-chart", EMenuAction.PageHistory, "history"));
+            items.Add(new Entry("Statistiken", "oi-bar-chart", EMenuAction.PageStats, "stats"));
+            items.Add(null);
+
+            switch (MenuService.OpenTab.Value)
+            {
+                case EMenuAction.PageTable:
+                    items.Add(new Entry("Karten geben", "dealSymbolWhite", EMenuAction.Deal));
+                    items.Add(new Entry("Sonderspiel", "oi-star", EMenuAction.SpecialGame));
+                    break;
+
+                case EMenuAction.PagePoints:
+                    items.Add(new Entry("Link " + (string.IsNullOrEmpty(stateService.GameState.ExternalPageUrl.Value) ? "hinzufügen" : "ändern"), "oi-external-link", EMenuAction.IncludePointsDoc));
+                    break;
+            }
+
+
+            items.Add(new Entry("Tisch verlassen", "oi-account-logout", EMenuAction.LeaveGame));
         }
         else
         {
-            items.Add(new Entry("TEST2", "oi-star", EMenuAction.Debug));
+            //items.Add(new Entry("TEST", "oi-star", EMenuAction.Debug));
 
         }
 
@@ -97,12 +121,18 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        stateService.OnChange += StateHasChanged;
+
+        //stateService.AddChangeListener(nameof(stateService.InGame), StateHasChanged);
+
+
+        stateService.InGame.OnChange += StateHasChanged;
+        MenuService.OpenTab.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
         Console.WriteLine("NavMenu disposed");
-        stateService.OnChange -= StateHasChanged;
+        MenuService.OpenTab.OnChange += StateHasChanged;
+        stateService.InGame.OnChange -= StateHasChanged;
     }
 }

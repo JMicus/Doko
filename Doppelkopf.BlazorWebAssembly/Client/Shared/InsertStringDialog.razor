@@ -1,0 +1,29 @@
+﻿@using C = Doppelkopf.Core.App;
+@using Radzen;
+
+@inject DialogService dialogService;
+
+<div class="fcol">
+    <h5>@Text</h5>
+
+    <RadzenTextBox @bind-Value=@TextBoxText Placeholder="Link..." />
+
+
+
+    <div class="frow" Style="margin-top: 20px">
+        <RadzenButton Click="@((args) => dialogService.Close(TextBoxText))" Text="OK" Style="width: 150px" />
+
+        <RadzenButton Click="@((args) => dialogService.Close(null))" ButtonStyle="ButtonStyle.Secondary" Text="Abbrechen" Style="width: 150px" />
+    </div>
+
+</div>
+
+@code {
+
+    
+
+    [Parameter]
+    public string Text { get; set; }
+
+    public string TextBoxText { get; set; }
+}

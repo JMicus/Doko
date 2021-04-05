@@ -15,6 +15,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Enums
         Poverty,
         PovertyReturn,
         ReceiveCards,
-        ReceiveCardsAndReturn
+        ReceiveCardsAndReturn,
+        IncludePointsPage
     }
 }

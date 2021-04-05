@@ -19,3 +19,14 @@
         </div>*@
     @Body
 </div>
+
+@code{      protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
+        {
+            Console.WriteLine("Render Layout first");
+        }
+    }
+}

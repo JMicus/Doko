@@ -23,7 +23,7 @@ namespace Doppelkopf.Core.App
         public string Token { get; set; }
 
         [JsonIgnore]
-        public List<string> ConnectionIds { get; set; } = new List<string>();
+        public HashSet<string> ConnectionIds { get; set; } = new HashSet<string>();
 
         [JsonIgnore]
         public List<Card> Cards { get; set; } = new List<Card>();

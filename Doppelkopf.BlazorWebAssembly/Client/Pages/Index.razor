@@ -1,7 +1,11 @@
 ﻿@page "/"
 
+@using Services
+
 @inject NavigationManager NavManager
+@inject StateService StateService
 @inject IJSRuntime JSRuntime
+@inject Core.Connection.Client Client;
 
 @code{
     protected override void OnInitialized()
@@ -14,8 +18,8 @@
     {
         base.OnAfterRender(firstRender);
 
-        JSRuntime.InvokeVoidAsync("MainPage.setPageTitle", "doko");
 
-        NavManager.NavigateTo("game?game=Doko&player=1&name=Spieler 1&token=0");
+        //NavManager.NavigateTo("game?game=Doko&player=1&name=Spieler 1&token=0");
+        NavManager.NavigateTo("login");
     }
 }

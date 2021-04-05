@@ -1,9 +1,11 @@
 ﻿using Doppelkopf.Core.App.Enums;
+using Doppelkopf.Core.App.Helper;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DokoTest
@@ -16,10 +18,25 @@ namespace DokoTest
         private static int _ch;
         private static int _whGap;
 
+        class x
+        {
+            internal int a = 0;
+        }
+
         static void Main(string[] args)
         {
+            Watch<bool> x = true;
 
-            
+            x.OnChange += () => Console.WriteLine("Changed to: " + x.Value);
+
+            x.Value = false;
+
+            x.Value = false;
+
+            Console.WriteLine("DONE");
+
+
+            Thread.Sleep(2000);
             
             
             

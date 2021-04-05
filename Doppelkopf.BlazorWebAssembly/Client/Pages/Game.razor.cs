@@ -18,7 +18,7 @@ using Radzen.Blazor;
 
 namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 {
-    public partial class Game : ComponentBase
+    public partial class Game : ComponentBase, IDisposable
     {
         #region Inject
         [Inject]
@@ -35,39 +35,32 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         [Inject]
         private StateService StateService { get; set; }
-                #endregion
 
-        #region Basic fields
-        private string gameName;
-        private string playerNo;
-        private string playerName;
-        private string token;
+        [Inject]
+        private Core.Connection.Client Client { get; set; }
         #endregion
 
         #region Child Components
-        private Hand _handView;
-        private PlayerView[] _playerViews = new PlayerView[4];
-        private TrickView _trickView;
-        private TrickView _lastTrickView;
+        public Hand HandView;
+        public PlayerView[] PlayerViews = new PlayerView[4];
+        public TrickView TrickView;
+        public TrickView LastTrickView;
         #endregion
 
-        #region C Objects
-        public C.PlayerHolder _players = new C.PlayerHolder(null);
-        public C.Player _testplayer = new Player(null, 1);
-
-        private C.Trick _trick = new Trick();
-        private C.Trick _lastTrick = new Trick();
-
-        private C.Layout _layout = new C.Layout();
-        #endregion
+        private GameState gs => StateService.GameState;
+        
 
         #region Client Objects
-        private Core.Connection.Client _client;
+        //private Core.Connection.Client _client;
 
         private string test = "-";
 
+
+
+        #endregion
+
         private EDialog _openDialog = EDialog.None;
-        private EDialog openDialog
+        public EDialog OpenDialog
         {
             get
             {
@@ -80,15 +73,13 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             }
         }
 
-        #endregion
-
         #region Properties
-        private C.Player me => _players[playerNo];
         #endregion
 
         private void debug()
         {
-            _client.Debug("poverty");
+            //Client.Debug("poverty");
+            Console.WriteLine(StateService.CurrentPage);
         }
 
         protected override bool ShouldRender()
@@ -96,207 +87,133 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             return false;
         }
 
+        protected override void OnAfterRender(bool firstRender)
+        {
+            Console.WriteLine("Game render " + (firstRender ? "(first)" : ""));
+            base.OnAfterRender(firstRender);
+
+
+            if (firstRender)
+            {
+                Client.SayHello(StateService.Token);
+            }
+
+
+        }
+
         protected override void OnInitialized()
         {
+            Console.WriteLine("Game initialized");
             base.OnInitialized();
-            NavManager.TryGetQueryString<string>("game", out gameName);
-            NavManager.TryGetQueryString<string>("player", out playerNo);
-            NavManager.TryGetQueryString<string>("name", out playerName);
-            NavManager.TryGetQueryString<string>("token", out token);
 
-            if (!string.IsNullOrEmpty(gameName))
+            StateService.GameView = this;
+
+            if (StateService.Init(Client, NavManager, JSRuntime))
             {
-                JSRuntime.InvokeVoidAsync("MainPage.setMenuTitle", gameName);
+
+                
+
             }
 
             DialogService.OnClose += Close;
 
             MenuService.OnClick += onMenuClick;
-            StateService.InGame = true;
-
-            log("INIT");
+            StateService.InGame.Value = true;
         }
 
-        protected override Task OnInitializedAsync()
+
+        public void OpenDialogUnauthorized(string gameName, int playerNo, string playerName)
         {
-            _client = new Core.Connection.Client(NavManager.ToAbsoluteUri("/dokohub"), gameName, playerNo);
-
-            initMessagesFromHub();
-
-            _client.SayHello(token);
-
-            return base.OnInitializedAsync();
-        }
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            if (firstRender)
-            {
-                base.OnAfterRender(firstRender); 
-            }
-            Console.WriteLine("Game render " + (firstRender ? "(first)" : ""));
-        }
-
-        private void initMessagesFromHub()
-        {
-            _client.OnUnauthorized += (gameName, playerNo, playerName) => {
-                log("Unauthorized");
-                openDialog = EDialog.Login;
-                DialogService.Confirm("Spieler*in " + playerNo + " (" + playerName + ") ist bereits im Spiel " + gameName + " angemeldet.",
+            _openDialog = EDialog.Login;
+            DialogService.Confirm("Spieler*in " + playerNo + " (" + playerName + ") ist bereits im Spiel " + gameName + " angemeldet.",
                                     "Platz belegt",
                                     new ConfirmOptions()
                                     {
                                         OkButtonText = "OK",
                                         CancelButtonText = "Abbrechen"
                                     });
-            };
+        }
 
-            _client.OnPlayerJoined += (no, name) =>
-            {
-                log("PlayerJoined", no + ", " + name);
+        public void OpenDialogDealConfirm()
+        {
+            _openDialog = EDialog.Deal;
+            DialogService.Confirm("Soll wirklich neu gegeben werden?", "Neu Geben", new ConfirmOptions() { OkButtonText = "Ja", CancelButtonText = "Nein" });
+        }
 
-                var p = _players[no];
-                p.Name = name;
-                _playerViews[p.No - 1].Refresh();
+        public void OpenDialogPoints(C.Points points)
+        {
+            _openDialog = EDialog.Points;
+            DialogService.Open<PointsView>("Ergebnis",
+                                           new Dictionary<string, object>() { { "Points", points } });
+        }
 
-                //StateHasChanged();
-            };
+        public void OpenDialogCardsFromPlayer(C.Player player, List<C.Card> cards, bool cardsBack)
+        {
+            _openDialog = cardsBack ? EDialog.ReceiveCardsAndReturn : EDialog.ReceiveCards;
+            DialogService.Open<SelectCardsView>("Trumpfarmut",
+                                                        new SelectCardsView.SelectCardsViewParameters()
+                                                        {
+                                                            Text = $"{player.Name} gibt dir diese Karten:",
+                                                            Players = new List<Player>() { player},
+                                                            Cards = cards,
+                                                            Layout = gs.Layout,
+                                                            SelectionMode = false
+                                                        }.ToDict());
 
-            _client.OnMessages += (msgs) =>
-            {
-                log("Messages", msgs.ToString());
-                for (int i = 0; i < 4; i++)
-                {
-                    _playerViews[i].RefreshMsg(msgs[i]);
-                }
-                //StateHasChanged();
-            };
-
-            _client.OnHand += (cards) =>
-            {
-                // TODO debug
-                var first = me.Cards == null || me.Cards.Count == 0;
-
-
-                log("Hand", cards.ToString());
-                me.SetHand(cards);
-
-                _handView.Refresh();
-                //_handView.Refresh();
-                //StateHasChanged();
-
-                if (false)
-                {
-                    openDialog = EDialog.SpecialGame;
-                    Close(C.Enums.EGameType.Poverty);
-                }
-            };
-
-            _client.OnTrick += (trick) =>
-            {
-                log("Trick", trick.ToString());
-
-                //_trick.FromCode(trick);
-                //_trickView.Trick = new Trick(trick);
-                _trickView.Refresh(trick);
-                //_trickView.Refresh();
-                //_trickView.Trick = new Trick(trick);
-                //_trick
-                //StateHasChanged();
-            };
-
-            _client.OnLastTrick += (trick) =>
-            {
-                log("LastTrick", trick.ToString());
-                _lastTrickView.Refresh(trick);
-                //_lastTrickView.Refresh();
-                //StateHasChanged();
-            };
-
-            _client.OnLayout += (layout) =>
-            {
-                log("Layout");
-                //_layout.FromCode(layoutCode);
-                _layout = layout;
-                //StateHasChanged();
-            };
-
-            _client.OnDealQuestion += () =>
-            {
-                openDialog = EDialog.Deal;
-                DialogService.Confirm("Soll wirklich neu gegeben werden?", "Neu Geben", new ConfirmOptions() { OkButtonText = "Ja", CancelButtonText = "Nein" });
-            };
-
-            _client.OnPoints += (points) =>
-            {
-                openDialog = EDialog.Points;
-                DialogService.Open<PointsView>("Ergebnis",
-                                               new Dictionary<string, object>() { { "Points", points } });
-            };
-
-            _client.OnCardsFromPlayer += (player, cards, cardsBack) =>
-            {
-                openDialog = cardsBack ? EDialog.ReceiveCardsAndReturn : EDialog.ReceiveCards;
-                DialogService.Open<SelectCardsView>("Trumpfarmut",
-                                                    new SelectCardsView.SelectCardsViewParameters()
-                                                    {
-                                                        Text = $"{player.Name} gibt dir diese Karten:",
-                                                        Players = new List<Player>() { player },
-                                                        Cards = cards,
-                                                        Layout = _layout,
-                                                        SelectionMode = false
-                                                    }.ToDict());
-            };
         }
 
         private void onClickTest()
         {
-            _client.PlayerMsg($"Hi, my name is {playerName}");
+            Client.PlayerMsg($"Hi, my name is {StateService.PlayerName}");
         }
 
-        private void onMenuClick(EMenuAction click)
+        private bool onMenuClick(EMenuAction click)
         {
             switch (click)
             {
                 case EMenuAction.Deal:
-                    _client.Deal(false);
+                    Client.Deal(false);
                     break;
 
                 case EMenuAction.SpecialGame:
-                    openDialog = EDialog.SpecialGame;
+                    _openDialog = EDialog.SpecialGame;
                     DialogService.Open<SpecialGameView>("Sonderspiel");
                     break;
 
                 case EMenuAction.LeaveGame:
-                    _client.Dispose();
-                    StateService.InGame = false;
+                    StateService.InGame.Value = false;
                     NavManager.NavigateTo("login");
                     break;
 
                 case EMenuAction.Debug:
                     debug();
                     break;
+
+                default:
+                    return false;
             }
+
+            return true;
         }
 
         private void onHandClick(C.Card card)
         {
-            _client.PutCard(card);
+            Client.PutCard(card);
         }
 
         private void onTakeTrick(object o)
         {
-            _client.TakeTrick();
+            Client.TakeTrick();
         }
 
         private void onTakeTrickBack(object o)
         {
-            _client.LastTrickBack();
+            Client.LastTrickBack();
         }
 
         private void onLastCardBack(object o)
         {
-            _client.TakeCardBack();
+            Client.TakeCardBack();
         }
 
         private void onSendOnEnter(KeyboardEventArgs args)
@@ -305,7 +222,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             {
                 if (!string.IsNullOrEmpty(_chatInputTextUpdated))
                 {
-                    _client.PlayerMsg(_chatInputTextUpdated);
+                    Client.PlayerMsg(_chatInputTextUpdated);
                 }
                 _chatInputText = "";
                 _chatInputTextUpdated = "";
@@ -313,7 +230,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             log("CHAT", _chatInputText);
         }
         private RadzenTextArea _chatTextArea;
-        private string _chatInputText = "ölkjölkj";
+        private string _chatInputText = "";
         private string _chatInputTextUpdated;
 
         private void onSendTextChanged(ChangeEventArgs args)
@@ -324,13 +241,13 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         private void log(string tag, string msg = "")
         {
-            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss,ffff")} C{playerNo} {tag} {msg}");
+            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss,ffff")} C{StateService.PlayerNo} {tag} {msg}");
         }
 
         private void Close(dynamic result)
         {
-            var closedDialog = openDialog;
-            openDialog = EDialog.None;
+            var closedDialog = _openDialog;
+            _openDialog = EDialog.None;
 
             if (result == null)
             {
@@ -343,28 +260,29 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             switch (closedDialog)
             {
                 case EDialog.Login:
-                    NavManager.NavigateTo($"/login?game={gameName}&player={playerName}");
+                    NavManager.NavigateTo($"/login?game={StateService.GameName}&player={StateService.PlayerName}");
                     break;
 
                 case EDialog.Deal when result == true:
-                    _client.Deal(true);
+                    Client.Deal(true);
                     break;
 
                 case EDialog.Points when result = false:
-                    _client.Deal(false);
+                    Client.Deal(false);
                     break;
 
                 case EDialog.SpecialGame:
                     if (result == C.Enums.EGameType.Poverty)
                     {
                         //log("DIALOG", "armut");
-                        openDialog = EDialog.Poverty;
+                        _openDialog = EDialog.Poverty;
+                        DialogService.Dispose();
                         DialogService.Open<SelectCardsView>("Trumpfarmut",
                                                             new SelectCardsView.SelectCardsViewParameters()
                                                             {
-                                                                Cards = me.Cards,
-                                                                Players = _players.Where(p => p != me).ToList(),
-                                                                Layout = _layout,
+                                                                Cards = gs.Me.Cards,
+                                                                Players = gs.Players.Where(p => p != gs.Me).ToList(),
+                                                                Layout = gs.Layout,
                                                                 SelectionMode = true
                                                             }.ToDict());
                     }
@@ -372,7 +290,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                     {
                         log("CHANGECARDORDER", result);
 
-                        _client.ChangeCardOrder(result);
+                        Client.ChangeCardOrder(result);
                     }
                     break;
 
@@ -389,7 +307,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                     }
 
                     log("Poverty", $"{string.Join(".", viewResult.Cards.Select(c => c.ToCode()))} to {viewResult.Player.NameLabel}");
-                    _client.GiveCardsToPlayer(viewResult.Player.No, viewResult.Cards, true);
+                    Client.GiveCardsToPlayer(viewResult.Player.No, viewResult.Cards, true);
                     break;
 
                 case EDialog.ReceiveCards:
@@ -406,15 +324,15 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                         break;
                     }
 
-                    log("DIALOG", "ReceiveCardsAndReturn - " + openDialog);
-                    openDialog = EDialog.PovertyReturn;
+                    log("DIALOG", "ReceiveCardsAndReturn - " + _openDialog);
+                    _openDialog = EDialog.PovertyReturn;
                     DialogService.Open<SelectCardsView>("Trumpfarmut",
                                                         new SelectCardsView.SelectCardsViewParameters()
                                                         {
                                                             Text = "Karten zurückgeben:",
-                                                            Cards = me.Cards,
+                                                            Cards = gs.Me.Cards,
                                                             Players = new List<C.Player>() { viewResult.Player },
-                                                            Layout = _layout,
+                                                            Layout = gs.Layout,
                                                             SelectionMode = true
                                                         }.ToDict());
                     break;
@@ -430,14 +348,21 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                     }
 
                     log("PovertyReturn", $"{string.Join(".", viewResult.Cards.Select(c => c.ToCode()))} to {viewResult.Player.NameLabel}");
-                    _client.GiveCardsToPlayer(viewResult.Player.No, viewResult.Cards, false);
+                    Client.GiveCardsToPlayer(viewResult.Player.No, viewResult.Cards, false);
                     break;
 
                 default:
-                    log("DIALOG", "default - " + openDialog);
+                    log("DIALOG", "default - " + _openDialog);
                     break;
             }
             
+        }
+
+        public void Dispose()
+        {
+            DialogService.OnClose -= Close;
+
+            MenuService.OnClick -= onMenuClick;
         }
     }
 }

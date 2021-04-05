@@ -9,30 +9,34 @@ using Newtonsoft.Json;
 
 namespace Doppelkopf.Core.Connection
 {
-    public class Client : IDisposable
+    public class Client
     {
-        #region Singleton
-        //private static Client _instance;
-
-        //public static Client Instance { get; set; }
-
-        //public static void Initialize(Uri hubUrl)
-        //{
-        //    Instance = new Client(hubUrl);
-        //}
-        #endregion
-
         #region Fields
-        private HubConnection hubConnection;
+        private HubConnection _hubConnection;
+        private Uri _hubUri;
 
-        private string gameName;
-        private string playerNo;
+        private string gameName => GameName;
+        private int playerNo => PlayerNo;
         #endregion
 
-        #region Properties
-        [Inject]
-        protected NavigationManager NavigationManager { get; set; }
-        #endregion
+        public string GameName { get; set; }
+        public int PlayerNo { get; set; }
+
+        private HubConnection hubConnection
+        {
+            get
+            {
+                if (_hubConnection == null)
+                {
+                    initializeConnection();
+                }
+                return _hubConnection;
+            }
+            set
+            {
+                _hubConnection = value;
+            }
+        }
 
 
         #region (generated) delegates
@@ -77,14 +81,28 @@ namespace Doppelkopf.Core.Connection
 
 
         #region ctor
-        public Client(Uri hubUri, string myGameName, string myPlayerNo)
+
+        //public void Conf(string myGameName, int myPlayerNo)
+        //{
+        //    this.gameName = myGameName;
+        //    this.playerNo = myPlayerNo;
+        //}
+
+        public void Init(Uri hubUri)
         {
+            _hubUri = hubUri;
+        }
+
+        private void initializeConnection()
+        { 
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(hubUri)
+                .WithUrl(_hubUri)
                 .Build();
 
-            this.gameName = myGameName;
-            this.playerNo = myPlayerNo;
+            if (hubConnection.State == HubConnectionState.Connected)
+            {
+                //_ = hubConnection.StopAsync();
+            }
 
             #region (generated) ctor
             
@@ -196,6 +214,9 @@ namespace Doppelkopf.Core.Connection
         
         public void SayHello(string playerToken)
         {
+            Console.WriteLine("SayHello " + gameName);
+            Console.WriteLine("SayHello " + playerNo.ToString());
+            Console.WriteLine("SayHello " + playerToken);
             hubConnection.SendAsync("SayHello_H", gameName, playerNo.ToString(), playerToken);
         }
         
@@ -220,11 +241,6 @@ namespace Doppelkopf.Core.Connection
         }
         
         #endregion
-
-        public void Dispose()
-        {
-            _ = hubConnection.DisposeAsync();
-        }
         #endregion
     }
 }

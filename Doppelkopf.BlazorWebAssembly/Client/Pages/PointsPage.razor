@@ -1,0 +1,103 @@
+﻿@page "/points"
+
+@using Radzen
+@using Services
+@using Enums
+@using Shared
+
+@implements IDisposable
+
+@inject MenuService MenuService
+@inject StateService StateService
+@inject DialogService DialogService
+@inject IJSRuntime JSRuntime
+@inject Core.Connection.Client Client
+
+<div style="margin: auto">
+
+
+@if (string.IsNullOrEmpty(StateService.GameState.ExternalPageUrl))
+{
+
+
+
+    <RadzenButton Text="Link zur externen Punkteliste hinzufügen"
+                  Click=@(() => openDialog()) />
+}
+else
+{
+    <RadzenButton Text="Zur Punkteliste"
+                  Click=@(() => JSRuntime.InvokeAsync<object>("open", StateService.GameState.ExternalPageUrl.Value, "_blank")) />
+}
+</div>
+
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        DialogService.OnClose += Close;
+        MenuService.OnClick += menuClick;
+        StateService.GameState.ExternalPageUrl.OnChange += () =>
+        {
+            Console.WriteLine("PP url changed");
+            StateHasChanged();
+        };
+    }
+
+    public void Dispose()
+    {
+        DialogService.OnClose -= Close;
+        MenuService.OnClick -= menuClick;
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+
+    private bool menuClick(EMenuAction action)
+    {
+        if (action == EMenuAction.IncludePointsDoc)
+        {
+            openDialog();
+        }
+
+        return false;
+    }
+
+    private void Close(dynamic result)
+    {
+        var closedDialog = StateService.OpenDialog;
+        StateService.OpenDialog = EDialog.None;
+
+        if (result == null)
+        {
+            Console.WriteLine("DIALOG closed with no result");
+            return;
+        }
+
+        switch (closedDialog)
+        {
+            case EDialog.IncludePointsPage:
+                if (result is string url)
+                {
+                    Client.SetExternalPage(url);
+                }
+                break;
+
+            default:
+                Console.WriteLine("DIALOG default - " + StateService.OpenDialog);
+                break;
+        }
+    }
+
+    private void openDialog()
+    {
+        Console.WriteLine("opendialog");
+        StateService.OpenDialog = EDialog.IncludePointsPage;
+        DialogService.Open<InsertStringDialog>("Punkteliste hinzufügen", new Dictionary<string, object>() { { "Text", "Füge einen Link zu einer öffenlichen Webseite ein um Punkte aufzuschreiben." } });
+    }
+}

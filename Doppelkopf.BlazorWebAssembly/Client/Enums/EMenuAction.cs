@@ -10,6 +10,12 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Enums
         Debug,
         Deal,
         SpecialGame,
-        LeaveGame
+        LeaveGame,
+        IncludePointsDoc,
+
+        PageTable,
+        PagePoints,
+        PageStats,
+        PageHistory
     }
 }

@@ -512,6 +512,7 @@ namespace Doppelkopf.Core.Connection
         {
             foreach (var connectionId in player.ConnectionIds)
             {
+                Console.WriteLine($"Send to player {player.No}. ConnID: {connectionId}");
                 if (o1 == null)
                 {
                     await Clients.Client(connectionId).SendAsync(method);
@@ -537,10 +538,10 @@ namespace Doppelkopf.Core.Connection
             {
                 try
                 {
-                    var extension = param.StartsWith("{") || param.StartsWith("[") ? "json" : "txt";
-                    var fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ff")}_{method}_{paramName}.{extension}";
+                    var extension = param != null && (param.StartsWith("{") || param.StartsWith("[")) ? "json" : "txt";
+                    var fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}_{method}_{paramName}.{extension}";
                     var path = Path.Combine(debugOutputDir, fileName);
-                    File.WriteAllText(path, param.ToString());
+                    File.WriteAllText(path, param  ?? "NULL");
                 }
                 catch (Exception)
                 {

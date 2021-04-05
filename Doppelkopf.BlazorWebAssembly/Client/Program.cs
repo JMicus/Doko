@@ -25,6 +25,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client
 
             builder.Services.AddSingleton<MenuService>();
             builder.Services.AddSingleton<StateService>();
+            builder.Services.AddSingleton<Core.Connection.Client>();
 
             await builder.Build().RunAsync();
         }

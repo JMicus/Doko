@@ -70,7 +70,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             {
                 foreach (var player in game.Player)
                 {
-                    if (player.ConnectionIds.RemoveAll(cid => cid == Context.ConnectionId) > 0)
+                    if (player.ConnectionIds.RemoveWhere(cid => cid == Context.ConnectionId) > 0)
                     {
                         Console.WriteLine("HUB DISCONNECT " + player.Name);
                         _ = SendPlayerJoined(game, player.No, player.Name);

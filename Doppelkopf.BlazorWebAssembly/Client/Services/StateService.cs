@@ -15,6 +15,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
     {
         #region private
         private bool _shouldInitialize = true;
+        private bool _eventsAreInit = false;
         #endregion
 
         #region user
@@ -38,6 +39,8 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 
         private NavigationManager _navManager;
 
+        private Core.Connection.Client _client;
+
         public string CurrentPage => _navManager?.Uri?.Substring(_navManager.BaseUri.Length).Split('?')[0];
 
         public EDialog OpenDialog { get; set; }
@@ -56,12 +59,13 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
         public bool Init(Core.Connection.Client client, NavigationManager navManager, IJSRuntime jsRuntime)
         {
             _navManager = navManager;
+            _client = client;
 
             var firstInit = _shouldInitialize;
 
-            if (_shouldInitialize)
+            if (!_eventsAreInit)
             {
-                _shouldInitialize = false;
+                _eventsAreInit = true;
 
                 GameName.OnChange += () =>
                 {
@@ -77,9 +81,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
                 };
 
                 GameState.InitMessagesFromHub(client);
-
-                client.Init(navManager.ToAbsoluteUri("/dokohub"));
-
             }
 
             if (navManager.TryGetQueryString<string>("game", out var gameName))
@@ -99,11 +100,26 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
                 Token.Value = token;
             }
 
-            Console.WriteLine($"StateService INIT {GameName}");
+
+            if (firstInit)
+            {
+                _shouldInitialize = false;
+
+                client.Init(navManager.ToAbsoluteUri("/dokohub"));
+            }
+
+            Console.WriteLine($"StateService INIT {(firstInit ? "(first) " : "")}{GameName}");
             return firstInit;
         }
 
-               
+        public void Clear()
+        {
+            _shouldInitialize = true;
+
+            InGame.Value = false;
+
+            _client?.Disconnect();
+        }  
         
-        }
+    }
 }

@@ -1,10 +1,12 @@
 ﻿@page "/login"
 
 @using Doppelkopf.BlazorWebAssembly.Client.Helper
+@using Doppelkopf.BlazorWebAssembly.Client.Enums
 @using Doppelkopf.BlazorWebAssembly.Client.Services
 
 @inject NavigationManager NavManager
 @inject StateService StateService
+@inject MenuService MenuService
 @inject Doppelkopf.Core.Connection.Client Client
 @inject IJSRuntime JSRuntime
 
@@ -41,7 +43,7 @@
 
     private string gameName;
     private string playerName;
-    private string playerNo = "Auto";
+    private string playerNo;
 
     private bool popup;
 
@@ -49,25 +51,47 @@
     {
         base.OnInitialized();
 
+        MenuService.OpenTab.Value = EMenuAction.PageLogin;
+
+        StateService.Clear();
+        StateService.Init(Client, NavManager, JSRuntime);
+
+        gameName = StateService.GameName;
+        playerName = StateService.PlayerName;
+        playerNo = StateService.PlayerNo > 0 ? StateService.PlayerNo.Value.ToString() : "Auto";
     }
 
     void OnClickLogin()
     {
         //Client.Init(NavManager.ToAbsoluteUri("/dokohub"), gameName, int.Parse(playerNo.Length > 1 ? "0" : playerNo));
 
+        MenuService.OpenTab.Value = EMenuAction.PageTable;
+
+        if (StateService.Init(Client, NavManager, JSRuntime))
+        {
+
+        }
+
         Client.OnInitialized += OnInitialized;
 
         var playerNoInt = 0;
         int.TryParse(playerNo, out playerNoInt);
 
+
         Console.WriteLine("init " + playerNo + " " + playerName);
+
+        StateService.PlayerName.Value = playerName;
         Client.Init(gameName, playerNoInt, playerName);
     }
 
     void OnInitialized(string gameName, int playerNo, string playerToken)
     {
-        StateService.Init(Client, NavManager, JSRuntime);
-        
+        //StateService.Init(Client, NavManager, JSRuntime);
+
+        StateService.GameName.Value = gameName;
+        StateService.PlayerNo.Value = playerNo;
+        StateService.Token.Value = playerToken;
+
         NavManager.NavigateTo(StateService.CreateUrl("game"));
     }
 

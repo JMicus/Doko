@@ -8,26 +8,16 @@ namespace Doppelkopf.Core.App
 {
     public class Points
     {
-        private List<(string PLayerName, int Points)> _points;
+        public List<(string PLayerName, int Points)> List;
+
+        public Points()
+        {
+
+        }
 
         public Points(PlayerHolder player)
         {
-            _points = player.Select(p => (p.Name, p.WonPoints)).ToList();
-        }
-
-        public Points(string code)
-        {
-            _points = code.DokoCodeToList<string, int>().OrderByDescending(p => p.Item2).ToList();
-        }
-
-        public List<(string PlayerName, int Points)> ToList()
-        {
-            return _points;
-        }
-
-        public string ToCode()
-        {
-            return _points.ToDokoCode();
+            List = player.Select(p => (p.Name, p.WonPoints)).ToList();
         }
     }
 }

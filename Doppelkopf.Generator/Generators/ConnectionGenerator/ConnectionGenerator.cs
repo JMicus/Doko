@@ -20,13 +20,6 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             string i = getRootFile(iFile);
             string h = getRootFile(hFile);
 
-
-            
-
-
-           
-
-
             var cToS = new List<Method>()
             {
                 new Method("Init", "newGameName", "myPlayerNo.int", "myPlayerName"),
@@ -140,6 +133,12 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 var logData = string.Join("", method.Params.ToList(false, showHidden: false, serializeComplexName: Method.ESerialize.SerOut)
                                                            .Select(p => $"logTransferObj(\"{method.Name}\", \"{p.Name}\", {p.Output});")
                                          );//.Replace(", \"\"", "");
+
+                if (logData == "")
+                {
+                    logData = $"logTransferObj(\"{method.Name}\", \"NONE\", \"\");";
+                }
+
 
                 var temp = createMethod($"protected async Task Send{method.Name}(Game game, {method.Params.ToString(true, true, showHidden: false)})",
                                         logData + 

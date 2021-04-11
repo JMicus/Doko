@@ -93,6 +93,12 @@ namespace Doppelkopf.Core.Connection
             _hubUri = hubUri;
         }
 
+        public void Disconnect()
+        {
+            hubConnection.DisposeAsync();
+            hubConnection = null;
+        }
+
         private void initializeConnection()
         { 
             hubConnection = new HubConnectionBuilder()
@@ -214,9 +220,6 @@ namespace Doppelkopf.Core.Connection
         
         public void SayHello(string playerToken)
         {
-            Console.WriteLine("SayHello " + gameName);
-            Console.WriteLine("SayHello " + playerNo.ToString());
-            Console.WriteLine("SayHello " + playerToken);
             hubConnection.SendAsync("SayHello_H", gameName, playerNo.ToString(), playerToken);
         }
         

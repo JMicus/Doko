@@ -98,6 +98,6 @@ else
     {
         Console.WriteLine("opendialog");
         StateService.OpenDialog = EDialog.IncludePointsPage;
-        DialogService.Open<InsertStringDialog>("Punkteliste hinzufügen", new Dictionary<string, object>() { { "Text", "Füge einen Link zu einer öffenlichen Webseite ein um Punkte aufzuschreiben." } });
+        DialogService.Open<InsertStringDialog>("Punkteliste hinzufügen", new Dictionary<string, object>() { { "Text", "Füge einen Link zu einer öffenlichen Webseite ein um Punkte aufzuschreiben. (Z. B. Freigabelink zu einem Google-Dokument)" } });
     }
 }

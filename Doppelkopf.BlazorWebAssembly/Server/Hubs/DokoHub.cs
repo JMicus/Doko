@@ -15,18 +15,18 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 {
     public class DokoHub : AbstractHubBase
     {
-        public static string testgame = "Doko";
+        public static string TESTGAME = "Doko";
 
          
 
         public DokoHub() : base() {
             //Console.WriteLine(GetHttpContextExtensions.GetHttpContext(this.Context).s)
 
-            if (testgame != null)
+            if (TESTGAME != null)
             {
                 C.Game game = new C.Game()
                 {
-                    Name = testgame
+                    Name = TESTGAME
                 };
                 game.OnMessagesChanged += Game_OnMessagesChanged;
 
@@ -39,7 +39,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     game.Player[i].Token = "0";
                 }
 
-                game.Deal();
+                game.Deal(null, true, 1);
 
                 //for (int i = 1; i <= 4; i++)
                 //{
@@ -73,7 +73,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     if (player.ConnectionIds.RemoveWhere(cid => cid == Context.ConnectionId) > 0)
                     {
                         Console.WriteLine("HUB DISCONNECT " + player.Name);
-                        _ = SendPlayerJoined(game, player.No, player.Name);
+                        _ = SendPlayerJoined(game, player.No, player.NameLabel);
                     }
                 }
             }
@@ -132,7 +132,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
             if (player.IsInitialized && player.ConnectionIds.Any())
             {
-                await SendInitialized(game, game.Name, playerNo, "");
+                await SendInitializedToCaller(game.Name, playerNo, "");
             }
             else
             {
@@ -165,11 +165,11 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
             await SendInfo(game, player.Name + " ist dem Spiel beigetreten.");
 
-            await SendPlayerJoined(game, player.No, player.Name);
+            await SendPlayerJoined(game, player.No, player.NameLabel);
 
             foreach (var p in game.Player)
             {
-                await SendPlayerJoined(player, p.No, p.Name);
+                await SendPlayerJoined(player, p.No, p.NameLabel);
             }
             //await Clients.Group(gameName).SendAsync("PlayerJoined", playerNo, player.Name);
 
@@ -211,7 +211,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
         protected override async Task Deal(C.Game game, C.Player player, bool force = false)
         {
-            if (game.Deal(player, force))
+            if (game.Deal(player, force, TESTGAME == null ? (int?)null : 1))
             {
                 await sendHandToAll(game);
                 await SendTrick(game, game.Trick);
@@ -242,7 +242,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 // put card
                 if (game.PutCard(player, card))
                 {
-                    if (false && testgame == game.Name)
+                    if (false && TESTGAME == game.Name)
                     {
                         foreach (var p in game.Player.Where(p => p.No != player.No))
                         {
@@ -293,8 +293,8 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             {
                 if (game.TakeTrick(player))
                 {
-                    await SendTrick(player, game.Trick);
-                    await SendLastTrick(player, game.LastTrick);
+                    await SendTrick(game, game.Trick);
+                    await SendLastTrick(game, game.LastTrick);
                     await sendSymbols(game);
                     await SendInfo(game, $"{player.Name} nimmt den Stich.");
                 }

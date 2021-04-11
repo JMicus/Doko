@@ -212,16 +212,19 @@ namespace Doppelkopf.Core.Connection
         
         protected async Task SendDealQuestion(Game game)
         {
+            logTransferObj("DealQuestion", "NONE", "");
             await sendToAll(game, "DealQuestion");
         }
         
         protected async Task SendDealQuestion(Player player)
         {
+            logTransferObj("DealQuestion", "NONE", "");
             await sendToPlayer(player, "DealQuestion");
         }
         
         protected async Task SendDealQuestionToCaller()
         {
+            logTransferObj("DealQuestion", "NONE", "");
             await Clients.Caller.SendAsync("DealQuestion");
         }
         
@@ -512,7 +515,7 @@ namespace Doppelkopf.Core.Connection
         {
             foreach (var connectionId in player.ConnectionIds)
             {
-                Console.WriteLine($"Send to player {player.No}. ConnID: {connectionId}");
+                Console.WriteLine($"Send to player {player.No}. ConnID: {connectionId}. {method}");
                 if (o1 == null)
                 {
                     await Clients.Client(connectionId).SendAsync(method);

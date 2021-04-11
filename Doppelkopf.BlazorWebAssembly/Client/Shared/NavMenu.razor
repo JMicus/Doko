@@ -27,7 +27,7 @@
         {
             @if (item == null)
             {
-                <li style="height: 30px"></li>
+                <li style="height: 60px"></li>
             }
             else
             {
@@ -43,7 +43,7 @@
                         }
                         else
                         {
-                            <img src="Images/dealSymbolWhite.png" />
+                            <img src="Images/dealSymbolWhite.png" style="width: 24px; height: 24px; margin-right: 8px"/>
                         }
                         @item.Text
                     </NavLink>
@@ -84,13 +84,13 @@
     {
         var items = new List<Entry>();
 
-        items.Add(new Entry("TEST", "oi-star", EMenuAction.Debug));
+        //items.Add(new Entry("TEST", "oi-star", EMenuAction.Debug));
 
         if (stateService.InGame)
         {
-            items.Add(new Entry("Zum Tisch", "oi-star", EMenuAction.PageTable, "game"));
-            items.Add(new Entry("Punkte", "oi-clipboad", EMenuAction.PagePoints, "points"));
-            items.Add(new Entry("Verlauf", "oi-bar-chart", EMenuAction.PageHistory, "history"));
+            items.Add(new Entry("Zum Tisch", "oi-people", EMenuAction.PageTable, "game"));
+            items.Add(new Entry("Punkte", "oi-clipboard", EMenuAction.PagePoints, "points"));
+            items.Add(new Entry("Verlauf", "oi-sort-ascending", EMenuAction.PageHistory, "history"));
             items.Add(new Entry("Statistiken", "oi-bar-chart", EMenuAction.PageStats, "stats"));
             items.Add(null);
 
@@ -106,8 +106,8 @@
                     break;
             }
 
-
-            items.Add(new Entry("Tisch verlassen", "oi-account-logout", EMenuAction.LeaveGame));
+            items.Add(null);
+            items.Add(new Entry("Tisch verlassen", "oi-account-logout", EMenuAction.LeaveGame, "login"));
         }
         else
         {

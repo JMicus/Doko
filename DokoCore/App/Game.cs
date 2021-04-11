@@ -36,7 +36,7 @@ namespace Doppelkopf.Core.App
         }
 
 
-        public bool Deal(Player player = null, bool force = false)
+        public bool Deal(Player player = null, bool force = false, int? testGameCardsPerPlayer = null)
         {
             var state = GameState();
 
@@ -48,8 +48,6 @@ namespace Doppelkopf.Core.App
             Trick.Clear();
             LastTrick.Clear();
             Center.Clear();
-
-            var deck = Rules.Deck;
 
             for (int i = 1; i <= 4; i++)
             {
@@ -63,7 +61,14 @@ namespace Doppelkopf.Core.App
                 Player[i].RemoveLastWonCards();
             }
 
+            var deck = Rules.Deck;
+
             deck = deck.OrderBy(x => rnd.NextDouble()).ToList();
+
+            if (testGameCardsPerPlayer.HasValue)
+            {
+                deck = deck.GetRange(0, testGameCardsPerPlayer.Value * 4);
+            }
 
             for (int i = 0; i<deck.Count; i++)
             {

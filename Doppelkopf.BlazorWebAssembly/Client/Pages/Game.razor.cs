@@ -91,14 +91,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         {
             Console.WriteLine("Game render " + (firstRender ? "(first)" : ""));
             base.OnAfterRender(firstRender);
-
-
-            if (firstRender)
-            {
-                Client.SayHello(StateService.Token);
-            }
-
-
         }
 
         protected override void OnInitialized()
@@ -106,19 +98,24 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             Console.WriteLine("Game initialized");
             base.OnInitialized();
 
-            StateService.GameView = this;
+            MenuService.OpenTab.Value = EMenuAction.PageTable;
 
             if (StateService.Init(Client, NavManager, JSRuntime))
             {
 
-                
-
             }
 
             DialogService.OnClose += Close;
-
             MenuService.OnClick += onMenuClick;
-            StateService.InGame.Value = true;
+
+            StateService.GameView = this;
+
+            if (!StateService.InGame.Value)
+            {
+                StateService.InGame.Value = true;
+                Client.SayHello(StateService.Token);
+            }
+
         }
 
 
@@ -182,7 +179,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
                 case EMenuAction.LeaveGame:
                     StateService.InGame.Value = false;
-                    NavManager.NavigateTo("login");
+                    //NavManager.NavigateTo("login");
                     break;
 
                 case EMenuAction.Debug:
@@ -260,14 +257,15 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             switch (closedDialog)
             {
                 case EDialog.Login:
-                    NavManager.NavigateTo($"/login?game={StateService.GameName}&player={StateService.PlayerName}");
+                    StateService.InGame.Value = false;
+                    NavManager.NavigateTo(StateService.CreateUrl("login"));
                     break;
 
                 case EDialog.Deal when result == true:
                     Client.Deal(true);
                     break;
 
-                case EDialog.Points when result = false:
+                case EDialog.Points when result == true:
                     Client.Deal(false);
                     break;
 
@@ -361,7 +359,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         public void Dispose()
         {
             DialogService.OnClose -= Close;
-
             MenuService.OnClick -= onMenuClick;
         }
     }

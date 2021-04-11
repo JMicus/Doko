@@ -1,4 +1,5 @@
-﻿using Doppelkopf.Core.App.Enums;
+﻿using Doppelkopf.Core.App;
+using Doppelkopf.Core.App.Enums;
 using Doppelkopf.Core.App.Helper;
 using Newtonsoft.Json;
 using System;
@@ -25,15 +26,23 @@ namespace DokoTest
 
         static void Main(string[] args)
         {
-            Watch<bool> x = true;
+            var rules = new Rules();
 
-            x.OnChange += () => Console.WriteLine("Changed to: " + x.Value);
+            var players = new PlayerHolder(rules);
 
-            x.Value = false;
+            players[1].AddWonCards(new List<Card>()
+            {
+                new Card(ECard.H1),
+                new Card(ECard.KK)
+            });
 
-            x.Value = false;
+            var p = new Points(players);
 
-            Console.WriteLine("DONE");
+            var ps = JsonConvert.SerializeObject(p);
+
+            var p2 = JsonConvert.DeserializeObject<Points>(ps);
+
+            Console.WriteLine(JsonConvert.SerializeObject(p2, Formatting.Indented));
 
 
             Thread.Sleep(2000);

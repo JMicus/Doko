@@ -133,7 +133,11 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
                 //StateService.PointsView.Refresh();
             };
 
-            client.OnPoints += (points) => gv.OpenDialogPoints(points);
+            client.OnPoints += (points) =>
+            {
+                Console.WriteLine("from server - points: " + string.Join("-", points.List.Select(p => p.Points)));
+                gv.OpenDialogPoints(points);
+            };
 
             client.OnCardsFromPlayer += (player, cards, back) => gv.OpenDialogCardsFromPlayer(player, cards, back);
         }

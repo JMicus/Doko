@@ -213,27 +213,35 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             Client.TakeCardBack();
         }
 
-        private void onSendOnEnter(KeyboardEventArgs args)
-        {
-            if (args.Code == "Enter")
-            {
-                if (!string.IsNullOrEmpty(_chatInputTextUpdated))
-                {
-                    Client.PlayerMsg(_chatInputTextUpdated);
-                }
-                _chatInputText = "";
-                _chatInputTextUpdated = "";
-            }
-            log("CHAT", _chatInputText);
-        }
-        private RadzenTextArea _chatTextArea;
-        private string _chatInputText = "";
-        private string _chatInputTextUpdated;
+        //private void onSendOnEnter(KeyboardEventArgs args)
+        //{
+        //    if (args.Code == "Enter")
+        //    {
+        //        if (!string.IsNullOrEmpty(_chatInputTextUpdated))
+        //        {
+        //            Client.PlayerMsg(_chatInputTextUpdated);
+        //        }
+        //        _chatInputText = "";
+        //        _chatInputTextUpdated = "";
+        //    }
+        //    log("CHAT", _chatInputText);
+        //}
+        //private RadzenTextArea _chatTextArea;
+        private string _chatInputText = null;
+        //private string _chatInputTextUpdated;
 
         private void onSendTextChanged(ChangeEventArgs args)
         {
             var val = args.Value.ToString();
-            _chatInputTextUpdated = val;
+            log("CHAT", "val|" + val + "|");
+            log("CHAT", "bin|" + _chatInputText + "|");
+            //_chatInputTextUpdated = val;
+            if (val.Contains('\n'))
+            {
+                Client.PlayerMsg(val.Replace("\n", "").Replace("\r", ""));
+                _chatInputText = "";
+                StateHasChanged();
+            }
         }
 
         private void log(string tag, string msg = "")

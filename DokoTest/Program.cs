@@ -26,26 +26,13 @@ namespace DokoTest
 
         static void Main(string[] args)
         {
-            var rules = new Rules();
-
-            var players = new PlayerHolder(rules);
-
-            players[1].AddWonCards(new List<Card>()
-            {
-                new Card(ECard.H1),
-                new Card(ECard.KK)
-            });
-
-            var p = new Points(players);
-
-            var ps = JsonConvert.SerializeObject(p);
-
-            var p2 = JsonConvert.DeserializeObject<Points>(ps);
-
-            Console.WriteLine(JsonConvert.SerializeObject(p2, Formatting.Indented));
 
 
-            Thread.Sleep(2000);
+            var s = "abc\r\n";
+
+            var t = s.Trim();
+
+            Console.WriteLine("_" + t + "_ " + t.Length);
             
             
             

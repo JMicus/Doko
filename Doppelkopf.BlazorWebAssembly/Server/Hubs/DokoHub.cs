@@ -41,17 +41,20 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
                 game.Deal(null, true, 1);
 
-                //for (int i = 1; i <= 4; i++)
-                //{
-                //    var player = game.Player[i];
+                for (int i = 1; i <= 4; i++)
+                {
+                    var player = game.Player[i];
 
-                //    // put card
-                //    game.PutCard(player, player.Cards.First());
+                    player.Symbols.Add(new C.Enums.Symbol(C.Enums.Symbol.ESymbol.charlie));
+                    player.Symbols.Add(new C.Enums.Symbol(C.Enums.Symbol.ESymbol.trickCount, 2));
 
-                //    // messages
-                //    //_ = player.AddMessage("my name is " + player.Name);
-                //    //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
-                //}
+                    // put card
+                    //game.PutCard(player, player.Cards.First());
+
+                    // messages
+                    //_ = player.AddMessage("my name is " + player.Name);
+                    //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
+                }
 
             }
 

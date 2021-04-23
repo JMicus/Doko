@@ -70,23 +70,31 @@
         </div>*@
 
         <div style="width: 100%">
-            <input 
-                   @oninput=@onSendTextChanged
-                            @bind=@_chatInputText
-                            Placeholder="Senden mit Enter"
-                            style="width: 100%"
-                            @onkeyup=@onSendOnEnter />
+
+            <EnterTextBox Placeholder="Senden mit Enter"
+                          OnEnter=@((text) => Client.PlayerMsg(text))/>
+
+            @*<textarea @ref=@
+                      @onchange=@onSendTextChanged
+                   @bind=@_chatInputText
+                   @bind:event="oninput"
+                   Placeholder="Senden mit Enter"
+                   style="width: 100%" />*@
+
+            @*<RadzenTextArea Placeholder="Senden mit Enter"
+                            Change=@(args => onSendTextChanged(args)) 
+                            Style="width: 100%"/>*@
 
             @*<RadzenTextArea @ref=@_chatTextArea
-                             bind-value-onchange=@_chatInputText
-                             Placeholder="Senden mit Enter"
-                             Style="width: 100%"
-                             @onkeypress=@onSendOnEnter />
+                         bind-value-onchange=@_chatInputText
+                         Placeholder="Senden mit Enter"
+                         Style="width: 100%"
+                         @onkeypress=@onSendOnEnter />
 
-            x<DButton OnClick=@onSendMsgClick
-                      ImgName=@DButton.ButtonImgName.msg
-                      Size=@DButton.ButtonSize.Small />*@
-                </div>
+        x<DButton OnClick=@onSendMsgClick
+                  ImgName=@DButton.ButtonImgName.msg
+                  Size=@DButton.ButtonSize.Small />*@
+        </div>
 
         <PlayerView @ref=@PlayerViews[gs.Me.No - 1]
                     MsgDirUp=true

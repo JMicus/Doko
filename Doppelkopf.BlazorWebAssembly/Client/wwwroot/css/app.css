@@ -270,8 +270,9 @@ p.input {
     border-radius: 5px;
     border-style: solid;
     padding: 2px;
-    font-size: 24px;
+    font-size: 20px;
     margin: 0 10px;
+    overflow-wrap: break-word;
 }
 
 .nav-link img {

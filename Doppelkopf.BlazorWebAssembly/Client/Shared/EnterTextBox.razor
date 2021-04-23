@@ -1,36 +1,33 @@
-﻿@inherits InputBase<string>
+﻿@inject IJSRuntime JSRuntime
 
-<input type="text" value="@CurrentValueAsString" id="Id" class="@CssClass"
-       @onkeydown="KeyDownHandler" @onkeypress="KeyPressHandler"
-       @onkeypress:preventDefault />
+<textarea id="enterTextBox"
+          @oninput=@(args => onTextChanged(args))
+          Placeholder=@Placeholder
+          style="width: 100%; resize: none"/>
 
 @code{
 
-    protected override bool TryParseValueFromString(string value, out string
-                                      result, out string validationErrorMessage)
-    {
-        result = value;
-        validationErrorMessage = null;
-        return true;
-    }
+    [Parameter]
+    public string Placeholder { get; set; }
 
-    void KeyDownHandler(KeyboardEventArgs args)
+    [Parameter]
+    public EventCallback<string> OnEnter { get; set; }
+
+
+    private void onTextChanged(ChangeEventArgs args)
     {
-        if (args.Key == "Backspace" && CurrentValueAsString.Length >= 1)
+        var val = args.Value.ToString();
+        //Console.WriteLine("CHAT val|" + val + "|");
+
+        if (val.Contains('\n'))
         {
-            CurrentValueAsString = CurrentValueAsString.Substring(0,
-                                       CurrentValueAsString.Length - 1);
-        }
-    }
+            var text = val.Trim();
 
-    void KeyPressHandler(KeyboardEventArgs args)
-    {
-
-        if (args.Key == "Enter")
-        {
-            return;
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                JSRuntime.InvokeVoidAsync("EnterTextBox.clear");
+                OnEnter.InvokeAsync(val);
+            }
         }
-        var key = (string)args.Key;
-        CurrentValueAsString += key;
     }
 }

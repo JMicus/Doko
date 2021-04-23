@@ -39,6 +39,8 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Shared
             Console.WriteLine("PlayerView render " + (firstRender ? "(first)" : ""));
         }
 
+
+
         public void Refresh()
         {
             StateHasChanged();

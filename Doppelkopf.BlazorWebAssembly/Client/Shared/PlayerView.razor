@@ -1,14 +1,28 @@
 ﻿
 
-<div style=@($"position: relative; width: 100%") >
+<div style=@($"position: relative; width: 100%; height: 100%") >
 
-    <RadzenCard>
+    <RadzenCard Style="height: 100%">
 
-        <RadzenLabel Text=@Player.Name />
+        <div class="fcol fcol-1">
+            <h3>@Player.Name</h3>
+
+            <div style="display: inline-block">
+
+                @foreach (var symbol in Player.Symbols)
+                {
+                    <img src=@($"Images/{symbol.FileName}") style="height: 30px" />
+                }
+
+            </div>
+
+        </div>
+
+
 
     </RadzenCard>
 
-    <div style=@($"position: absolute; {(MsgDirUp ? "bottom" : "top")}: 80px")>
+    <div style=@($"position: absolute; {(MsgDirUp ? "bottom: 170" : "top: 110")}px; width: 100%")>
         <PlayerMessageView @ref=@_msgView/>
     </div>
 

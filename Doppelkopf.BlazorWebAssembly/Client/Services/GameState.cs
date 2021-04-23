@@ -140,6 +140,17 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
             };
 
             client.OnCardsFromPlayer += (player, cards, back) => gv.OpenDialogCardsFromPlayer(player, cards, back);
+
+            client.OnSymbols += (symbols) =>
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    var player = Players[i + 1];
+                    player.Symbols.Clear();
+                    player.Symbols.AddRange(symbols[i]);
+                    gv.PlayerViews[i].Refresh();
+                }
+            };
         }
     }
 }

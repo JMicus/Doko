@@ -86,7 +86,7 @@ namespace Doppelkopf.Core.App
             if (player != null)
             {
                 History.DealCount[player.No]++;
-                player.Symbols.Add(new Symbol(ESymbol.dealer));
+                player.Symbols.Add(new Symbol(ESymbol.dealSymbol));
             }
 
             return true;

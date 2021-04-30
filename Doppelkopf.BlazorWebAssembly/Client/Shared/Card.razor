@@ -1,17 +1,18 @@
 ﻿@using C = Doppelkopf.Core.App;
 @using Newtonsoft.Json
+@using Helper
 
-<div class=@_class style=@($"height: {int.Parse(Layout["cardHeight"]) + (SelectionMode ? 40 : 0) + 10}px; /*padding-top: {(SelectionMode ? 40 : 0)}px; {(SelectionMode ? "margin-top: 60px" : "")}*/") >
+<div class=@_class style=@($"height: {int.Parse(Layout["cardHeight"]) + (SelectionMode ? 40 : 0) + 10}px; /*padding-top: {(SelectionMode ? 40 : 0)}px; {(SelectionMode ? "margin-top: 60px" : "")}*/")>
 
-    <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(_style) @onclick=@(() =>
+    <div style=@_style2>
+
+        <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(_style) @onclick=@(() =>
                                                                                {
                                                                                    onClick();
                                                                                    OnClick.InvokeAsync(CardObj);
                                                                                }) />
+    </div>
 </div>
-
-
-@*<p>@CardObj.ToCode()</p>*@
 
 
 @code {
@@ -59,6 +60,7 @@
 
     private RadzenImage _image { get; set; }
 
+    private string _style2 { get; set; }
     private string _style { get; set; }
 
     private string _class = "nolift";
@@ -67,6 +69,11 @@
     {
         base.OnParametersSet();
 
+        createStyle();
+    }
+
+    private void createStyle()
+    {
         Console.WriteLine("Card param set: Hover " + Hover);
 
         if (Hover)
@@ -77,6 +84,7 @@
         //Console.WriteLine(JsonConvert.SerializeObject(this, Formatting.Indented));
 
         _style = "";
+        _style2 = "";
 
         _style += $"position: {(AbsolutPosition ? "absolute" : "relative")};";
         _style += $"left: {Left};";
@@ -94,13 +102,14 @@
         var ch = int.Parse(Layout["cardHeight"]);
 
         _style += $"width: {(string.IsNullOrEmpty(Width) ? (cw * RelativeSize) + "px;" : Width)};";
-        _style += $"height: {(string.IsNullOrEmpty(Height) ? (ch * RelativeSize + (SelectionMode ? 40 : 0)) + "px;" : Height)};";
+        _style += $"height: {(string.IsNullOrEmpty(Height) ? (ch * RelativeSize + (SelectionMode ? /*4*/0 : 0)) + "px;" : Height)};";
+
 
 
         if (Layout["cardBorder"] == "true")
         {
             _style += "border: 1px solid #000;";
-            //_style += "border-radius: " + (h / 15) + "px;";
+            _style += "border-radius: " + (RelativeSize * ch / 15).ToDoubleString() + "px;";
         }
         else
         {
@@ -121,7 +130,8 @@
 
         if (SelectionMode)
         {
-            _style += $"padding-{(IsSelected ? "bottom" : "top")}: 40px;";
+            _style += $"margin-{(IsSelected ? "bottom" : "top")}: 40px;";
+            //_style += $"padding-{(IsSelected ? "bottom" : "top")}: 40px;";
         }
     }
 
@@ -149,6 +159,13 @@
             StateHasChanged();
         }
         //Trick = new C.Trick(code);
+    }
+
+    public void Refresh(C.Layout layout)
+    {
+        Layout = layout;
+        createStyle();
+        StateHasChanged();
     }
 
 }

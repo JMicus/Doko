@@ -28,11 +28,9 @@ namespace DokoTest
         {
 
 
-            var s = "abc\r\n";
+            var s = 2.423452345;
 
-            var t = s.Trim();
-
-            Console.WriteLine("_" + t + "_ " + t.Length);
+            Console.WriteLine(s.ToString("0.0###", System.Globalization.CultureInfo.InvariantCulture));
             
             
             

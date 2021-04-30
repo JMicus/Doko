@@ -1,4 +1,5 @@
 ﻿@using C = Doppelkopf.Core.App;
+@using Radzen;
 
 @inject DialogService dialogService;
 
@@ -19,27 +20,27 @@
         </RadzenDropDown>
     }
 
-<div style="background: green; padding: 30px">
+    <div style="background: green; padding: 30px">
 
-    @if (Params.SelectionMode)
-    {
-        <Hand @ref=@_handView
-              Cards=@Params.Cards
-              Layout=@Params.Layout
-              SelectionMode=true
-              CardHover=true />
-    }
-    else
-    {
-        <Hand @ref=@_handView
-              Cards=@Params.Cards
-              Layout=@Params.Layout
-              SelectionMode=false
-              CardHover=false />
-    }
+        @if (Params.SelectionMode)
+        {
+            <Hand @ref=@_handView
+                  Cards=@Params.Cards
+                  Layout=@Params.Layout
+                  SelectionMode=true
+                  CardHover=true />
+        }
+        else
+        {
+            <Hand @ref=@_handView
+                  Cards=@Params.Cards
+                  Layout=@Params.Layout
+                  SelectionMode=false
+                  CardHover=false />
+        }
 
 
-</div>
+    </div>
 
     <div class="frow" Style="margin-top: 20px">
         <RadzenButton Click="@((args) => dialogService.Close(new SelectCardsViewResult(_selectedPlayer ?? Params.Players.FirstOrDefault(), _handView.SelectedCards)))" Text="OK" Style="width: 150px" />
@@ -69,7 +70,7 @@
         public Dictionary<string, object> ToDict()
         {
             return new Dictionary<string, object>()
-            {
+        {
                 {
                     "Params",
                     this
@@ -117,6 +118,6 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        
+
     }
 }

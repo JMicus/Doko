@@ -1,24 +1,22 @@
 ﻿@using C = Doppelkopf.Core.App;
 @using Enums;
+@using Helper;
 
 
 <div id="trick" class="frow" style="
     position: relative;
     margin: auto;
-    width: 100%;
-    height: 100%;
-">
+    width: @((RelSize * _maxWidth).ToDoubleString() + "px");
+    height: @((RelSize * _maxHeight).ToDoubleString() + "px")"
+     >
 
     <div class="fcol" style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        max-width: @((RelSize * _maxWidth) + "px");
-        max-height: @((RelSize * _maxWidth) + "px")">
-        @*height: r("hhghh")*@
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         width: 100%;
+         height: 100%;">
 
 
         @foreach (var card in _cards)
@@ -29,26 +27,27 @@
                   AbsolutPosition=@true
                   Left=@card.Left
                   Top=@card.Top
-                  Width=@r("ww")
-                  Height=@r("hh")
+                  Width=@rW("ww")
+                  Height=@rH("hh")
+                  RelativeSize=@RelSize
                   Rotation=@card.Rotation
                   OnClick=@(card.OwnCard ? OnOwnCardClick : OnOtherCardClick) />
 
         }
 
 
-        <div style="position: absolute; right: 0px; bottom: @(r("wwg"))">
+        <div style="position: absolute; right: 0px; bottom: @(rH("wg"))">
 
             <DButton @ref=@_button
-                    ImgName=@(Button == ButtonType.Take ? DButton.ButtonImgName.takeTrick : DButton.ButtonImgName.lastTrickBack)
-                    Size=@ButtonSize
-                    Visible=false
-                    OnClick=@(x => OnButtonClick.InvokeAsync(x))>
+                     ImgName=@(Button == ButtonType.Take ? DButton.ButtonImgName.takeTrick : DButton.ButtonImgName.lastTrickBack)
+                     Size=@ButtonSize
+                     Visible=false
+                     OnClick=@(x => OnButtonClick.InvokeAsync(x))>
 
 
             </DButton>
         </div>
-        
+
 
 
     </div>
@@ -106,12 +105,31 @@
     private int _whGap;
 
     private double _maxWidth => 2 * _ch + 2 * _gap + _cw;
+    private double _maxHeight => 2 * _ch + 2 * _gap;
 
-    private double _rel;
+    private double _relW;
+    private double _relH;
+
+    private bool shouldRender = false;
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+
+        initSizes();
+
+        Trick.OnChanged += StateHasChanged;
+    }
+
+    public void Refresh()
+    {
+        shouldRender = true;
+        StateHasChanged();
+        shouldRender = false;
+    }
+
+    private void initSizes()
+    {
 
         _cw = int.Parse(Layout["cardWidth"]);
         _ch = int.Parse(Layout["cardHeight"]);
@@ -123,7 +141,8 @@
 
         _whGap = (_ch - _cw);
 
-        _rel = 100 / _maxWidth;
+        _relW = 100 / _maxWidth;
+        _relH = 100 / _maxHeight;
         //Console.WriteLine("rel: " + _rel);
 
 
@@ -131,22 +150,22 @@
 
 
         _cards = new List<(int, string, string, int, bool)>()
-    {
-            (1,  r("hhgg"),      r("hhgg"),  0, true),
-            (2,  r("t"),         r("hg"),   -1, false),
-            (3,  r("hhgg"),      r(""),      0, false),
-            (4,  r("hhggwwggt"), r("hg"),    1, false)
+{
+            (1,  rW("hhgg"),      rH("hhgg"),  0, true),
+            (2,  rW("t"),         rH("hg"),    1, false),
+            (3,  rW("hhgg"),      rH(""),      0, false),
+            (4,  rW("hhggwwggt"), rH("hg"),   -1, false)
         };
 
-        Trick.OnChanged += StateHasChanged;
+
 
         //Console.WriteLine(_cw + " " + _ch + " " + _gap + " " + _whGap);
     }
 
     protected override bool ShouldRender()
     {
-        Console.WriteLine("TrickView no render ");
-        return false;
+        Console.WriteLine($"TrickView {(shouldRender ? "" : "no ")}render ");
+        return shouldRender;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -155,12 +174,12 @@
         Console.WriteLine("TrickView render " + (firstRender ? "(first)" : ""));
     }
 
-    private string r(double x)
+    private string r(double x, double rel)
     {
-        return (_rel * x).ToString().Replace(',', '.') + "%";
+        return (rel * x).ToString().Replace(',', '.') + "%";
     }
 
-    private string r(string spaceChars)
+    private string r(string spaceChars, double rel)
     {
         if (string.IsNullOrEmpty(spaceChars))
         {
@@ -173,7 +192,17 @@
                                                             .Replace("w", _cw.ToString())
                                                             .Replace("h", _ch.ToString())
                                                             .Replace("t", _whGap.ToString()))
-                           * (p.Item1 ? 1 : -1) / 2));
+                           * (p.Item1 ? 1 : -1) / 2), rel);
+    }
+
+    private string rW(string spaceChars)
+    {
+        return r(spaceChars, _relW);
+    }
+
+    private string rH(string spaceChars)
+    {
+        return r(spaceChars, _relH);
     }
 
     private char lower(char c)
@@ -212,5 +241,18 @@
 
         _button.Refresh(Button != ButtonType.None && Trick.Complete);
         //StateHasChanged();
+    }
+
+    public void Refresh(C.Layout layout)
+    {
+        Layout = layout;
+
+        initSizes();
+        Refresh();
+
+        for (int i = 1; i <= 4; i++)
+        {
+            _cardViews[i - 1].Refresh(layout);
+        }
     }
 }

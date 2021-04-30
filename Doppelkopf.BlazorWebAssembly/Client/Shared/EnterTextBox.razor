@@ -23,10 +23,11 @@
         {
             var text = val.Trim();
 
+            JSRuntime.InvokeVoidAsync("EnterTextBox.clear");
+            
             if (!string.IsNullOrWhiteSpace(text))
             {
-                JSRuntime.InvokeVoidAsync("EnterTextBox.clear");
-                OnEnter.InvokeAsync(val);
+                OnEnter.InvokeAsync(text);
             }
         }
     }

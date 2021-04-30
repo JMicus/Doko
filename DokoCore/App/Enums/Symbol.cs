@@ -22,7 +22,7 @@ namespace Doppelkopf.Core.App.Enums
             //[Description("Charlie")]
             trickCount,
 
-            dealer
+            dealSymbol
         }
 
         public ESymbol Type;

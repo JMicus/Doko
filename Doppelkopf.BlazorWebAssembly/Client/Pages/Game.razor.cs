@@ -55,6 +55,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         private string test = "-";
 
+        private bool shouldRender = false;
 
 
         #endregion
@@ -84,12 +85,19 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         protected override bool ShouldRender()
         {
-            return false;
+            return shouldRender;
+        }
+
+        public void Refresh()
+        {
+            shouldRender = true;
+            StateHasChanged();
+            shouldRender = false;
         }
 
         protected override void OnAfterRender(bool firstRender)
         {
-            Console.WriteLine("Game render " + (firstRender ? "(first)" : ""));
+            Console.WriteLine($"Game {(shouldRender ? "" : "no ")}render " + (firstRender ? "(first)" : ""));
             base.OnAfterRender(firstRender);
         }
 
@@ -151,7 +159,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                                                         new SelectCardsView.SelectCardsViewParameters()
                                                         {
                                                             Text = $"{player.Name} gibt dir diese Karten:",
-                                                            Players = new List<Player>() { player},
+                                                            Players = new List<Player>() { player },
                                                             Cards = cards,
                                                             Layout = gs.Layout,
                                                             SelectionMode = false
@@ -283,11 +291,15 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                         //log("DIALOG", "armut");
                         _openDialog = EDialog.Poverty;
                         DialogService.Dispose();
+
+                        var otherPlayers = gs.Players.Where(p => p.No != gs.Me.No).ToList();
+                        Console.WriteLine(string.Join(", ", otherPlayers.Select(p => p.Name + "(" + p.No + ")")));
+
                         DialogService.Open<SelectCardsView>("Trumpfarmut",
                                                             new SelectCardsView.SelectCardsViewParameters()
                                                             {
                                                                 Cards = gs.Me.Cards,
-                                                                Players = gs.Players.Where(p => p != gs.Me).ToList(),
+                                                                Players = otherPlayers,
                                                                 Layout = gs.Layout,
                                                                 SelectionMode = true
                                                             }.ToDict());

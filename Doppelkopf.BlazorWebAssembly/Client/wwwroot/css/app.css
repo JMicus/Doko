@@ -273,6 +273,8 @@ p.input {
     font-size: 20px;
     margin: 0 10px;
     overflow-wrap: break-word;
+    clear: both;
+    float: left;
 }
 
 .nav-link img {

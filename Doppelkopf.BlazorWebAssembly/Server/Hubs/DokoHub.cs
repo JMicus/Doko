@@ -28,6 +28,15 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 {
                     Name = TESTGAME
                 };
+                var height = 240;
+
+                game.Layout["cardLayout"] = "HP";
+                game.Layout["cardImageType"] = "gif";
+                game.Layout["cardHeight"] = "" + height;
+                game.Layout["cardWidth"] = "" + (int)(height * 0.605);
+                game.Layout["cardBorder"] = "true";
+                game.Layout["background"] = "pergament.jpg";
+
                 game.OnMessagesChanged += Game_OnMessagesChanged;
 
 
@@ -39,7 +48,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     game.Player[i].Token = "0";
                 }
 
-                game.Deal(null, true, 1);
+                game.Deal(null, true, 3);
 
                 for (int i = 1; i <= 4; i++)
                 {
@@ -224,7 +233,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             }
             else
             {
-                await SendDealQuestion(player);
+                await SendDealQuestionToCaller();
             }
 
             

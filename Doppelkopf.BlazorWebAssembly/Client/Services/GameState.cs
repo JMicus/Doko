@@ -116,9 +116,10 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
             client.OnLayout += (layout) =>
             {
                 log("Layout");
-                //_layout.FromCode(layoutCode);
                 Layout = layout;
-                //StateHasChanged();
+                gv.Refresh();
+                gv.TrickView.Refresh(layout);
+                gv.LastTrickView.Refresh(layout);
             };
 
             client.OnDealQuestion += () =>

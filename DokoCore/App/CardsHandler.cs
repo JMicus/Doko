@@ -1,4 +1,5 @@
-﻿using Doppelkopf.Core.App.Enums;
+﻿using Doppelkopf.Core.App.Config;
+using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +9,10 @@ using System.Threading.Tasks;
 
 namespace Doppelkopf.Core.App
 {
-    public class Rules
+    public class CardsHandler
     {
-        // Settings /////////////////
-
         private string _order = CardOrder.Regular.Replace(" ", "");
 
-        [JsonIgnore]
         public string Order
         {
             get
@@ -27,45 +25,30 @@ namespace Doppelkopf.Core.App
             }
         }
 
-        public int Pigs = 1;
-
-        public bool Nines = false;
-
-
-        // //////////////////////////
-
-
-        [JsonIgnore]
-        public List<Card> Deck
+        public List<Card> CreateDeck(Rules rules)
         {
-            get
+            var deck = new List<Card>();
+            for (int i = 0; i < 2; i++)
             {
-                var deck = new List<Card>();
-                for (int i = 0; i < 2; i++)
+                foreach (ECard c in Enum.GetValues(typeof(ECard)))
                 {
-                    foreach (ECard c in Enum.GetValues(typeof(ECard)))
+                    var cString = Parsenum.E2S(c);
+
+                    if (cString[0] != 'S'
+                        && cString[0] != 'X'
+                        && (rules.Nines.Value || cString[1] != '9'))
                     {
-                        var cString = Parsenum.E2S(c);
-
-                        if (cString[0] != 'S'
-                            && cString[0] != 'X'
-                            && (Nines || cString[1] != '9'))
-                        {
-                            deck.Add(new Card(c, i));
-                        }
-
+                        deck.Add(new Card(c, i));
                     }
+
                 }
-                return deck;
             }
+            return deck;
         }
-
-
         
-
         //private string cardOrderRegular = "sa.h1.kd.pd.hd.cd.kb.pb.hb.cb.ca.c1.ck.ka.k1.kk.pa.p1.pk.ha.hk";
 
-        public void SortCards(List<Card> cards, bool detectPigs = true)
+        public void SortCards(List<Card> cards, Rules rules, bool detectPigs = true)
         {
             var cardOrder = Order.Split('.');
 
@@ -78,7 +61,7 @@ namespace Doppelkopf.Core.App
             // schweine
             if (detectPigs)
             {
-                if (Pigs > 0)
+                if (rules.Pigs.Value > 0)
                 {
                     int pigCount = 0;
                     foreach (var c in cards)
@@ -96,7 +79,7 @@ namespace Doppelkopf.Core.App
                         if (ca.Count() == 2)
                         {
                             ca[0].Name = ECard.SA;
-                            if (Pigs == 2)
+                            if (rules.Pigs.Value == 2)
                             {
                                 ca[1].Name = ECard.SA;
                             }
@@ -109,7 +92,7 @@ namespace Doppelkopf.Core.App
             cards.Sort((a, b) => dict[a.NameCode].CompareTo(dict[b.NameCode]));
         }
 
-        public int CountPoints(List<Card> cards)
+        public static int CountPoints(List<Card> cards)
         {
             return cards.Sum(card =>
             {
@@ -129,30 +112,6 @@ namespace Doppelkopf.Core.App
                         return 0;
                 }
             });
-        }
-
-        public string ToCode()
-        {
-            return "Pigs-" + Pigs + ".Nines-" + Nines;
-        }
-
-        public void FromCode(string code)
-        {
-            var rules = code.Split('.');
-
-            foreach (var rule in rules)
-            {
-                var pair = rule.Split('-');
-                switch (pair[0])
-                {
-                    case "Pigs":
-                        Pigs = Convert.ToInt32(pair[1]);
-                        break;
-                    case "Nines":
-                        Nines = Convert.ToBoolean(pair[1]);
-                        break;
-                }
-            }
         }
     }
 }

@@ -8,6 +8,7 @@ using Doppelkopf.Core.App;
 using Doppelkopf.Core.App.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using Doppelkopf.Core.App.Config;
 
 namespace Doppelkopf.Core.Connection
 {
@@ -152,16 +153,16 @@ namespace Doppelkopf.Core.Connection
             await SetExternalPage(game, player, url);
         }
         
-        protected abstract Task SetRules(Game game, Player player, Rules rulesCT);
+        protected abstract Task SetSettings(Game game, Player player, DokoSettings settingsCT);
         
-        public async Task SetRules_H(string gameName, string playerNo, string rulesCT)
+        public async Task SetSettings_H(string gameName, string playerNo, string settingsCT)
         {
-            logTransferObj("SetRules", "gameName", gameName);
-            logTransferObj("SetRules", "playerNo", playerNo);
-            logTransferObj("SetRules", "rulesCT", rulesCT);
+            logTransferObj("SetSettings", "gameName", gameName);
+            logTransferObj("SetSettings", "playerNo", playerNo);
+            logTransferObj("SetSettings", "settingsCT", settingsCT);
             var game = getGame(gameName);
             var player = game?.Player[playerNo];
-            await SetRules(game, player, JsonConvert.DeserializeObject<Rules>(rulesCT));
+            await SetSettings(game, player, JsonConvert.DeserializeObject<DokoSettings>(settingsCT));
         }
         
         protected abstract Task TakeCardBack(Game game, Player player);
@@ -324,24 +325,6 @@ namespace Doppelkopf.Core.Connection
             await Clients.Caller.SendAsync("LastTrick", JsonConvert.SerializeObject(trickCT));
         }
         
-        protected async Task SendLayout(Game game, Layout layoutCT)
-        {
-            logTransferObj("Layout", "layoutCT", JsonConvert.SerializeObject(layoutCT, Formatting.Indented));
-            await sendToAll(game, "Layout", JsonConvert.SerializeObject(layoutCT));
-        }
-        
-        protected async Task SendLayout(Player player, Layout layoutCT)
-        {
-            logTransferObj("Layout", "layoutCT", JsonConvert.SerializeObject(layoutCT, Formatting.Indented));
-            await sendToPlayer(player, "Layout", JsonConvert.SerializeObject(layoutCT));
-        }
-        
-        protected async Task SendLayoutToCaller(Layout layoutCT)
-        {
-            logTransferObj("Layout", "layoutCT", JsonConvert.SerializeObject(layoutCT, Formatting.Indented));
-            await Clients.Caller.SendAsync("Layout", JsonConvert.SerializeObject(layoutCT));
-        }
-        
         protected async Task SendMessages(Game game, List<List<string>> messagesCT)
         {
             logTransferObj("Messages", "messagesCT", JsonConvert.SerializeObject(messagesCT, Formatting.Indented));
@@ -399,22 +382,22 @@ namespace Doppelkopf.Core.Connection
             await Clients.Caller.SendAsync("Points", JsonConvert.SerializeObject(pointsCT));
         }
         
-        protected async Task SendRules(Game game, Rules rulesCT)
+        protected async Task SendSettings(Game game, DokoSettings settingsCT)
         {
-            logTransferObj("Rules", "rulesCT", JsonConvert.SerializeObject(rulesCT, Formatting.Indented));
-            await sendToAll(game, "Rules", JsonConvert.SerializeObject(rulesCT));
+            logTransferObj("Settings", "settingsCT", JsonConvert.SerializeObject(settingsCT, Formatting.Indented));
+            await sendToAll(game, "Settings", JsonConvert.SerializeObject(settingsCT));
         }
         
-        protected async Task SendRules(Player player, Rules rulesCT)
+        protected async Task SendSettings(Player player, DokoSettings settingsCT)
         {
-            logTransferObj("Rules", "rulesCT", JsonConvert.SerializeObject(rulesCT, Formatting.Indented));
-            await sendToPlayer(player, "Rules", JsonConvert.SerializeObject(rulesCT));
+            logTransferObj("Settings", "settingsCT", JsonConvert.SerializeObject(settingsCT, Formatting.Indented));
+            await sendToPlayer(player, "Settings", JsonConvert.SerializeObject(settingsCT));
         }
         
-        protected async Task SendRulesToCaller(Rules rulesCT)
+        protected async Task SendSettingsToCaller(DokoSettings settingsCT)
         {
-            logTransferObj("Rules", "rulesCT", JsonConvert.SerializeObject(rulesCT, Formatting.Indented));
-            await Clients.Caller.SendAsync("Rules", JsonConvert.SerializeObject(rulesCT));
+            logTransferObj("Settings", "settingsCT", JsonConvert.SerializeObject(settingsCT, Formatting.Indented));
+            await Clients.Caller.SendAsync("Settings", JsonConvert.SerializeObject(settingsCT));
         }
         
         protected async Task SendStatistics(Game game, string stats)

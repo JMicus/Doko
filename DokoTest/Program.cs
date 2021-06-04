@@ -1,9 +1,11 @@
 ﻿using Doppelkopf.Core.App;
+using Doppelkopf.Core.App.Config;
 using Doppelkopf.Core.App.Enums;
 using Doppelkopf.Core.App.Helper;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -28,12 +30,16 @@ namespace DokoTest
         {
 
 
-            var s = 2.423452345;
+            var settings = new DokoSettings();
 
-            Console.WriteLine(s.ToString("0.0###", System.Globalization.CultureInfo.InvariantCulture));
-            
-            
-            
+            var ser = JsonConvert.SerializeObject(settings);
+
+            File.WriteAllText(@"C:\Users\acer\Documents\ProgrammeCode\Doppelkopf\debugOut\test.json", ser);
+
+            settings = JsonConvert.DeserializeObject<DokoSettings>(ser);
+
+
+
 
             //var l = JsonConvert.DeserializeObject<List<List<string>>>(JsonConvert.SerializeObject(list));
 

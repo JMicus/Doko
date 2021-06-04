@@ -33,6 +33,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 
         #region view
         public Game GameView { get; set; }
+        public Settings SettingsView { get; set; }
         public PointsPage PointsView { get; set; }
         #endregion
 

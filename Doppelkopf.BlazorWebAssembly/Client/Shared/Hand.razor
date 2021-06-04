@@ -3,7 +3,7 @@
 
 <div class="frow frow-1">
 
-    <div class="frow frow-1" style="max-width: @((int.Parse(Layout["cardWidth"]) * (Cards.Count - 1)) + "px"); margin: auto; height: 100%">
+    <div class="frow frow-1" style="max-width: @((Layout.CardLayout.Value.Width.Value * (Cards.Count - 1)) + "px"); margin: auto; height: 100%">
 
         @for (int i = 0; i < Cards.Count; i++)
         {
@@ -21,7 +21,7 @@
         }
 
     </div>
-    <div class="frow" style="width: @(Layout["cardWidth"] + "px")">
+    <div class="frow" style="width: @(Layout.CardLayout.Value.Height.Value + "px")">
 
     </div>
 </div>
@@ -32,7 +32,7 @@
     public List<C.Card> Cards { get; set; }
 
     [Parameter]
-    public C.Layout Layout { get; set; }
+    public C.Config.Layout Layout { get; set; }
 
     [Parameter]
     public EventCallback<C.Card> OnClick { get; set; }

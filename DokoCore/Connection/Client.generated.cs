@@ -6,6 +6,7 @@ using System.Text;
 using Doppelkopf.Core.App;
 using Doppelkopf.Core.App.Enums;
 using Newtonsoft.Json;
+using Doppelkopf.Core.App.Config;
 
 namespace Doppelkopf.Core.Connection
 {
@@ -48,11 +49,10 @@ namespace Doppelkopf.Core.Connection
         public delegate void InfoAction(string msg);
         public delegate void InitializedAction(string gameName, int playerNo, string playerToken);
         public delegate void LastTrickAction(Trick trickCT);
-        public delegate void LayoutAction(Layout layoutCT);
         public delegate void MessagesAction(List<List<string>> messagesCT);
         public delegate void PlayerJoinedAction(int playerNo, string name);
         public delegate void PointsAction(Points pointsCT);
-        public delegate void RulesAction(Rules rulesCT);
+        public delegate void SettingsAction(DokoSettings settingsCT);
         public delegate void StatisticsAction(string stats);
         public delegate void SymbolsAction(List<List<Symbol>> symbolsCT);
         public delegate void TrickAction(Trick trickCT);
@@ -68,11 +68,10 @@ namespace Doppelkopf.Core.Connection
         public event InfoAction OnInfo;
         public event InitializedAction OnInitialized;
         public event LastTrickAction OnLastTrick;
-        public event LayoutAction OnLayout;
         public event MessagesAction OnMessages;
         public event PlayerJoinedAction OnPlayerJoined;
         public event PointsAction OnPoints;
-        public event RulesAction OnRules;
+        public event SettingsAction OnSettings;
         public event StatisticsAction OnStatistics;
         public event SymbolsAction OnSymbols;
         public event TrickAction OnTrick;
@@ -119,11 +118,10 @@ namespace Doppelkopf.Core.Connection
             On("Info", (string msg) => OnInfo?.Invoke(msg));
             On("Initialized", (string gameName, string playerNo, string playerToken) => OnInitialized?.Invoke(gameName, int.Parse(playerNo), playerToken));
             On("LastTrick", (string trickCT) => OnLastTrick?.Invoke(JsonConvert.DeserializeObject<Trick>(trickCT)));
-            On("Layout", (string layoutCT) => OnLayout?.Invoke(JsonConvert.DeserializeObject<Layout>(layoutCT)));
             On("Messages", (string messagesCT) => OnMessages?.Invoke(JsonConvert.DeserializeObject<List<List<string>>>(messagesCT)));
             On("PlayerJoined", (string playerNo, string name) => OnPlayerJoined?.Invoke(int.Parse(playerNo), name));
             On("Points", (string pointsCT) => OnPoints?.Invoke(JsonConvert.DeserializeObject<Points>(pointsCT)));
-            On("Rules", (string rulesCT) => OnRules?.Invoke(JsonConvert.DeserializeObject<Rules>(rulesCT)));
+            On("Settings", (string settingsCT) => OnSettings?.Invoke(JsonConvert.DeserializeObject<DokoSettings>(settingsCT)));
             On("Statistics", (string stats) => OnStatistics?.Invoke(stats));
             On("Symbols", (string symbolsCT) => OnSymbols?.Invoke(JsonConvert.DeserializeObject<List<List<Symbol>>>(symbolsCT)));
             On("Trick", (string trickCT) => OnTrick?.Invoke(JsonConvert.DeserializeObject<Trick>(trickCT)));
@@ -228,9 +226,9 @@ namespace Doppelkopf.Core.Connection
             hubConnection.SendAsync("SetExternalPage_H", gameName, playerNo.ToString(), url);
         }
         
-        public void SetRules(Rules rulesCT)
+        public void SetSettings(DokoSettings settingsCT)
         {
-            hubConnection.SendAsync("SetRules_H", gameName, playerNo.ToString(), JsonConvert.SerializeObject(rulesCT));
+            hubConnection.SendAsync("SetSettings_H", gameName, playerNo.ToString(), JsonConvert.SerializeObject(settingsCT));
         }
         
         public void TakeCardBack()

@@ -11,16 +11,21 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 {
     public class GameState
     {
-
-
         #region C Objects
-        public C.PlayerHolder Players = new C.PlayerHolder(null);
+        public C.PlayerHolder Players = new C.PlayerHolder();
         //public C.Player _testplayer = new C.Player(null, 1);
 
         public C.Trick Trick = new C.Trick();
         public C.Trick LastTrick = new C.Trick();
 
-        public C.Layout Layout = new C.Layout();
+        //public C.Layout Layout = new C.Layout();
+        public C.Config.DokoSettings Settings = new C.Config.DokoSettings();
+
+        public C.Config.Layout Layout
+        {
+            get { return Settings.Layout.Value; }
+            set { Settings.Layout.Value = value; }
+        }
         #endregion
 
         public Watch<string> ExternalPageUrl = new Watch<string>("");
@@ -113,13 +118,14 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
                 //StateHasChanged();
             };
 
-            client.OnLayout += (layout) =>
+            client.OnSettings += (settings) =>
             {
-                log("Layout");
-                Layout = layout;
+                log("Settigns");
+                Settings = settings;
                 gv.Refresh();
-                gv.TrickView.Refresh(layout);
-                gv.LastTrickView.Refresh(layout);
+                gv.TrickView.Refresh(settings.Layout.Value);
+                gv.LastTrickView.Refresh(settings.Layout.Value);
+                StateService.SettingsView?.Refresh();
             };
 
             client.OnDealQuestion += () =>

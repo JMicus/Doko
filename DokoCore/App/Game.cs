@@ -1,4 +1,5 @@
 ﻿using DokoCore.Core.App.Enums;
+using Doppelkopf.Core.App.Config;
 using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections;
@@ -13,8 +14,8 @@ namespace Doppelkopf.Core.App
     {
         public string Name;
 
-        public Rules Rules = new Rules();
-        public Layout Layout = new Layout();
+        public CardsHandler CardsHandler = new CardsHandler();
+        public Config.DokoSettings Settings = new Config.DokoSettings();
         public History History = new History();
 
         public Trick Trick = new Trick();
@@ -32,7 +33,7 @@ namespace Doppelkopf.Core.App
 
         public Game()
         {
-            Player = new PlayerHolder(Rules);
+            Player = new PlayerHolder();
         }
 
 
@@ -61,7 +62,7 @@ namespace Doppelkopf.Core.App
                 Player[i].RemoveLastWonCards();
             }
 
-            var deck = Rules.Deck;
+            var deck = CardsHandler.CreateDeck(Settings.Rules.Value);
 
             deck = deck.OrderBy(x => rnd.NextDouble()).ToList();
 
@@ -75,7 +76,7 @@ namespace Doppelkopf.Core.App
                 Player[i % 4 + 1].AddCard(deck[i]);
             }
 
-            Rules.Order = CardOrder.Regular;
+            CardsHandler.Order = CardOrder.Regular;
             SortHandCards();
 
             History.Add(this);
@@ -96,7 +97,7 @@ namespace Doppelkopf.Core.App
         {
             for (int i = 1; i <= 4; i++)
             {
-                Rules.SortCards(Player[i].Cards, detectPigs);
+                CardsHandler.SortCards(Player[i].Cards, Settings.Rules.Value, detectPigs);
             }
         }
 
@@ -215,7 +216,7 @@ namespace Doppelkopf.Core.App
 
         public string Stats()
         {
-            var s = History.Stats(Rules);
+            var s = History.Stats(Settings.Rules.Value);
 
             for (int i = 1; i <= 4; i++)
             {

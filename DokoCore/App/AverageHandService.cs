@@ -1,4 +1,5 @@
-﻿using Doppelkopf.Core.App.Enums;
+﻿using Doppelkopf.Core.App.Config;
+using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,7 @@ namespace Doppelkopf.Core.App
             }
 
 
+            var cardsHandler = new CardsHandler();
 
 
 
@@ -122,12 +124,12 @@ namespace Doppelkopf.Core.App
                 avgCards.AddRange(getMostAppearedWhere(allCards.Where(x => !x.IsTrumpf)
                                                                 .ToList(),
                                                                 c => fehlList.GetRange(0, (int)(avgFehlfarbenCount + .5f)).Contains(c.NameCode[0]),
-                                                                rules.Deck.Count / 4 - avgCards.Count));
+                                                                cardsHandler.CreateDeck(rules).Count / 4 - avgCards.Count));
 
 
                 //for (int i = 0; i < avgFehlfarbenCount)
 
-                rules.SortCards(avgCards);
+                cardsHandler.SortCards(avgCards, rules);
 
                 handsToShow.Add(avgCards);
             }
@@ -139,7 +141,7 @@ namespace Doppelkopf.Core.App
             {
                 // make playable
                 var cardsOut = handsToShow.SelectMany(x => x).Select(x => x.Name).ToList();
-                var cardsIn = rules.Deck.Select(x => x.Name).ToList();
+                var cardsIn = cardsHandler.CreateDeck(rules).Select(x => x.Name).ToList();
 
 
                 for (int o = 0; o < cardsOut.Count; o++)
@@ -155,8 +157,8 @@ namespace Doppelkopf.Core.App
                     };
                 };
 
-                var inSorted = cardsIn.OrderBy(x => rules.Order.IndexOf(Card.NameCodeOf(x))).ToList();
-                var outSorted = cardsOut.OrderBy(x => rules.Order.IndexOf(Card.NameCodeOf(x))).ToList();
+                var inSorted = cardsIn.OrderBy(x => cardsHandler.Order.IndexOf(Card.NameCodeOf(x))).ToList();
+                var outSorted = cardsOut.OrderBy(x => cardsHandler.Order.IndexOf(Card.NameCodeOf(x))).ToList();
                 for (int i = 0; i < inSorted.Count(); i++)
                 {
 
@@ -165,7 +167,7 @@ namespace Doppelkopf.Core.App
 
                 handsToShow.ForEach(x =>
                 {
-                    rules.SortCards(x);
+                    cardsHandler.SortCards(x, rules);
 
                 });
             }

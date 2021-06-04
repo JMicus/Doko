@@ -43,7 +43,7 @@
                         }
                         else
                         {
-                            <img src="Images/dealSymbolWhite.png" style="width: 24px; height: 24px; margin-right: 8px"/>
+                            <img src="Images/dealSymbolWhite.png" style="width: 24px; height: 24px; margin-right: 8px" />
                         }
                         @item.Text
                     </NavLink>
@@ -92,6 +92,7 @@
             items.Add(new Entry("Punkte", "oi-clipboard", EMenuAction.PagePoints, "points"));
             items.Add(new Entry("Verlauf", "oi-sort-ascending", EMenuAction.PageHistory, "history"));
             items.Add(new Entry("Statistiken", "oi-bar-chart", EMenuAction.PageStats, "stats"));
+            items.Add(new Entry("Einstellungen", "oi-cog", EMenuAction.PageSettings, "settings"));
             items.Add(null);
 
             switch (MenuService.OpenTab.Value)

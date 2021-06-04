@@ -17,6 +17,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Enums
         PageTable,
         PagePoints,
         PageStats,
-        PageHistory
+        PageHistory,
+        PageSettings
     }
 }

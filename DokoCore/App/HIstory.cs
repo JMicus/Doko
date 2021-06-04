@@ -1,4 +1,5 @@
-﻿using Doppelkopf.Core.App.Enums;
+﻿using Doppelkopf.Core.App.Config;
+using Doppelkopf.Core.App.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

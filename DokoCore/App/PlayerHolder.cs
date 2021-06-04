@@ -10,11 +10,11 @@ namespace Doppelkopf.Core.App
     {
         private Player[] _player = new Player[4];
 
-        public PlayerHolder(Rules rules)
+        public PlayerHolder()
         {
             for (int i = 1; i <= 4; i++)
             {
-                this[i] = new Player(rules, i);
+                this[i] = new Player(i);
             }
         }
 

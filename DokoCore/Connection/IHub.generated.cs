@@ -33,7 +33,7 @@ namespace Doppelkopf.Core.Connection
         
         Task SetExternalPage(string gameName, string playerNo, string url);
         
-        Task SetRules(string gameName, string playerNo, string rulesCT);
+        Task SetSettings(string gameName, string playerNo, string settingsCT);
         
         Task TakeCardBack(string gameName, string playerNo);
         

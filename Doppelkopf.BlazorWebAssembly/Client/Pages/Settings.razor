@@ -1,0 +1,62 @@
+﻿@page "/settings"
+
+
+@using Services
+@using Core.App.Config
+
+@inject StateService StateService
+@inject Core.Connection.Client Client
+
+<RadzenCard Style="width:600px; height:500px; margin: auto;">
+     @foreach (var setting in getSettingsToShow())
+     {
+
+        <div class="row">
+            <div class="col-md-6">
+                <b>@setting.DisplayName</b>
+            </div>
+            <div class="col-md-6">
+                <RadzenDropDown @bind-Value=@setting.ValueObj
+                                AllowClear="false"
+                                TValue="object"
+                                Data=@setting.GetAllowedValues()
+                                Change=@(args => uploadSettings())>
+                    <Template>
+                        @setting.DisplayNameOfValue((object)context)
+                    </Template>
+                </RadzenDropDown>
+            </div>
+        </div>
+     }
+</RadzenCard>
+
+@code {     
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        StateService.SettingsView = this;
+    }
+
+    private void uploadSettings()
+    {
+        Client.SetSettings(StateService.GameState.Settings);
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+
+    private List<AbstractSetting> getSettingsToShow()
+    {
+        var settings = new List<AbstractSetting>();
+
+        var rules = StateService.GameState.Settings.Rules.Value;
+
+        settings.Add(rules.Nines);
+        settings.Add(rules.Pigs);
+
+        return settings;
+    }
+}

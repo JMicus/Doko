@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Doppelkopf.Core;
 using Newtonsoft.Json;
 using Doppelkopf.Core.Connection;
+using Doppelkopf.Core.App.Enums;
 
 namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 {
@@ -28,14 +29,8 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 {
                     Name = TESTGAME
                 };
-                var height = 240;
 
-                game.Layout["cardLayout"] = "HP";
-                game.Layout["cardImageType"] = "gif";
-                game.Layout["cardHeight"] = "" + height;
-                game.Layout["cardWidth"] = "" + (int)(height * 0.605);
-                game.Layout["cardBorder"] = "true";
-                game.Layout["background"] = "pergament.jpg";
+                //game.Settings.Layout.Value.CardLayout.Value.ChangeLayoutToHP();
 
                 game.OnMessagesChanged += Game_OnMessagesChanged;
 
@@ -185,7 +180,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             }
             //await Clients.Group(gameName).SendAsync("PlayerJoined", playerNo, player.Name);
 
-            await SendLayout(player, game.Layout);
+            await SendSettings(player, game.Settings);
 
             // current state to new client
             
@@ -212,11 +207,8 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 await sendMessages(game);
             }
 
-            await SendRules(player, game.Rules);
 
            //TODO await SendStatistics(player, game.Stats);
-
-            //await sendLayout(game);
         }
 
         //public static async Task SayHelloStatic(string gameName, string playerNo, string playerName) { }
@@ -235,8 +227,6 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             {
                 await SendDealQuestionToCaller();
             }
-
-            
         }
 
         protected override async Task PutCard(C.Game game, C.Player player, C.Card card)
@@ -331,7 +321,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
         {
             try
             {
-                game.Rules.Order = C.Enums.CardOrder.OrderByGameType(eGameType);
+                game.CardsHandler.Order = C.Enums.CardOrder.OrderByGameType(eGameType);
                 game.SortHandCards();
                 await SendHand(game, player.Cards);
             }
@@ -388,26 +378,21 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 {
                     case "hp":
                         //await PlayerMsg(gameName, playerNo, "cmd.cards.HP.200.gif");
-                        var height = 240;
 
-                        game.Layout["cardLayout"] = "HP";
-                        game.Layout["cardImageType"] = "gif";
-                        game.Layout["cardHeight"] = "" + height;
-                        game.Layout["cardWidth"] = "" + (int)(height * 0.605);
-                        game.Layout["cardBorder"] = "true";
-                        game.Layout["background"] = "pergament.jpg";
+                        game.Settings.Layout.Value.CardLayout.Value.ChangeLayoutToHP();
+
                         refreshLayout = true;
                         break;
 
                     case "default":
-                        game.Layout.ResetLayout();
+                        game.Settings.Layout.Value.CardLayout.Value = new C.Config.CardLayout();
                         refreshLayout = true;
                         break;
 
-                    case "layout":
-                        game.Layout[c[2]] = c[3];
-                        refreshLayout = true;
-                        break;
+                    //case "layout":
+                    //    game.Layout[Parsenum.S2E<ELayout>(c[2])] = c[3];
+                    //    refreshLayout = true;
+                    //    break;
 
                     default:
                         break;
@@ -416,7 +401,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
                 if (refreshLayout)
                 {
-                    await SendLayout(game, game.Layout);
+                    await SendSettings(game, game.Settings);
                     await SendHand(game, player.Cards);
                     await SendTrick(player, game.Trick);
                     await SendLastTrick(player, game.LastTrick);
@@ -431,11 +416,11 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             await sendMessages(game);
         }
 
-        protected override async Task SetRules(C.Game game, C.Player player, C.Rules rules)
+        protected override async Task SetSettings(C.Game game, C.Player player, C.Config.DokoSettings settings)
         {
-            game.Rules = rules;
+            game.Settings = settings;
 
-            await SendRules(game, game.Rules);
+            await SendSettings(game, settings);
         }
 
         protected override async Task AddSymbol(C.Game game, C.Player player, int playerOfSymbolNo, C.Enums.Symbol symbol)

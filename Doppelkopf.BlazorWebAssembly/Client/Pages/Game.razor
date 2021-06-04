@@ -77,7 +77,7 @@
 
 </div>
 
-    <div class="frow" style="height: @(gs.Layout["cardHeight"] + "px"); margin-bottom: 20px">
+    <div class="frow" style="height: @(gs.Layout.CardLayout.Value.Height + "px"); margin-bottom: 20px">
         @*<Card Layout=@_layout CardObj=@me.Cards.FirstOrDefault() Width="300px"/>*@
         <Hand @ref=@HandView Layout=@gs.Layout Cards=@gs.Me.Cards SelectionMode=false OnClick=@onHandClick />
     </div>

@@ -34,7 +34,7 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 Method.GameAndPlayer("GiveCardsToPlayer", "receivingPlayerNo.int", "cards.List<Card>", "cardsBack.bool"),
                 Method.GameAndPlayer("AddSymbol", "playerOfSymbol.int", "symbol.Symbol"),
                 Method.GameAndPlayer("ChangeCardOrder", "cardOrder.e-EGameType"),
-                Method.GameAndPlayer("SetRules", "rules.Rules"),
+                Method.GameAndPlayer("SetSettings", "settings.DokoSettings"),
                 Method.GameAndPlayer("SetExternalPage", "url")
             }.OrderBy(m => m.Name).ToList();
 
@@ -46,14 +46,13 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 Method.OnMsgFromHub("Messages", "messages.List<List<string>>"),
                 Method.OnMsgFromHub("Hand", "hand.List<Card>"),
                 Method.OnMsgFromHub("CardsFromPlayer", "player.Player", "cards.List<Card>", "cardsBack.bool"),
-                Method.OnMsgFromHub("Layout", "layout.Layout"),
+                Method.OnMsgFromHub("Settings", "settings.DokoSettings"),
                 Method.OnMsgFromHub("Statistics", "stats"),
                 Method.OnMsgFromHub("Trick", "trick.Trick"),
                 Method.OnMsgFromHub("LastTrick", "trick.Trick"),
                 Method.OnMsgFromHub("Points", "points.Points"),
                 Method.OnMsgFromHub("Symbols", "symbols.List<List<Symbol>>"),
                 Method.OnMsgFromHub("Info", "msg"),
-                Method.OnMsgFromHub("Rules", "rules.Rules"),
                 Method.OnMsgFromHub("ExternalPage", "url"),
                 new Method("DealQuestion")
             }.OrderBy(m => m.Name).ToList();

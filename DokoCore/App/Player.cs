@@ -38,7 +38,7 @@ namespace Doppelkopf.Core.App
         public List<string> Messages { get; set; } = new List<string>();
 
         [JsonIgnore]
-        public int WonPoints => rules.CountPoints(wonCards);
+        public int WonPoints => CardsHandler.CountPoints(wonCards);
 
         [JsonIgnore]
         public string NameShort => (Name.Count() < 2 ? Name : Name.Substring(0, 2)).ToUpper();
@@ -54,14 +54,8 @@ namespace Doppelkopf.Core.App
         [JsonIgnore]
         public bool IsInitialized => !string.IsNullOrEmpty(Token);
 
-        private Rules rules;
-
-        //public Card CenterCard;
-
-
-        public Player(Rules rules, int no)
+        public Player(int no)
         {
-            this.rules = rules;
             No = no;
         }
 

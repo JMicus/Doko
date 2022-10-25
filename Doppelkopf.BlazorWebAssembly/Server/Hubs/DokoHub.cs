@@ -43,7 +43,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     game.Player[i].Token = "0";
                 }
 
-                game.Deal(null, true, 3);
+                game.Deal(null, true);
 
                 for (int i = 1; i <= 4; i++)
                 {
@@ -215,7 +215,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
         protected override async Task Deal(C.Game game, C.Player player, bool force = false)
         {
-            if (game.Deal(player, force, TESTGAME == null ? (int?)null : 1))
+            if (game.Deal(player, force, TESTGAME != game.Name ? (int?)null : 1))
             {
                 await sendHandToAll(game);
                 await SendTrick(game, game.Trick);

@@ -150,9 +150,19 @@ app {
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
     }
+
+    .toLeft + div {
+        margin-left: 0px;
+    }
 }
 
 @media (min-width: 768px) {
+
+    /*.nolift * {*/
+        /*position: relative;
+    top: -15px;*/
+        /*margin-top: 8px;
+    }*/
     app {
         flex-direction: row;
     }
@@ -187,6 +197,32 @@ app {
         /*position: relative;
         top: -15px;*/
         margin-top: 0px;
+    }
+}
+
+@media (min-width: 0px){
+    .scaled + div {
+        transform: scale(.6);
+    }
+
+    
+}
+
+@media (min-width: 450px){
+    .scaled + div {
+        transform: scale(.8);
+    }
+}
+
+@media (min-width: 768px){
+    .scaled + div {
+        transform: scale(.8);
+    }
+}
+
+@media (min-width: 850px){
+    .scaled + div {
+        transform: scale(1);
     }
 }
 

@@ -6,11 +6,15 @@
 
     <div>
 
+        <div class=@(Scaled ? "scaled" : "")/>
+
+
         <RadzenImage @ref=@(_image) Path=@getCardLink() Style=@(getStyle()) @onclick=@(() =>
-                                                                               {
-                                                                                   onClick();
-                                                                                   OnClick.InvokeAsync(CardObj);
-                                                                               }) />
+                                                                                   {
+                                                                                       onClick();
+                                                                                       OnClick.InvokeAsync(CardObj);
+                                                                                   }) />
+        
     </div>
 </div>
 
@@ -55,6 +59,9 @@
 
     [Parameter]
     public bool SelectionMode { get; set; } = false;
+
+    [Parameter]
+    public bool Scaled { get; set; } = true;
 
     public bool IsSelected { get; set; } = false;
 

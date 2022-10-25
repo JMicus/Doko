@@ -3,6 +3,8 @@
 @using Helper;
 
 
+<p class="scaled" />
+<p class="toLeft" />
 <div id="trick" class="frow" style="
     position: relative;
     margin: auto;
@@ -18,42 +20,39 @@
          width: 100%;
          height: 100%;">
 
+            @foreach (var card in _cards)
+            {
 
-        @foreach (var card in _cards)
-        {
+                <Card @ref=@_cardViews[card.NoInTrick - 1]
+                      Layout=@Layout
+                      AbsolutPosition=@true
+                      Left=@card.Left
+                      Top=@card.Top
+                      Scaled="false"
+                      Width=@rW("ww")
+                      Height=@rH("hh")
+                      RelativeSize=@RelSize
+                      Rotation=@card.Rotation
+                      OnClick=@(card.OwnCard ? OnOwnCardClick : OnOtherCardClick) />
 
-            <Card @ref=@_cardViews[card.NoInTrick - 1]
-                  Layout=@Layout
-                  AbsolutPosition=@true
-                  Left=@card.Left
-                  Top=@card.Top
-                  Width=@rW("ww")
-                  Height=@rH("hh")
-                  RelativeSize=@RelSize
-                  Rotation=@card.Rotation
-                  OnClick=@(card.OwnCard ? OnOwnCardClick : OnOtherCardClick) />
-
-        }
-
-
-        <div style="position: absolute; right: 0px; bottom: @(rH("wg"))">
-
-            <DButton @ref=@_button
-                     ImgName=@(Button == ButtonType.Take ? DButton.ButtonImgName.takeTrick : DButton.ButtonImgName.lastTrickBack)
-                     Size=@ButtonSize
-                     Visible=false
-                     OnClick=@(x => OnButtonClick.InvokeAsync(x))>
+            }
 
 
-            </DButton>
-        </div>
+            <div style="position: absolute; right: 0px; bottom: 0px">
 
+                <DButton @ref=@_button
+                         ImgName=@(Button == ButtonType.Take ? DButton.ButtonImgName.takeTrick : DButton.ButtonImgName.lastTrickBack)
+                         Size=@ButtonSize
+                         Visible=false
+                         OnClick=@(x => OnButtonClick.InvokeAsync(x))>
+
+
+                </DButton>
+            </div>
 
 
     </div>
-
 </div>
-
 
 @code {
 

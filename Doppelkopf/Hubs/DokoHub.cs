@@ -20,7 +20,7 @@ namespace Doppelkopf.Hubs
         public DokoHub() : base() {
             //Console.WriteLine(GetHttpContextExtensions.GetHttpContext(this.Context).s)
 
-            if (true)
+            if (false)
             {
                 Game game = new Game()
                 {
@@ -398,6 +398,18 @@ namespace Doppelkopf.Hubs
                         game.Rules.Layout["cardImageType"] = "gif";
                         game.Rules.Layout["cardHeight"] = "" + height;
                         game.Rules.Layout["cardWidth"] = "" + (int)(height * 0.605);
+                        game.Rules.Layout["cardBorder"] = "true";
+                        game.Rules.Layout["background"] = "pergament.jpg";
+                        refreshLayout = true;
+                        break;
+
+                    case "got":
+                        var heightGOT = 240;
+
+                        game.Rules.Layout["cardLayout"] = "GOT";
+                        game.Rules.Layout["cardImageType"] = "png";
+                        game.Rules.Layout["cardHeight"] = "" + heightGOT;
+                        game.Rules.Layout["cardWidth"] = "" + (int)(heightGOT * 0.689);
                         game.Rules.Layout["cardBorder"] = "true";
                         game.Rules.Layout["background"] = "pergament.jpg";
                         refreshLayout = true;

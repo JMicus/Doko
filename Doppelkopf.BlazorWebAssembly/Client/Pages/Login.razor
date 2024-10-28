@@ -81,7 +81,7 @@
         Console.WriteLine("init " + playerNo + " " + playerName);
 
         StateService.PlayerName.Value = playerName;
-        Client.Init(gameName, playerNoInt, playerName);
+        Client.Init(gameName, playerNoInt, playerName, null);
     }
 
     void OnInitialized(string gameName, int playerNo, string playerToken)

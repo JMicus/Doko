@@ -18,15 +18,6 @@ namespace Doppelkopf.Core.App
             }
         }
 
-        private int s2i(string playerNo)
-        {
-            if (int.TryParse(playerNo, out int _) == false)
-            {
-
-            }
-            return Convert.ToInt32(playerNo) - 1;
-        }
-
         public IEnumerator<Player> GetEnumerator()
         {
             for (int i = 0; i < 4; i++)
@@ -40,15 +31,31 @@ namespace Doppelkopf.Core.App
             return GetEnumerator();
         }
 
-        public Player this[string playerNo]
+        public Player this[string playerNoOrToken]
         {
             get
             {
-                return _player[s2i(playerNo)];
+                var no = stringKeyToNo(playerNoOrToken);
+
+                var player = this[no];
+
+                if (player != null)
+                {
+                    return player;
+                }
+
+                return this.FirstOrDefault(p => p.Token == playerNoOrToken);
             }
             set
             {
-                _player[s2i(playerNo)] = value;
+                if (int.TryParse(playerNoOrToken, out int no))
+                {
+                    this[no] = value;
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException($"Value has to be an integer but is '{playerNoOrToken}'");
+                }
             }
         }
 
@@ -56,12 +63,26 @@ namespace Doppelkopf.Core.App
         {
             get
             {
+                if (playerNo <= 0 || playerNo > _player.Length)
+                {
+                    return null;
+                }
                 return _player[playerNo - 1];
             }
             set
             {
                 _player[playerNo - 1] = value;
             }
+        }
+
+        private int stringKeyToNo(string playerNo)
+        {
+            if (int.TryParse(playerNo, out int no))
+            {
+                return no;
+            }
+
+            return -1;
         }
 
         public List<Player> AllExcept(Player player)

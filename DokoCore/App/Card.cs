@@ -21,6 +21,7 @@ namespace Doppelkopf.Core.App
         }
 
         private ECard? _name;
+
         public ECard? Name
         {
             get
@@ -48,10 +49,13 @@ namespace Doppelkopf.Core.App
 
         [JsonIgnore]
         public bool IsTrumpf => IsDame || IsBube || IsKaro || Name == ECard.H1;
+
         [JsonIgnore]
         public bool IsDame => ToCode()[1] == 'd';
+
         [JsonIgnore]
         public bool IsBube => ToCode()[1] == 'b';
+
         [JsonIgnore]
         public bool IsKaro => ToCode()[0] == 'c' && !IsDame && !IsBube;
 
@@ -69,14 +73,19 @@ namespace Doppelkopf.Core.App
                 {
                     case EColor.Trumpf:
                         return "t";
+
                     case EColor.Kreuz:
                         return "k";
+
                     case EColor.Pik:
                         return "p";
+
                     case EColor.Herz:
                         return "h";
+
                     case EColor.Karo:
                         return "c";
+
                     default:
                         return "_";
                 }
@@ -88,15 +97,19 @@ namespace Doppelkopf.Core.App
                     case "t":
                         Color = EColor.Trumpf;
                         break;
+
                     case "k":
                         Color = EColor.Kreuz;
                         break;
+
                     case "p":
                         Color = EColor.Pik;
                         break;
+
                     case "h":
                         Color = EColor.Herz;
                         break;
+
                     case "c":
                         Color = EColor.Karo;
                         break;
@@ -114,9 +127,11 @@ namespace Doppelkopf.Core.App
 
         public Card(string code)
         {
-            if (code != "")
+            if (!string.IsNullOrWhiteSpace(code)
+                && code.Length == 2
+                && Enum.TryParse<ECard>(code.ToUpper(), out var card))
             {
-                Name = (ECard)Enum.Parse(typeof(ECard), code.Substring(0, 2).ToUpper());
+                Name = card;
                 No = int.Parse(code[2].ToString());
                 ColorChar = code[3].ToString();
             }
@@ -129,7 +144,8 @@ namespace Doppelkopf.Core.App
             ColorChar = card.ColorChar;
         }
 
-        public Card() { }
+        public Card()
+        { }
 
         /// <summary>
         /// Returns NCT: CardColor, Card-Number/Head, Trumpf/Fehl-Color

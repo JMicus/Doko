@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>6</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>6</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DokoCore\Doppelkopf.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ToolKit.Core">
+      <HintPath>..\Binaries\ToolKit.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ToolKit.Telegram">
+      <HintPath>..\Binaries\ToolKit.Telegram.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

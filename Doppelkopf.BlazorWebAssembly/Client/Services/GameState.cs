@@ -12,6 +12,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
     public class GameState
     {
         #region C Objects
+
         public C.PlayerHolder Players = new C.PlayerHolder();
         //public C.Player _testplayer = new C.Player(null, 1);
 
@@ -26,7 +27,8 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
             get { return Settings.Layout.Value; }
             set { Settings.Layout.Value = value; }
         }
-        #endregion
+
+        #endregion C Objects
 
         public Watch<string> ExternalPageUrl = new Watch<string>("");
 
@@ -34,8 +36,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 
         private Game gv => StateService.GameView;
         public C.Player Me => Players[StateService.PlayerNo];
-
-
 
         public GameState(StateService stateService)
         {
@@ -49,10 +49,10 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 
         public void InitMessagesFromHub(Core.Connection.Client client)
         {
-            client.OnUnauthorized += (gameName, playerNo, playerName) =>
+            client.OnUnauthorized += (message) =>
             {
-                log("Unauthorized");
-                gv.OpenDialogUnauthorized(gameName, playerNo, playerName);
+                log("Unauthorized: " + message);
+                gv.OpenDialogUnauthorized(message);
             };
 
             client.OnPlayerJoined += (no, name) =>
@@ -82,7 +82,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
 
                 // TODO debug
                 var first = Me.Cards == null || Me.Cards.Count == 0;
-
 
                 Me.SetHand(cards);
 

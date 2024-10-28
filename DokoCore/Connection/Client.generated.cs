@@ -10,36 +10,8 @@ using Doppelkopf.Core.App.Config;
 
 namespace Doppelkopf.Core.Connection
 {
-    public class Client
+    public partial class Client
     {
-        #region Fields
-        private HubConnection _hubConnection;
-        private Uri _hubUri;
-
-        private string gameName => GameName;
-        private int playerNo => PlayerNo;
-        #endregion
-
-        public string GameName { get; set; }
-        public int PlayerNo { get; set; }
-
-        private HubConnection hubConnection
-        {
-            get
-            {
-                if (_hubConnection == null)
-                {
-                    initializeConnection();
-                }
-                return _hubConnection;
-            }
-            set
-            {
-                _hubConnection = value;
-            }
-        }
-
-
         #region (generated) delegates
         
         public delegate void CardsFromPlayerAction(Player playerCT, List<Card> cardsCT, bool cardsBack);
@@ -56,8 +28,8 @@ namespace Doppelkopf.Core.Connection
         public delegate void StatisticsAction(string stats);
         public delegate void SymbolsAction(List<List<Symbol>> symbolsCT);
         public delegate void TrickAction(Trick trickCT);
-        public delegate void UnauthorizedAction(string gameName, int playerNo, string playerName);
-        #endregion
+        public delegate void UnauthorizedAction(string message);
+        #endregion (generated) delegates
 
         #region (generated) events
         
@@ -76,40 +48,11 @@ namespace Doppelkopf.Core.Connection
         public event SymbolsAction OnSymbols;
         public event TrickAction OnTrick;
         public event UnauthorizedAction OnUnauthorized;
-        #endregion
+        #endregion (generated) events
 
-
-        #region ctor
-
-        //public void Conf(string myGameName, int myPlayerNo)
-        //{
-        //    this.gameName = myGameName;
-        //    this.playerNo = myPlayerNo;
-        //}
-
-        public void Init(Uri hubUri)
+        private void initializeGenerated()
         {
-            _hubUri = hubUri;
-        }
-
-        public void Disconnect()
-        {
-            hubConnection.DisposeAsync();
-            hubConnection = null;
-        }
-
-        private void initializeConnection()
-        { 
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl(_hubUri)
-                .Build();
-
-            if (hubConnection.State == HubConnectionState.Connected)
-            {
-                //_ = hubConnection.StopAsync();
-            }
-
-            #region (generated) ctor
+            #region (generated) init
             
             On("CardsFromPlayer", (string playerCT, string cardsCT, string cardsBack) => OnCardsFromPlayer?.Invoke(JsonConvert.DeserializeObject<Player>(playerCT), JsonConvert.DeserializeObject<List<Card>>(cardsCT), bool.Parse(cardsBack)));
             On("DealQuestion", () => OnDealQuestion?.Invoke());
@@ -125,123 +68,96 @@ namespace Doppelkopf.Core.Connection
             On("Statistics", (string stats) => OnStatistics?.Invoke(stats));
             On("Symbols", (string symbolsCT) => OnSymbols?.Invoke(JsonConvert.DeserializeObject<List<List<Symbol>>>(symbolsCT)));
             On("Trick", (string trickCT) => OnTrick?.Invoke(JsonConvert.DeserializeObject<Trick>(trickCT)));
-            On("Unauthorized", (string gameName, string playerNo, string playerName) => OnUnauthorized?.Invoke(gameName, int.Parse(playerNo), playerName));
-            #endregion
-            
-            hubConnection.StartAsync();
-        }
-        #endregion
-
-        #region Methods
-        private void On(string method, Action action)
-        {
-            hubConnection.On(method, action);
-        }
-
-        private void On(string method, Action<string> action)
-        {
-            hubConnection.On<string>(method, action);
-        }
-
-        private void On(string method, Action<string, string> action)
-        {
-            hubConnection.On<string, string>(method, action);
-        }
-
-        private void On(string method, Action<string, string, string> action)
-        {
-            hubConnection.On<string, string, string>(method, action);
-        }
-
-        private void Send(string method, string arg1, string arg2 = null, string arg3 = null)
-        {
-            if (arg3 != null)
-            {
-                hubConnection.SendAsync(method, arg1, arg2, arg3);
-            }
-            else if (arg2 != null)
-            {
-                hubConnection.SendAsync(method, arg1, arg2);
-            }
-            else
-            {
-                hubConnection.SendAsync(method, arg1);
-            }
+            On("Unauthorized", (string message) => OnUnauthorized?.Invoke(message));
+            #endregion (generated) init
         }
 
         #region (generated) methods
         
+        // creation info: Generate:99, init: Generate:26
         public void AddSymbol(int playerOfSymbol, Symbol symbolCT)
         {
-            hubConnection.SendAsync("AddSymbol_H", gameName, playerNo.ToString(), playerOfSymbol.ToString(), JsonConvert.SerializeObject(symbolCT));
+            hubConnection.SendAsync("AddSymbol_H", gameName, playerNo.ToString(), playerToken, playerOfSymbol.ToString(), JsonConvert.SerializeObject(symbolCT));
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void ChangeCardOrder(EGameType cardOrderE)
         {
-            hubConnection.SendAsync("ChangeCardOrder_H", gameName, playerNo.ToString(), Parsenum.E2S(cardOrderE));
+            hubConnection.SendAsync("ChangeCardOrder_H", gameName, playerNo.ToString(), playerToken, Parsenum.E2S(cardOrderE));
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void Deal(bool force)
         {
-            hubConnection.SendAsync("Deal_H", gameName, playerNo.ToString(), force.ToString());
+            hubConnection.SendAsync("Deal_H", gameName, playerNo.ToString(), playerToken, force.ToString());
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void Debug(string tag)
         {
-            hubConnection.SendAsync("Debug_H", gameName, playerNo.ToString(), tag);
+            hubConnection.SendAsync("Debug_H", gameName, playerNo.ToString(), playerToken, tag);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void GiveCardsToPlayer(int receivingPlayerNo, List<Card> cardsCT, bool cardsBack)
         {
-            hubConnection.SendAsync("GiveCardsToPlayer_H", gameName, playerNo.ToString(), receivingPlayerNo.ToString(), JsonConvert.SerializeObject(cardsCT), cardsBack.ToString());
+            hubConnection.SendAsync("GiveCardsToPlayer_H", gameName, playerNo.ToString(), playerToken, receivingPlayerNo.ToString(), JsonConvert.SerializeObject(cardsCT), cardsBack.ToString());
         }
         
-        public void Init(string newGameName, int myPlayerNo, string myPlayerName)
+        // creation info: Generate:99, init: Generate:26
+        public void Init(string newGameName, int myPlayerNo, string myPlayerName, string myPlayerToken)
         {
-            hubConnection.SendAsync("Init_H", newGameName, myPlayerNo.ToString(), myPlayerName);
+            hubConnection.SendAsync("Init_H", newGameName, myPlayerNo.ToString(), myPlayerName, myPlayerToken);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void LastTrickBack()
         {
-            hubConnection.SendAsync("LastTrickBack_H", gameName, playerNo.ToString());
+            hubConnection.SendAsync("LastTrickBack_H", gameName, playerNo.ToString(), playerToken);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void PlayerMsg(string msg)
         {
-            hubConnection.SendAsync("PlayerMsg_H", gameName, playerNo.ToString(), msg);
+            hubConnection.SendAsync("PlayerMsg_H", gameName, playerNo.ToString(), playerToken, msg);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void PutCard(Card cardCT)
         {
-            hubConnection.SendAsync("PutCard_H", gameName, playerNo.ToString(), JsonConvert.SerializeObject(cardCT));
+            hubConnection.SendAsync("PutCard_H", gameName, playerNo.ToString(), playerToken, JsonConvert.SerializeObject(cardCT));
         }
         
-        public void SayHello(string playerToken)
+        // creation info: Generate:99, init: Generate:26
+        public void SayHello()
         {
             hubConnection.SendAsync("SayHello_H", gameName, playerNo.ToString(), playerToken);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void SetExternalPage(string url)
         {
-            hubConnection.SendAsync("SetExternalPage_H", gameName, playerNo.ToString(), url);
+            hubConnection.SendAsync("SetExternalPage_H", gameName, playerNo.ToString(), playerToken, url);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void SetSettings(DokoSettings settingsCT)
         {
-            hubConnection.SendAsync("SetSettings_H", gameName, playerNo.ToString(), JsonConvert.SerializeObject(settingsCT));
+            hubConnection.SendAsync("SetSettings_H", gameName, playerNo.ToString(), playerToken, JsonConvert.SerializeObject(settingsCT));
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void TakeCardBack()
         {
-            hubConnection.SendAsync("TakeCardBack_H", gameName, playerNo.ToString());
+            hubConnection.SendAsync("TakeCardBack_H", gameName, playerNo.ToString(), playerToken);
         }
         
+        // creation info: Generate:99, init: Generate:26
         public void TakeTrick()
         {
-            hubConnection.SendAsync("TakeTrick_H", gameName, playerNo.ToString());
+            hubConnection.SendAsync("TakeTrick_H", gameName, playerNo.ToString(), playerToken);
         }
         
-        #endregion
-        #endregion
+        #endregion (generated) methods
     }
 }

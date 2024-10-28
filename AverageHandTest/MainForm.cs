@@ -38,11 +38,11 @@ namespace AverageHandTest
                 }
             }
 
-
-            foreach (var hand in AverageHandService.AverageCards(game.History.Cards, game.Rules))
-            {
-                showHand(hand);
-            }
+            // fix buid!
+            //foreach (var hand in AverageHandService.AverageCards(game.History.Cards, game.Rules))
+            //{
+            //    showHand(hand);
+            //}
 
             /*// schwein durch h1 ersetzen
             game.History.Cards.ForEach(h => h.ToList().ForEach(hand => hand.ForEach(c =>

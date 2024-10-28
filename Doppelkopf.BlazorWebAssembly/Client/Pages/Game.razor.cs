@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Doppelkopf.Core.App;
+
 using Doppelkopf.BlazorWebAssembly.Client.Shared;
 using Doppelkopf.BlazorWebAssembly.Client.Enums;
 using Newtonsoft.Json;
@@ -21,6 +23,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
     public partial class Game : ComponentBase, IDisposable
     {
         #region Inject
+
         [Inject]
         private NavigationManager NavManager { get; set; }
 
@@ -38,29 +41,32 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
         [Inject]
         private Core.Connection.Client Client { get; set; }
-        #endregion
+
+        #endregion Inject
 
         #region Child Components
+
         public Hand HandView;
         public PlayerView[] PlayerViews = new PlayerView[4];
         public TrickView TrickView;
         public TrickView LastTrickView;
-        #endregion
+
+        #endregion Child Components
 
         private GameState gs => StateService.GameState;
-        
 
         #region Client Objects
+
         //private Core.Connection.Client _client;
 
         private string test = "-";
 
         private bool shouldRender = false;
 
-
-        #endregion
+        #endregion Client Objects
 
         private EDialog _openDialog = EDialog.None;
+
         public EDialog OpenDialog
         {
             get
@@ -73,9 +79,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                 log("OPENDIALOG", _openDialog.ToString());
             }
         }
-
-        #region Properties
-        #endregion
 
         private void debug()
         {
@@ -110,7 +113,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
 
             if (StateService.Init(Client, NavManager, JSRuntime))
             {
-
             }
 
             DialogService.OnClose += Close;
@@ -121,16 +123,14 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
             if (!StateService.InGame.Value)
             {
                 StateService.InGame.Value = true;
-                Client.SayHello(StateService.Token);
+                Client.SayHello();
             }
-
         }
 
-
-        public void OpenDialogUnauthorized(string gameName, int playerNo, string playerName)
+        public void OpenDialogUnauthorized(string message)
         {
             _openDialog = EDialog.Login;
-            DialogService.Confirm("Spieler*in " + playerNo + " (" + playerName + ") ist bereits im Spiel " + gameName + " angemeldet.",
+            DialogService.Confirm(message,
                                     "Platz belegt",
                                     new ConfirmOptions()
                                     {
@@ -164,7 +164,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                                                             Layout = gs.Layout,
                                                             SelectionMode = false
                                                         }.ToDict());
-
         }
 
         private void onClickTest()
@@ -236,6 +235,7 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
         //}
         //private RadzenTextArea _chatTextArea;
         private string _chatInputText = null;
+
         //private string _chatInputTextUpdated;
 
         private void onSendTextChanged(ChangeEventArgs args)
@@ -373,7 +373,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Pages
                     log("DIALOG", "default - " + _openDialog);
                     break;
             }
-            
         }
 
         public void Dispose()

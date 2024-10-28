@@ -1,0 +1,14 @@
+{
+  "FileVersion": 2,
+  "Id": "6c27df21-e0f5-4df9-85e9-08ecaf237785",
+  "Items": [
+    {
+      "Id": "7b8992b5-630f-430d-837d-05c9abbb480c",
+      "Command": "connection"
+    },
+    {
+      "Id": "38505127-4295-40c1-b373-2d266a9c0700",
+      "Command": "-autoclose"
+    }
+  ]
+}

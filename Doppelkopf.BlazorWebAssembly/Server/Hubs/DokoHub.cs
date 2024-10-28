@@ -18,9 +18,8 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
     {
         public static string TESTGAME = "Doko";
 
-         
-
-        public DokoHub() : base() {
+        public DokoHub() : base()
+        {
             //Console.WriteLine(GetHttpContextExtensions.GetHttpContext(this.Context).s)
 
             if (TESTGAME != null)
@@ -33,7 +32,6 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 //game.Settings.Layout.Value.CardLayout.Value.ChangeLayoutToHP();
 
                 game.OnMessagesChanged += Game_OnMessagesChanged;
-
 
                 Games.Add(game);
 
@@ -59,10 +57,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     //_ = player.AddMessage("my name is " + player.Name);
                     //_ = player.AddMessage("this is a long text which needs at least two rows to be displayed");
                 }
-
             }
-
-            
         }
 
         protected override async Task Debug(C.Game game, C.Player player, string tag)
@@ -93,10 +88,9 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             sendMessages(game).Wait();
         }
 
-
         // Client Methods //////////////////////
 
-        protected override async Task Init(string gameName, int playerNo, string playerName)
+        protected override async Task Init(string gameName, int playerNo, string playerName, string playerToken)
         {
             Console.WriteLine($"HUB Init {playerNo} {playerName}");
             var game = getGame(gameName);
@@ -109,12 +103,12 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     Name = gameName
                 };
                 Games.Add(game);
-                await SendInfo(game, $"Game created: {gameName}");
+                await SendInfoToCaller($"Game created: {gameName}");
             }
 
             // find playerNo if not set
             int pNo = 0;
-            var nos = new int[]{ 1, 2, 3, 4 };
+            var nos = new int[] { 1, 2, 3, 4 };
             var rand = new Random();
             nos = nos.OrderBy(x => rand.Next()).ToArray();
             while (playerNo == 0 && pNo < 4)
@@ -139,16 +133,16 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
             if (player.IsInitialized && player.ConnectionIds.Any())
             {
-                await SendInitializedToCaller(game.Name, playerNo, "");
+                await SendInitializedToCaller(game.Name, playerNo, player.Token);
             }
             else
             {
-                player.Init(playerName);
+                player.Init(playerName, playerToken);
                 await SendInitializedToCaller(game.Name, playerNo, player.Token);
             }
         }
 
-        protected override async Task SayHello(C.Game game, C.Player player, string playerToken)
+        protected override async Task SayHello(C.Game game, C.Player player)
         {
             Console.WriteLine($"HUB SayHello {player?.No}");
 
@@ -158,11 +152,12 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 return;
             }
 
-            if (player.Token != playerToken)
-            {
-                await SendUnauthorizedToCaller(game.Name, player.No, player.Name);
-                return;
-            }
+            // not necessary, is validated on every request now
+            //if (player.Token != playerToken)
+            //{
+            //    await SendUnauthorizedToCaller(game.Name, player.No, player.Name);
+            //    return;
+            //}
 
             //await Groups.AddToGroupAsync(Context.ConnectionId, gameName);
 
@@ -183,7 +178,7 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             await SendSettings(player, game.Settings);
 
             // current state to new client
-            
+
             if (!game.Trick.Empty)
             {
                 await SendTrick(player, game.Trick);
@@ -207,13 +202,12 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                 await sendMessages(game);
             }
 
-
-           //TODO await SendStatistics(player, game.Stats);
+            //TODO await SendStatistics(player, game.Stats);
         }
 
         //public static async Task SayHelloStatic(string gameName, string playerNo, string playerName) { }
 
-        protected override async Task Deal(C.Game game, C.Player player, bool force = false)
+        protected override async Task Deal(C.Game game, C.Player player, bool force)
         {
             if (game.Deal(player, force, TESTGAME != game.Name ? (int?)null : 1))
             {
@@ -255,11 +249,9 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     await SendTrick(game, game.Trick);
                     await SendHand(player, player.Cards);
 
-
-
                     //if (deleyTrickUpdate)
                     //{
-                    //    Thread.Sleep(1000); 
+                    //    Thread.Sleep(1000);
                     //}
 
                     //await sendTrick(game, player, true);
@@ -280,7 +272,6 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
                     await SendHand(player, player.Cards);
                     await SendTrick(game, game.Trick);
                     //sendInfo(gameName, $"{game.Trick.StartPlayer.N} - {game.Trick.ToCode()}");
-
                 }
             }
             catch (DokoException e)
@@ -347,7 +338,6 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
             }
         }
 
-
         protected override async Task GiveCardsToPlayer(C.Game game, C.Player player, int receivingPlayerNo, List<C.Card> cards, bool cardsBack)
         {
             var toPlayer = game.Player[receivingPlayerNo];
@@ -396,7 +386,6 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
                     default:
                         break;
-
                 }
 
                 if (refreshLayout)
@@ -409,7 +398,6 @@ namespace Doppelkopf.BlazorWebAssembly.Server.Hubs
 
                 return;
             }
-
 
             _ = player.AddMessage(msg);
 

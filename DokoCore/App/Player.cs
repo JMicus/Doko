@@ -47,7 +47,7 @@ namespace Doppelkopf.Core.App
         {
             get
             {
-                return ConnectionIds.Count > 0 ? Name : "-"; 
+                return ConnectionIds.Count > 0 ? Name : "-";
             }
         }
 
@@ -59,10 +59,15 @@ namespace Doppelkopf.Core.App
             No = no;
         }
 
-        public void Init(string name)
+        public void Init(string name, string token = null)
         {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                token = null;
+            }
+
             Name = name;
-            Token = new Random().Next(1000, 10000).ToString();
+            Token = token ?? new Random().Next(1000, 10000).ToString();
             InitDateTime = DateTime.Now;
         }
 
@@ -151,7 +156,6 @@ namespace Doppelkopf.Core.App
             if (toRemove != null)
             {
                 Symbols.Remove(toRemove);
-
             }
 
             var tricks = wonCards.Count() / 4;

@@ -1,30 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace Doppelkopf.Generator.Generators.ConnectionGenerator
 {
-    class ConnectionGenerator : AbstractGenerator
+    internal class ConnectionGenerator : AbstractGenerator
     {
         public static void Generate()
         {
-            string nameSpace = "Doppelkopf.Core.Connection";
+            //string nameSpace = "Doppelkopf.Core.Connection";
 
             string cFile = @"DokoCore\Connection\Client.generated.cs";
+            string rFile = @"DokoCore\Connection\AbstractServerMessageReceiver.generated.cs";
             string iFile = @"DokoCore\Connection\IHub.generated.cs";
             string hFile = @"DokoCore\Connection\AbstractHubBase.generated.cs";
 
             string c = getRootFile(cFile);
+            string r = getRootFile(rFile);
             string i = getRootFile(iFile);
             string h = getRootFile(hFile);
 
             var cToS = new List<Method>()
             {
-                new Method("Init", "newGameName", "myPlayerNo.int", "myPlayerName"),
+                new Method("Init", "newGameName", "myPlayerNo.int", "myPlayerName", "myPlayerToken"),
                 Method.GameAndPlayer("Debug", "tag"),
-                Method.GameAndPlayer("SayHello", "playerToken"),
+                Method.GameAndPlayer("SayHello"),
                 Method.GameAndPlayer("PlayerMsg", "msg"),
                 Method.GameAndPlayer("PutCard", "card.Card"),
                 Method.GameAndPlayer("TakeTrick"),
@@ -41,7 +44,7 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             var sToC = new List<Method>()
             {
                 Method.OnMsgFromHub("Initialized", "gameName", "playerNo.int", "playerToken"),
-                Method.OnMsgFromHub("Unauthorized", "gameName", "playerNo.int", "playerName"),
+                Method.OnMsgFromHub("Unauthorized", "message"),
                 Method.OnMsgFromHub("PlayerJoined", "playerNo.int", "name"),
                 Method.OnMsgFromHub("Messages", "messages.List<List<string>>"),
                 Method.OnMsgFromHub("Hand", "hand.List<Card>"),
@@ -58,26 +61,34 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             }.OrderBy(m => m.Name).ToList();
 
             #region CLIENT
+
             // NAMESPACE
 
             //c = c.Replace("NAMESPACE", nameSpace);
-            #endregion
 
+            #endregion CLIENT
 
             #region IHUB
+
             // NAMESPACE
 
             //i = i.Replace("NAMESPACE", nameSpace);
-            #endregion
+
+            #endregion IHUB
 
             #region HUB
+
             // NAMESPACE
 
             //h = h.Replace("NAMESPACE", nameSpace);
-            #endregion
+
+            #endregion HUB
 
             #region BOTH
+
             var cMethodCode = "";
+            var rInitCode = "";
+            var rMethodCode = "";
             var iMethodCode = "";
             var hMethodCode = "";
             var cDelegateCode = "";
@@ -85,24 +96,30 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             var cCtorCode = "";
             foreach (var method in cToS)
             {
-                cMethodCode += createMethod($"public void {method.Name}({method.Params.ToString(true, true)})",
-                                            $"hubConnection.SendAsync(\"{method.Name}_H\", {method.Params.ToString(false, true, true, Method.ESerialize.Ser)});");
+                cMethodCode += createMethod(method,
+                    $"public void {method.Name}({method.Params.ToString(true, true)})",
+                    $"hubConnection.SendAsync(\"{method.Name}_H\", {method.Params.ToString(false, true, true, false, Method.ESerialize.Ser)});");
 
-                iMethodCode += createMethod($"Task {method.Name}({method.Params.ToString(true, true, true, Method.ESerialize.None, true)})");
-                
-                var temp = createMethod($"protected abstract Task {method.Name}({method.Params.ToString(true, true, true, Method.ESerialize.None, false)})");
-                temp = temp.Replace("string gameName, int playerNo", "Game game, Player player");
+                iMethodCode += createMethod(method,
+                    $"Task {method.Name}({method.Params.ToString(true, true, true, true, Method.ESerialize.None, false)})");
+
+                // ??? .Replace("string gameName, string playerNo, string playerToken", "Game game, Player player");
+
+                var temp = createMethod(method,
+                    $"protected abstract Task {method.Name}({method.Params.ToString(true, true, true, true, Method.ESerialize.None, false)})");
+                //temp = temp.Replace("string gameName, int playerNo", "Game game, Player player");
                 hMethodCode += temp;
 
-                temp = createMethod($"public async Task {method.Name}_H({method.Params.ToString(true, true, true, Method.ESerialize.None, true)})",
-                                    string.Join("", method.Params.Select(p => $"logTransferObj(\"{method.Name}\", \"{p.Name}\", {p.Name});")) + 
-                                    (method.Params[0].Name == "gameName"
-                                    ? $"var game = getGame(gameName);var player = game?.Player[playerNo];"
-                                    : "") +
-                                    $"await {method.Name}({method.Params.ToString(false, true, true, Method.ESerialize.Des, false)});");
-                temp = temp.Replace("gameName, int.Parse(playerNo)", "game, player");
+                temp = createMethod(method,
+                    $"public async Task {method.Name}_H({method.Params.ToString(true, true, true, false, Method.ESerialize.None, true)})",
+                    string.Join("", method.Params.Select(p => $"logTransferObj(\"{method.Name}\", \"{p.Name}\", {p.Name});")) +
+                    (method.Params[0].Name == "gameName"
+                    //? $"var game = getGame(gameName);var player = game?.Player[playerNo];"
+                    ? $"(var game, var player) = getGameAndPlayer(gameName, playerNo, playerToken);if (player == null) return;"
+                    : "") +
+                    $"await {method.Name}({method.Params.ToString(false, true, true, false, Method.ESerialize.Des, false)});");
+                temp = temp.Replace("gameName, int.Parse(playerNo), playerToken", "game, player");
                 hMethodCode += temp;
-
 
                 //public void On(string method, Action<string> action)
                 //{
@@ -112,7 +129,7 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             foreach (var method in sToC)
             {
                 var strings = string.Join(", ", method.Params.Select(p => "string"));
-                var delName = $"{ method.Name }Action";
+                var delName = $"{method.Name}Action";
 
                 cDelegateCode += $"\r\npublic delegate void {delName}({method.Params.StringFull});";
 
@@ -123,6 +140,10 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 //                            $"hubConnection.On<{strings}>(\"{method.Name}\", ({method.paramsStringFull}) => action({method.paramsString}));");
 
                 cCtorCode += $"\r\nOn(\"{method.Name}\", ({method.Params.ToString(true, true, complexIsString: true)}) => On{method.Name}?.Invoke({method.Params.ToString(false, true, serializeComplexName: Method.ESerialize.Des)}));";
+
+                // receiver
+                rMethodCode += $"\r\nprotected abstract void On{method.Name}({method.Params.StringFull});";
+                rInitCode += $"\r\nclient.On{method.Name} += On{method.Name};";
 
                 //var logData = string.Join("", method.Params.Select(p => $"logTransferObj(\"{method.Name}\", \"{p.Name}\", {p.Name});"));
                 //Func<string, string> logSer = (string p) => (p.Contains("Json")
@@ -138,37 +159,40 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                     logData = $"logTransferObj(\"{method.Name}\", \"NONE\", \"\");";
                 }
 
-
-                var temp = createMethod($"protected async Task Send{method.Name}(Game game, {method.Params.ToString(true, true, showHidden: false)})",
-                                        logData + 
-                                        $"await sendToAll(game, \"{method.Name}\", {method.Params.ToString(false, showHidden: false, serializeComplexName: Method.ESerialize.Ser)});");
+                var temp = createMethod(method,
+                    $"protected async Task Send{method.Name}(Game game, {method.Params.ToString(true, true, showHidden: false)})",
+                        logData +
+                        $"await sendToAll(game, \"{method.Name}\", {method.Params.ToString(false, showHidden: false, serializeComplexName: Method.ESerialize.Ser)});");
                 temp = temp.Replace(", )", ")");
                 hMethodCode += temp;
 
-                temp = createMethod($"protected async Task Send{method.Name}(Player player, {method.Params.ToString(true, true, showHidden: false)})",
-                                        logData + 
-                                            $"await sendToPlayer(player, \"{method.Name}\", {method.Params.ToString(false, showHidden: false, serializeComplexName: Method.ESerialize.Ser)});");
+                temp = createMethod(method,
+                    $"protected async Task Send{method.Name}(Player player, {method.Params.ToString(true, true, showHidden: false)})",
+                    logData +
+                        $"await sendToPlayer(player, \"{method.Name}\", {method.Params.ToString(false, showHidden: false, serializeComplexName: Method.ESerialize.Ser)});");
                 temp = temp.Replace(", )", ")");
                 hMethodCode += temp;
 
-                temp = createMethod($"protected async Task Send{method.Name}ToCaller({method.Params.ToString(true, true, showHidden: false)})",
-                                        logData + 
-                                            $"await Clients.Caller.SendAsync(\"{method.Name}\", {method.Params.ToString(false, showHidden: false, serializeComplexName: Method.ESerialize.Ser)});");
+                temp = createMethod(method,
+                    $"protected async Task Send{method.Name}ToCaller({method.Params.ToString(true, true, showHidden: false)})",
+                        logData +
+                            $"await Clients.Caller.SendAsync(\"{method.Name}\", {method.Params.ToString(false, showHidden: false, serializeComplexName: Method.ESerialize.Ser)});");
                 temp = temp.Replace(", )", ")");
                 hMethodCode += temp;
-
-
             }
             c = replaceRegion(c, "delegates", cDelegateCode);
             c = replaceRegion(c, "events", cEventsCode);
             c = replaceRegion(c, "methods", cMethodCode);
-            c = replaceRegion(c, "ctor", cCtorCode);
+            c = replaceRegion(c, "init", cCtorCode);
+            r = replaceRegion(r, "init", rInitCode);
+            r = replaceRegion(r, "methods", rMethodCode);
             i = replaceRegion(i, "methods", iMethodCode);
             h = replaceRegion(h, "methods", hMethodCode);
-            #endregion
 
+            #endregion BOTH
 
             writeRootFile(cFile, c);
+            writeRootFile(rFile, r);
             writeRootFile(iFile, i);
             writeRootFile(hFile, h);
         }
@@ -190,18 +214,21 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             var t = "";
             for (int x = xStart - 1; text[x] == ' '; x--) t += " ";
 
-
             return text.Substring(0, xStart) +
                    head + "\r\n" +
                    t + regionContent.Replace("\n", "\n" + t) + "\r\n" +
                    t + text.Substring(text.IndexOf(foot, xStart));
         }
 
-        private static string createMethod(string def, string body = null)
+        private static string createMethod(Method method, string def, string body = null)
         {
             var t = ""; // "        ";
             var m = "";
 
+            // creation info
+            m += "\r\n" + t + $"// creation info: {getStackInfo()}, init: {method.CreationInfo}";
+
+            // definition
             m += "\r\n" + t + def + "";
 
             if (body == null)
@@ -224,7 +251,31 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
             return m;
         }
 
-        class Method
+        private static string getStackInfo()
+        {
+            var stackTrace = new StackTrace(true);
+
+            var blackList = new[]
+            {
+                ".ctor",
+                nameof(createMethod),
+                nameof(Method.GameAndPlayer)
+            };
+
+            var lineNos = stackTrace.GetFrames()
+                .Skip(1)
+                .Select(f => (f.GetFileName(), f.GetFileLineNumber(), f.GetMethod()?.Name))
+                .Where(f => (f.Item1?.Contains(nameof(ConnectionGenerator)) ?? false)
+                    && !blackList.Contains(f.Name))
+                .Select(f => f.Name + ":" + f.Item2)
+                .ToList();
+
+            return string.Join(" <- ", lineNos);
+
+            //string lineNo = stackTrace.GetFrame(stackTrace.FrameCount - 2).GetFileLineNumber().ToString();
+        }
+
+        private class Method
         {
             internal enum TypeType
             {
@@ -238,14 +289,20 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
 
             internal class ParamList : List<(string Name, string Type, TypeType TypeType, bool IsHidden)>
             {
-
                 internal string StringFull => string.Join(", ", this.Select(p => p.Type + " " + p.Name));
                 internal string StringNames => string.Join(", ", this.Select(p => p.Name));
                 internal string StringTypes => string.Join(", ", this.Select(p => p.Type));
 
-                internal string ToString(bool type, bool name = true, bool showHidden = false, ESerialize serializeComplexName = ESerialize.None, bool complexIsString = false)
+                internal string ToString(bool type, bool name = true, bool showHidden = false, bool switchGameAndPlayer = false, ESerialize serializeComplexName = ESerialize.None, bool complexIsString = false)
                 {
-                    return string.Join(", ", ToList(type, name, showHidden, serializeComplexName, complexIsString).Select(p => p.Output));
+                    var result = string.Join(", ", ToList(type, name, showHidden, serializeComplexName, complexIsString).Select(p => p.Output));
+
+                    if (switchGameAndPlayer)
+                    {
+                        result = result.Replace("string gameName, int playerNo, string playerToken", "Game game, Player player");
+                    }
+
+                    return result;
                 }
 
                 internal List<(string Name, string Type, TypeType TypeType, bool IsHidden, string Output)> ToList(bool type, bool name = true, bool showHidden = false, ESerialize serializeComplexName = ESerialize.None, bool complexIsString = false)
@@ -317,9 +374,9 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                     }
 
                     var name = param.Split('.')[0];
-                    
+
                     var typeType = TypeType.Basic;
-                    
+
                     if (type.StartsWith("e-"))
                     {
                         type = type.Substring(2);
@@ -329,8 +386,6 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                     {
                         typeType = TypeType.Complex;
                     }
-
-
 
                     var isHidden = name.StartsWith("-");
 
@@ -351,12 +406,12 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
 
             internal string Name;
             internal ParamList Params = new ParamList();
-
-            
+            internal string CreationInfo;
 
             internal Method(string name)
             {
                 Name = name;
+                CreationInfo = getStackInfo();
             }
 
             internal Method(string name, string param1) : this(name)
@@ -374,10 +429,16 @@ namespace Doppelkopf.Generator.Generators.ConnectionGenerator
                 Params.Add(param3);
             }
 
+            internal Method(string name, string param1, string param2, string param3, string param4) : this(name, param1, param2, param3)
+            {
+                Params.Add(param4);
+            }
+
             internal static Method GameAndPlayer(string name)
             {
-                return new Method(name, "-gameName", "-playerNo.int");
+                return new Method(name, "-gameName", "-playerNo.int", "-playerToken");
             }
+
             internal static Method GameAndPlayer(string name, string param3)
             {
                 var m = GameAndPlayer(name);

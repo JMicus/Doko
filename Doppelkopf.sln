@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29920.165
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokoTest", "DokoTest\DokoTest.csproj", "{F88A4D78-A03D-485A-944C-4EA8ED6F686B}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doppelkopf.Generator", "Doppelkopf.Generator\Doppelkopf.Generator.csproj", "{6C27DF21-E0F5-4DF9-85E9-08ECAF237785}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokoWebTest", "DokoWebTest\DokoWebTest.csproj", "{85C4E42E-7D57-42F2-AE89-F7B55328582D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokoTelegramService", "DokoTelegramService\DokoTelegramService.csproj", "{97309DF9-2513-4C9C-BFF1-F22FFC3ABCAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{85C4E42E-7D57-42F2-AE89-F7B55328582D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85C4E42E-7D57-42F2-AE89-F7B55328582D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85C4E42E-7D57-42F2-AE89-F7B55328582D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97309DF9-2513-4C9C-BFF1-F22FFC3ABCAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97309DF9-2513-4C9C-BFF1-F22FFC3ABCAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97309DF9-2513-4C9C-BFF1-F22FFC3ABCAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97309DF9-2513-4C9C-BFF1-F22FFC3ABCAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

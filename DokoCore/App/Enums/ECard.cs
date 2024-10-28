@@ -14,6 +14,5 @@ namespace Doppelkopf.Core.App.Enums
         CA, C1, C9, CK, CD, CB,
 
         SA, X0
-        
     }
 }

@@ -14,16 +14,20 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
     public class StateService
     {
         #region private
+
         private bool _shouldInitialize = true;
         private bool _eventsAreInit = false;
-        #endregion
+
+        #endregion private
 
         #region user
+
         public Watch<string> GameName { get; set; } = new Watch<string>("");
         public Watch<int> PlayerNo { get; set; } = new Watch<int>(0);
         public Watch<string> PlayerName { get; set; } = new Watch<string>("");
         public Watch<string> Token { get; set; } = new Watch<string>("");
-        #endregion
+
+        #endregion user
 
         public GameState GameState { get; set; }
 
@@ -32,11 +36,12 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
         public Watch<bool> Connected { get; set; } = new Watch<bool>(false);
 
         #region view
+
         public Game GameView { get; set; }
         public Settings SettingsView { get; set; }
         public PointsPage PointsView { get; set; }
-        #endregion
 
+        #endregion view
 
         private NavigationManager _navManager;
 
@@ -45,7 +50,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
         public string CurrentPage => _navManager?.Uri?.Substring(_navManager.BaseUri.Length).Split('?')[0];
 
         public EDialog OpenDialog { get; set; }
-
 
         public StateService()
         {
@@ -73,12 +77,22 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
                     jsRuntime.InvokeVoidAsync("MainPage.setPageTitle", "doko - " + GameName);
                     jsRuntime.InvokeVoidAsync("MainPage.setMenuTitle", GameName.Value);
 
-                    client.GameName = GameName;
+                    client.Values.GameName = GameName;
                 };
 
                 PlayerNo.OnChange += () =>
                 {
-                    client.PlayerNo = PlayerNo;
+                    client.Values.PlayerNo = PlayerNo;
+                };
+
+                PlayerName.OnChange += () =>
+                {
+                    client.Values.PlayerToken = PlayerName;
+                };
+
+                Token.OnChange += () =>
+                {
+                    client.Values.PlayerToken = Token;
                 };
 
                 GameState.InitMessagesFromHub(client);
@@ -101,7 +115,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
                 Token.Value = token;
             }
 
-
             if (firstInit)
             {
                 _shouldInitialize = false;
@@ -120,7 +133,6 @@ namespace Doppelkopf.BlazorWebAssembly.Client.Services
             InGame.Value = false;
 
             _client?.Disconnect();
-        }  
-        
+        }
     }
 }
